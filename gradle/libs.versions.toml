@@ -1,0 +1,81 @@
+[versions]
+
+appCompat = "1.6.1"
+activity = "1.7.2"
+material = "1.9.0"
+coreKtx = "1.10.0"
+constraintLayout = "1.0.1"
+composeBom = "2022.12.00"
+room = "2.5.2"
+lifecycle = "2.6.1"
+lifecycle-common = "2.5.1"
+kotlin-coroutine = "1.7.1"
+dagger = "2.44"
+hilt = "1.1.0-alpha01"
+junit = "4.13.2"
+android-test-ext = "1.1.5"
+espresso = "3.5.1"
+gms-service-location = "21.0.1"
+gson = "2.9.0"
+
+# plugin
+androidStudioGradlePlugin = "8.0.2"
+kotlin = "1.8.20"
+
+[libraries]
+
+
+core-ktx = { module = "androidx.core:core-ktx", version.ref = "coreKtx" }
+appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appCompat" }
+activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activity" }
+material = { module = "com.google.android.material:material", version.ref = "material" }
+constraintLayout = { module = "androidx.constraintlayout:constraintlayout-compose", version.ref = "constraintLayout" }
+
+compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
+compose-material3 = { group = "androidx.compose.material3", name = "material3" }
+compose-material = { group = "androidx.compose.material", name = "material" }
+compose-foundation = { group = "androidx.compose.foundation", name = "foundation" }
+compose-ui = { group = "androidx.compose.ui", name = "ui" }
+compose-ui-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
+compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
+compose-viewBinding = { group = "androidx.compose.ui", name = "ui-viewbinding" }
+
+room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
+room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
+room-testing = { group = "androidx.room", name = "room-testing", version.ref = "room" }
+
+lifecycle-compose = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-compose", version.ref = "lifecycle" }
+lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
+lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycle" }
+lifecycle-runtime-compose = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "lifecycle" }
+lifecycle-service = { group = "androidx.lifecycle", name = "lifecycle-service", version.ref = "lifecycle-common" }
+
+coroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlin-coroutine" }
+
+dagger = { module = "com.google.dagger:dagger", version.ref = "dagger" }
+dagger-hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "dagger" }
+dagger-hilt-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "dagger" }
+hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hilt" }
+
+gms-play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "gms-service-location" }
+
+gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson"}
+
+jUnit = { group = "junit", name = "junit", version.ref = "junit" }
+test-ext = { group = "androidx.test.ext", name = "junit", version.ref = "android-test-ext" }
+test-espresso = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espresso" }
+
+[bundles]
+compose = ["compose-material3", "compose-material", "compose-foundation", "compose-ui", "compose-ui-preview", "compose-viewBinding"]
+lifecycle = ["lifecycle-compose", "lifecycle-viewmodel-ktx", "lifecycle-runtime-ktx", "lifecycle-runtime-compose", "lifecycle-service"]
+coroutines = ["coroutines"]
+hilt = ["dagger-hilt-android"]
+testing = ["jUnit", "test-ext", "test-espresso"]
+
+[plugins]
+
+android-application = { id = "com.android.application", version.ref = "androidStudioGradlePlugin" }
+android-library = { id = "com.android.library", version.ref = "androidStudioGradlePlugin" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+hilt = { id = "com.google.dagger.hilt.android", version.ref = "dagger" }
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
