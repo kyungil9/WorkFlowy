@@ -5,21 +5,21 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
-import com.example.data.WeekSchedule
+import com.example.data.datasource.local.database.entity.WeekSchedule
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
 
 @Dao
 interface WeekScheduleDao {
     @Query("select * from WeekSchedule where date = :today order by startTime asc")
-    fun getSearchSchedule(today : LocalDate) : Flow<List<com.example.data.WeekSchedule>>
+    fun getSearchSchedule(today : LocalDate) : Flow<List<WeekSchedule>>
 
     @Insert
-    fun insertSchedule(schedule : com.example.data.WeekSchedule)
+    fun insertSchedule(schedule : WeekSchedule)
 
     @Update
-    fun updateSchedule(schedule: com.example.data.WeekSchedule)
+    fun updateSchedule(schedule: WeekSchedule)
 
     @Delete
-    fun deleteSchedule(schedule : com.example.data.WeekSchedule)
+    fun deleteSchedule(schedule : WeekSchedule)
 }

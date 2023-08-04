@@ -6,7 +6,7 @@ import java.time.LocalDateTime
 
 @Entity
 data class WeekRecord(
-    @PrimaryKey(autoGenerate = true) val id : Int,
+    @PrimaryKey(autoGenerate = true) val id : Int = 0,
     val tag : String,
     var startTime : LocalDateTime,
     var endTime: LocalDateTime?,

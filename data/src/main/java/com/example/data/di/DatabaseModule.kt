@@ -7,9 +7,9 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.data.R
 
 import com.example.data.datasource.local.database.Database
-import com.example.data.datasource.local.database.entity.WeekRecord
-import com.example.data.datasource.local.database.entity.WeekSchedule
-import com.example.data.datasource.local.database.entity.WeekTag
+import com.example.data.datasource.local.database.dao.WeekRecordDao
+import com.example.data.datasource.local.database.dao.WeekScheduleDao
+import com.example.data.datasource.local.database.dao.WeekTagDao
 
 import dagger.Module
 import dagger.Provides
@@ -32,19 +32,19 @@ internal object DatabaseModule {
 
     @Provides
     @Singleton
-    fun providesWeekScheduleDao(database: Database): WeekSchedule {
+    fun providesWeekScheduleDao(database: Database): WeekScheduleDao {
         return database.weekScheduleDao()
     }
 
     @Provides
     @Singleton
-    fun providesWeekRecordDao(database: Database): WeekRecord {
+    fun providesWeekRecordDao(database: Database): WeekRecordDao {
         return database.weekRecordDao()
     }
 
     @Provides
     @Singleton
-    fun providesWeekTagDao(database: Database): WeekTag {
+    fun providesWeekTagDao(database: Database): WeekTagDao {
         return database.weekTagDao()
     }
 
