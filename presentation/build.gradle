@@ -1,17 +1,29 @@
 plugins {
-    alias(libs.plugins.android.library)
+    alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.hilt)
     id 'kotlin-kapt'
 }
 
 android {
-    namespace 'com.example.presentation'
     compileSdk 33
 
+    buildFeatures {
+        compose true
+    }
+
     defaultConfig {
-        minSdkVersion 28
-        targetSdkVersion 33
+        applicationId "com.example.workFlowy"
+        minSdk 28
+        targetSdk 33
+        versionCode 1
+        versionName "1.0"
+        multiDexEnabled true
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        vectorDrawables {
+            useSupportLibrary true
+        }
     }
 
     buildTypes {
@@ -27,20 +39,51 @@ android {
     kotlinOptions {
         jvmTarget = '17'
     }
-//    buildFeatures {
-//        compose true
-//    }
-//    composeOptions {
-//        kotlinCompilerExtensionVersion '1.4.6'
-//    }
-
+    namespace 'com.example.workFlowy'
+    composeOptions {
+        kotlinCompilerExtensionVersion '1.4.6'
+    }
+    packagingOptions {
+        resources {
+            excludes += '/META-INF/{AL2.0,LGPL2.1}'
+        }
+    }
 }
 
 dependencies {
+    implementation(project(":domain"))
+    implementation(project(":data"))
 
+
+    implementation(libs.core.ktx)
+    implementation(libs.appcompat)
+    implementation(libs.material)
+    implementation(libs.activity.compose)
     implementation(libs.coroutines)
+    implementation(libs.bundles.lifecycle)
+    implementation(libs.constraintLayout)
+
+    testImplementation (libs.JUnit)
+    androidTestImplementation (libs.test.ext)
+    androidTestImplementation (libs.test.espresso)
 
     //hilt
     implementation(libs.bundles.hilt)
     kapt(libs.dagger.hilt.compiler)
+
+    //compose
+    implementation platform(libs.compose.bom)
+    androidTestImplementation(libs.compose.bom)
+    implementation(libs.bundles.compose)
+    debugImplementation(libs.compose.ui.tooling)
+
+    //room
+    implementation(libs.room.ktx)
+    kapt(libs.room.compiler)
+    androidTestImplementation(libs.room.testing)
+
+    // gson
+    implementation(libs.gson)
+
+
 }

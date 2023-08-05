@@ -25,14 +25,25 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.domain.model.Schedule
 import com.example.workFlowy.R
+import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.LocalTime
 
 @Composable
 fun ScheduleList(){
     val scrollState = rememberLazyListState()
     var testList = ArrayList<Schedule>()
-    testList.add(Schedule(LocalDateTime.now(),R.drawable.baseline_wb_sunny_24,"test","comment"))
+    testList.add(
+        Schedule(
+            1,
+            LocalDate.now(),
+            LocalTime.now(),
+            LocalTime.now(),
+            R.drawable.baseline_wb_sunny_24,
+            "test",
+            "comment"))
     LazyColumn(modifier = Modifier
         .fillMaxWidth(),
         state = scrollState) {
@@ -80,8 +91,3 @@ fun ScheduleItem(schedule : Schedule){
     }
 }
 
-data class Schedule(
-    var time : LocalDateTime,
-    @DrawableRes var icon : Int,
-    var title : String,
-    var comment : String)

@@ -15,8 +15,12 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.ScaffoldState
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -38,6 +42,7 @@ fun WeekLayout(
     content : @Composable (PaddingValues) -> Unit
 ){
     val selectDay by weekViewModel.selectDayFlow.collectAsState()
+    var weekState by remember { mutableStateOf(false) }
 
     Scaffold (
         topBar = {topBar()},
@@ -53,9 +58,11 @@ fun WeekLayout(
                     .size(50.dp)
                     .padding(top = 10.dp, end = 15.dp))
             }
-            ActBox()
+            ActCard(weekViewModel, onClickAct = {
+                weekState = true
+            })
             ScheduleList()
         }
-
+        TagSelectedDialog(visible = weekState, weekViewModel = weekViewModel, onDismissRequest = {weekState = false}, onClickAct = {}, onAddActTag = {})
     }
 }
