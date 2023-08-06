@@ -22,6 +22,8 @@ class TagRepositoryImpl @Inject constructor(
 
     override fun getTagSingleInfo(): Tag = tagDatasource.getTagSingleInfo().toTagModel()
 
+    override fun getTagSize(): Int = tagDatasource.getTagSize()
+
     override fun insertTag(tag: Tag) {
         tagDatasource.insertTag(tag.toWeekTag())
     }

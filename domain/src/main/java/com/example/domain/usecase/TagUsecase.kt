@@ -9,6 +9,8 @@ interface TagUsecase {
 
     fun getTagSingleInfo() : Tag
 
+    fun getTagSize() : Int
+
     fun insertTag(tag: Tag)
 
     fun deleteTag(tag : Tag)

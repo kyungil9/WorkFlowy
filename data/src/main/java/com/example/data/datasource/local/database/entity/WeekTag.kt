@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey
 
 @Entity
 data class WeekTag(
-    @PrimaryKey(autoGenerate = true) val id : Int = 0,
+    @PrimaryKey(autoGenerate = true) val id : Int? = 0,
     var icon : Int,
     val title : String
 )

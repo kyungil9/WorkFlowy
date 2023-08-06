@@ -14,9 +14,14 @@ interface WeekTagDao {
     @Query("select * from WeekTag limit 1")
     fun getToDoOneTag() : WeekTag
 
+    @Query("select count(*) from WeekTag")
+    fun getTagSize() : Int
+
     @Insert
     fun insertTag(tag : WeekTag)
 
     @Query("Delete from WeekTag where WeekTag.title = :tag")
     fun deleteTag(tag: String)
+
+
 }

@@ -14,6 +14,8 @@ class TagDatasourceImpl @Inject constructor(
 
     override fun getTagSingleInfo(): WeekTag = tagService.getToDoOneTag()
 
+    override fun getTagSize(): Int = tagService.getTagSize()
+
     override fun insertTag(tag: WeekTag) {
         tagService.insertTag(tag)
     }

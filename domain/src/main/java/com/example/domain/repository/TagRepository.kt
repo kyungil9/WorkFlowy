@@ -9,6 +9,8 @@ interface TagRepository {
 
     fun getTagSingleInfo() : Tag
 
+    fun getTagSize() : Int
+
     fun insertTag(tag: Tag)
 
     fun deleteTag(tag : Tag)

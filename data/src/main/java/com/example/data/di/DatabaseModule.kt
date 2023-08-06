@@ -22,12 +22,18 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 internal object DatabaseModule {
 
+    @Singleton
+    val MIGRATION_1_2 = object : Migration(1,2){
+        override fun migrate(database: SupportSQLiteDatabase) {
+
+        }
+    }
+
     @Provides
     @Singleton
     fun providesDatabase(@ApplicationContext context: Context) : Database {
         return Room.databaseBuilder(context, Database::class.java,"mySchedule.db").addMigrations(
-            MIGRATION_1_2
-        ).build()
+            MIGRATION_1_2).build()
     }
 
     @Provides
@@ -48,15 +54,5 @@ internal object DatabaseModule {
         return database.weekTagDao()
     }
 
-    @Singleton
-    val MIGRATION_1_2 = object : Migration(1,2){
-        override fun migrate(database: SupportSQLiteDatabase) {
-            database.execSQL("insert into WeekTag values (null,${R.drawable.baseline_menu_book_24},'공부중'")
-            database.execSQL("insert into WeekTag values (null,${R.drawable.baseline_directions_run_24},'운동중'")
-            database.execSQL("insert into WeekTag values (null,${R.drawable.baseline_bed_24},'휴식중'")
-            database.execSQL("insert into WeekTag values (null,${R.drawable.baseline_directions_bus_24},'이동중'")
-            database.execSQL("insert into WeekTag values (null,${R.drawable.baseline_hotel_24},'수면중'")
-            database.execSQL("insert into WeekTag values (null,${R.drawable.baseline_local_cafe_24},'개인시간'")
-        }
-    }
+
 }

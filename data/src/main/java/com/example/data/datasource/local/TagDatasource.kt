@@ -9,6 +9,8 @@ interface TagDatasource {
 
     fun getTagSingleInfo() : WeekTag
 
+    fun getTagSize() : Int
+
     fun insertTag(tag: WeekTag)
 
     fun deleteTag(tag : WeekTag)
