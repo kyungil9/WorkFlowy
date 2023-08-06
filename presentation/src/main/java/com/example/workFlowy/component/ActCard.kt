@@ -1,15 +1,16 @@
 package com.example.workFlowy.component
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.Text
@@ -19,15 +20,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.data.datasource.local.database.entity.WeekTag
+import com.example.domain.model.Tag
 import com.example.workFlowy.R
+import com.example.workFlowy.WeekViewModel
 
 @Composable
-fun ActBox(){
+fun ActCard(
+    weekViewModel: WeekViewModel,
+    onClickAct : () -> Unit
+){
     Card(
         Modifier
             .fillMaxWidth()
             .height(200.dp)
-            .padding(20.dp),
+            .padding(20.dp)
+            .clickable { onClickAct() },
         shape = RoundedCornerShape(10.dp),
         elevation = 5.dp
     ) {
@@ -54,6 +62,37 @@ fun ActBox(){
                     text = "00:00",
                     fontSize = 24.sp)
             }
+        }
+    }
+}
+
+@Composable
+fun ActTagCard(
+    tag : Tag,
+    onClickAct: (Tag) -> Unit
+){
+    Card(
+        Modifier
+            .fillMaxSize()
+            .padding(10.dp)
+            .clickable { onClickAct(tag) },
+        shape = RoundedCornerShape(10.dp),
+        elevation = 5.dp
+    ) {
+        Column(
+            modifier = Modifier
+                .height(100.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Image(
+                painter = painterResource(id = tag!!.icon),
+                contentDescription = null,
+                modifier = Modifier
+                    .size(50.dp)
+            )
+
+            Text(text = tag!!.title, fontSize = 24.sp)
         }
     }
 }
