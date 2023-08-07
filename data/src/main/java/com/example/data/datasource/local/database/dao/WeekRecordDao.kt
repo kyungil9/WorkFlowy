@@ -23,4 +23,7 @@ interface WeekRecordDao {
 
     @Query("select * from WeekRecord where pause = :pause")
     fun getSelectRecordInfo(pause: Boolean): Flow<List<WeekRecord>>
+
+    @Query("select count(*) from WeekRecord")
+    fun getRecordSize() : Int
 }

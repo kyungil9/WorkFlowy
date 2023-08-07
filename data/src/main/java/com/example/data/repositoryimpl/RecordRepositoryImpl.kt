@@ -35,6 +35,8 @@ class RecordRepositoryImpl @Inject constructor(
             }
         }
 
+    override fun getRecordSize(): Int = recordDatasource.getRecordSize()
+
     override fun insertRecord(record: Record) {
         recordDatasource.insertRecord(record.toWeekRecord())
     }

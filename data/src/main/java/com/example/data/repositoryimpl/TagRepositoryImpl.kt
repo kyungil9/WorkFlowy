@@ -20,7 +20,7 @@ class TagRepositoryImpl @Inject constructor(
             }
         }
 
-    override fun getTagSingleInfo(): Tag = tagDatasource.getTagSingleInfo().toTagModel()
+    override fun getTagSingleInfo(tag : String): Tag = tagDatasource.getTagSingleInfo(tag).toTagModel()
 
     override fun getTagSize(): Int = tagDatasource.getTagSize()
 

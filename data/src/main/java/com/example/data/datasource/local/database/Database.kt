@@ -11,7 +11,7 @@ import com.example.data.datasource.local.database.entity.WeekSchedule
 import com.example.data.datasource.local.database.entity.WeekTag
 
 
-@Database(entities = [WeekSchedule::class, WeekTag::class, WeekRecord::class], version = 2, exportSchema = true)
+@Database(entities = [WeekSchedule::class, WeekTag::class, WeekRecord::class], version = 4, exportSchema = true)
 @TypeConverters(Converters::class)
 abstract class Database : RoomDatabase(){
 

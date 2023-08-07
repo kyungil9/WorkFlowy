@@ -12,6 +12,8 @@ interface RecordUsecase {
 
     fun getPauseRecord(pause: Boolean) : Flow<List<Record>> //??수정?
 
+    fun getRecordSize() : Int
+
     fun insertRecord(record: Record)
 
     fun updateRecord(endTime: LocalDateTime, progressTime : Long, id : Int, pause : Boolean)

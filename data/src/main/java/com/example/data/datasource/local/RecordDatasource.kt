@@ -13,6 +13,8 @@ interface RecordDatasource {
 
     fun getPauseRecord(pause: Boolean) : Flow<List<WeekRecord>> //??수정?
 
+    fun getRecordSize() : Int
+
     fun insertRecord(record: WeekRecord)
 
     fun updateRecord(endTime: LocalDateTime, progressTime : Long, id : Int, pause : Boolean)

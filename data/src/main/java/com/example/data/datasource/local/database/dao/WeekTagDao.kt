@@ -11,8 +11,8 @@ interface WeekTagDao {
     @Query("select * from WeekTag ")
     fun getAllTag(): Flow<List<WeekTag>>
 
-    @Query("select * from WeekTag limit 1")
-    fun getToDoOneTag() : WeekTag
+    @Query("select * from WeekTag where title = :tag limit 1")
+    fun getToDoOneTag(tag: String) : WeekTag
 
     @Query("select count(*) from WeekTag")
     fun getTagSize() : Int

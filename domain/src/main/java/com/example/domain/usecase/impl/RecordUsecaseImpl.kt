@@ -17,6 +17,8 @@ class RecordUsecaseImpl @Inject constructor(
 
     override fun getPauseRecord(pause: Boolean): Flow<List<Record>> = recordRepository.getPauseRecord(pause)
 
+    override fun getRecordSize(): Int = recordRepository.getRecordSize()
+
     override fun insertRecord(record: Record) {
         recordRepository.insertRecord(record)
     }

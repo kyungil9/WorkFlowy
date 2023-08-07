@@ -12,7 +12,7 @@ class TagDatasourceImpl @Inject constructor(
 
     override fun getTagInfo(): Flow<List<WeekTag>> = tagService.getAllTag()
 
-    override fun getTagSingleInfo(): WeekTag = tagService.getToDoOneTag()
+    override fun getTagSingleInfo(tag : String): WeekTag = tagService.getToDoOneTag(tag)
 
     override fun getTagSize(): Int = tagService.getTagSize()
 

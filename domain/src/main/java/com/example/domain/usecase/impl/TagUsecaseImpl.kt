@@ -12,7 +12,7 @@ class TagUsecaseImpl @Inject constructor(
 
     override fun getTagInfo(): Flow<List<Tag>> = tagRepository.getTagInfo()
 
-    override fun getTagSingleInfo(): Tag = tagRepository.getTagSingleInfo()
+    override fun getTagSingleInfo(tag : String): Tag = tagRepository.getTagSingleInfo(tag)
 
     override fun getTagSize(): Int = tagRepository.getTagSize()
 

@@ -17,6 +17,8 @@ class RecordDatasourceImpl @Inject constructor(
 
     override fun getPauseRecord(pause: Boolean): Flow<List<WeekRecord>> = recordService.getSelectRecordInfo(pause)
 
+    override fun getRecordSize(): Int = recordService.getRecordSize()
+
     override fun insertRecord(record: WeekRecord) {
         recordService.insertRecord(record)
     }

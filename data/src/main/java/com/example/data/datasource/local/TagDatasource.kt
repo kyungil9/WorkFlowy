@@ -7,7 +7,7 @@ interface TagDatasource {
 
     fun getTagInfo() : Flow<List<WeekTag>>
 
-    fun getTagSingleInfo() : WeekTag
+    fun getTagSingleInfo(tag : String) : WeekTag
 
     fun getTagSize() : Int
 
