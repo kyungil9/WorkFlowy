@@ -18,7 +18,9 @@ import com.example.workFlowy.component.WeekLayout
 import com.example.workFlowy.component.WeekLazyList
 import com.example.workFlowy.ui.theme.WorkFlowyTheme
 import com.example.workFlowy.utils.today
+import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
+import java.time.LocalTime
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -43,7 +45,6 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-        Log.d("drawable","${R.drawable.baseline_menu_book_24}")
     }
 }
 

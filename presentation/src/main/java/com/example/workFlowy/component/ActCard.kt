@@ -24,10 +24,12 @@ import com.example.data.datasource.local.database.entity.WeekTag
 import com.example.domain.model.Tag
 import com.example.workFlowy.R
 import com.example.workFlowy.WeekViewModel
+import java.time.Duration
 
 @Composable
 fun ActCard(
-    weekViewModel: WeekViewModel,
+    selectedTag: Tag,
+    progressTime : Duration,
     onClickAct : () -> Unit
 ){
     Card(
@@ -45,7 +47,7 @@ fun ActCard(
                 .padding(horizontal = 10.dp)
         ) {
             Image(
-                painter = painterResource(id = R.drawable.baseline_directions_run_24),
+                painter = painterResource(id = selectedTag.icon),
                 contentDescription = null,
                 modifier = Modifier
                     .padding(15.dp)
@@ -57,9 +59,9 @@ fun ActCard(
                     .padding(15.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(text = "운동중", fontSize = 32.sp, modifier = Modifier.padding(vertical = 20.dp))
+                Text(text = selectedTag.title, fontSize = 32.sp, modifier = Modifier.padding(vertical = 20.dp))
                 Text(
-                    text = "00:00",
+                    text = "${progressTime.toHours()}:${progressTime.toMinutes()%60}:${progressTime.seconds%60}",
                     fontSize = 24.sp)
             }
         }

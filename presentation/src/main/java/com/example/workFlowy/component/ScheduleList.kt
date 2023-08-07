@@ -27,27 +27,20 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.domain.model.Schedule
 import com.example.workFlowy.R
+import com.example.workFlowy.WeekUiState
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 
 @Composable
-fun ScheduleList(){
+fun ScheduleList(
+    uiState: WeekUiState
+){
     val scrollState = rememberLazyListState()
-    var testList = ArrayList<Schedule>()
-    testList.add(
-        Schedule(
-            1,
-            LocalDate.now(),
-            LocalTime.now(),
-            LocalTime.now(),
-            R.drawable.baseline_wb_sunny_24,
-            "test",
-            "comment"))
     LazyColumn(modifier = Modifier
         .fillMaxWidth(),
         state = scrollState) {
-        items(testList){ schedule ->
+        items(uiState.scheduleList){ schedule ->
             ScheduleItem(schedule)
         }
     }

@@ -25,6 +25,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.data.datasource.local.database.entity.WeekTag
 import com.example.domain.model.Tag
 import com.example.workFlowy.R
+import com.example.workFlowy.WeekUiState
 import com.example.workFlowy.WeekViewModel
 import java.util.Properties
 
@@ -45,21 +46,11 @@ fun CustomAlertDialog(
 @Composable
 fun TagSelectedDialog(
     visible : Boolean,
-    weekViewModel: WeekViewModel,
+    uiState: WeekUiState,
     onAddActTag : () -> Unit,
     onClickAct : (Tag) -> Unit,
     onDismissRequest: () -> Unit
 ){
-//    val tags = ArrayList<WeekTag>()
-//    tags.add(WeekTag(0, R.drawable.baseline_directions_run_24,"운동중"))
-//    tags.add(WeekTag(0, R.drawable.baseline_directions_run_24,"운동중"))
-//    tags.add(WeekTag(0, R.drawable.baseline_directions_run_24,"운동중"))
-//    tags.add(WeekTag(0, R.drawable.baseline_directions_run_24,"운동중"))
-//    tags.add(WeekTag(0, R.drawable.baseline_directions_run_24,"운동중"))
-//    tags.add(WeekTag(0, R.drawable.baseline_directions_run_24,"운동중"))
-
-    val uiState by weekViewModel.uiState.collectAsStateWithLifecycle()
-
     if (visible) {
         CustomAlertDialog(
             onDismissRequest = { onDismissRequest() },

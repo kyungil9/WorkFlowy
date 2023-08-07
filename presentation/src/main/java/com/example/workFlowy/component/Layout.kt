@@ -27,6 +27,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.workFlowy.R
 import com.example.workFlowy.WeekViewModel
 import com.example.workFlowy.ui.theme.white
@@ -41,8 +42,12 @@ fun WeekLayout(
     scaffoldState: ScaffoldState,
     content : @Composable (PaddingValues) -> Unit
 ){
-    val selectDay by weekViewModel.selectDayFlow.collectAsState()
+    val selectDay by weekViewModel.selectDayFlow.collectAsStateWithLifecycle()
+    val selectedTag by weekViewModel.selectedTagFlow.collectAsStateWithLifecycle()
+    val uiState by weekViewModel.uiState.collectAsStateWithLifecycle()
+    val progressTime by weekViewModel.progressTimeFlow.collectAsStateWithLifecycle()
     var weekState by remember { mutableStateOf(false) }
+    weekViewModel.timer.schedule(weekViewModel.timerTask,0,1000)
 
     Scaffold (
         topBar = {topBar()},
@@ -53,16 +58,34 @@ fun WeekLayout(
         Column(modifier = Modifier.fillMaxSize()) {
             WeekLazyList(weekViewModel = weekViewModel)//주달력 표시
             Row (modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween){
-                Text(text = "${selectDay.dayOfMonth}일 ${transDayToKorean(selectDay.dayOfWeek.value)}", textAlign = TextAlign.Start, fontSize = 24.sp, modifier = Modifier.padding(vertical = 12.dp,horizontal = 10.dp))
-                Icon(painter = painterResource(id = R.drawable.baseline_wb_sunny_24), contentDescription = null, modifier = Modifier
-                    .size(50.dp)
-                    .padding(top = 10.dp, end = 15.dp))
+                Text(text = "${selectDay.dayOfMonth}일 ${transDayToKorean(selectDay.dayOfWeek.value)}",
+                    textAlign = TextAlign.Start,
+                    fontSize = 24.sp,
+                    modifier = Modifier.padding(vertical = 12.dp,horizontal = 10.dp))
+                Icon(
+                    painter = painterResource(id = R.drawable.baseline_wb_sunny_24),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(50.dp)
+                        .padding(top = 10.dp, end = 15.dp))
             }
-            ActCard(weekViewModel, onClickAct = {
+            ActCard(selectedTag = selectedTag,
+                progressTime = progressTime,
+                onClickAct = {
                 weekState = true
             })
-            ScheduleList()
+            ScheduleList(uiState)
         }
-        TagSelectedDialog(visible = weekState, weekViewModel = weekViewModel, onDismissRequest = {weekState = false}, onClickAct = {}, onAddActTag = {})
+        TagSelectedDialog(
+            visible = weekState,
+            uiState = uiState,
+            onDismissRequest = {weekState = false},
+            onClickAct = {tag ->
+                weekViewModel.changeRecordInfo()
+                weekViewModel.insertRecord(tag)
+                weekState = false
+            },
+            onAddActTag = {}
+        )
     }
 }
