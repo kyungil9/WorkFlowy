@@ -16,7 +16,7 @@
         android:theme="@style/Theme.WorkFlowy"
         tools:targetApi="31">
         <activity
-            android:name="com.example.workFlowy.MainActivity"
+            android:name="com.example.workFlowy.screen.MainActivity"
             android:exported="true"
             android:label="@string/title_activity_main"
             android:theme="@style/Theme.WorkFlowy">

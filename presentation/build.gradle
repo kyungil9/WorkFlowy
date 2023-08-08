@@ -1,12 +1,13 @@
 plugins {
     alias(libs.plugins.android.application)
+    alias(libs.plugins.android.navigation.safeargs)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.hilt)
     id 'kotlin-kapt'
 }
 
 android {
-    compileSdk 33
+    compileSdk 34
 
     buildFeatures {
         compose true
@@ -15,7 +16,7 @@ android {
     defaultConfig {
         applicationId "com.example.workFlowy"
         minSdk 28
-        targetSdk 33
+        targetSdk 34
         versionCode 1
         versionName "1.0"
         multiDexEnabled true
@@ -41,7 +42,7 @@ android {
     }
     namespace 'com.example.workFlowy'
     composeOptions {
-        kotlinCompilerExtensionVersion '1.4.6'
+        kotlinCompilerExtensionVersion '1.5.0'
     }
     packagingOptions {
         resources {
@@ -66,6 +67,10 @@ dependencies {
     testImplementation (libs.JUnit)
     androidTestImplementation (libs.test.ext)
     androidTestImplementation (libs.test.espresso)
+
+    //navigation
+    implementation(libs.hilt.navigation.compose)
+    implementation(libs.bundles.navigation)
 
     //hilt
     implementation(libs.bundles.hilt)

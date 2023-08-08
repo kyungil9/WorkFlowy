@@ -10,17 +10,22 @@ room = "2.5.2"
 lifecycle = "2.6.1"
 lifecycle-common = "2.5.1"
 kotlin-coroutine = "1.7.1"
-dagger = "2.44"
+dagger = "2.47"
 hilt = "1.1.0-alpha01"
 junit = "4.13.2"
 android-test-ext = "1.1.5"
 espresso = "3.5.1"
 gms-service-location = "21.0.1"
 gson = "2.9.0"
+retrofit2 = "2.9.0"
+okhttp3 = "4.9.3"
+navigation = "2.7.0-rc01"
+compose = "1.5.0-beta01"
 
 # plugin
 androidStudioGradlePlugin = "8.0.2"
 kotlin = "1.8.20"
+androidNavigationSafeargs ="2.7.0-rc01"
 
 [libraries]
 
@@ -34,11 +39,15 @@ constraintLayout = { module = "androidx.constraintlayout:constraintlayout-compos
 compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
 compose-material3 = { group = "androidx.compose.material3", name = "material3" }
 compose-material = { group = "androidx.compose.material", name = "material" }
-compose-foundation = { group = "androidx.compose.foundation", name = "foundation" }
-compose-ui = { group = "androidx.compose.ui", name = "ui" }
-compose-ui-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
-compose-viewBinding = { group = "androidx.compose.ui", name = "ui-viewbinding" }
+compose-foundation = { group = "androidx.compose.foundation", name = "foundation", version.ref = "compose"  }
+compose-ui = { group = "androidx.compose.ui", name = "ui", version.ref = "compose"  }
+compose-ui-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview", version.ref = "compose"  }
+compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling", version.ref = "compose"  }
+compose-viewBinding = { group = "androidx.compose.ui", name = "ui-viewbinding" , version.ref = "compose" }
+
+navigation-fragment = { group = "androidx.navigation", name = "navigation-fragment-ktx", version.ref = "navigation" }
+navigation-ui = { group = "androidx.navigation", name = "navigation-ui-ktx", version.ref = "navigation" }
+navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigation" }
 
 room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
@@ -66,6 +75,7 @@ test-ext = { group = "androidx.test.ext", name = "junit", version.ref = "android
 test-espresso = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espresso" }
 
 [bundles]
+navigation = ["navigation-fragment","navigation-ui","navigation-compose"]
 compose = ["compose-material3", "compose-material", "compose-foundation", "compose-ui", "compose-ui-preview", "compose-viewBinding"]
 lifecycle = ["lifecycle-compose", "lifecycle-viewmodel-ktx", "lifecycle-runtime-ktx", "lifecycle-runtime-compose", "lifecycle-service"]
 coroutines = ["coroutines"]
@@ -77,5 +87,6 @@ testing = ["jUnit", "test-ext", "test-espresso"]
 android-application = { id = "com.android.application", version.ref = "androidStudioGradlePlugin" }
 android-library = { id = "com.android.library", version.ref = "androidStudioGradlePlugin" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+android-navigation-safeargs = {id = "androidx.navigation.safeargs", version.ref = "androidNavigationSafeargs"}
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "dagger" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
