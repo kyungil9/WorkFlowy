@@ -1,32 +1,20 @@
-package com.example.workFlowy
+package com.example.workFlowy.screen.Home
 
 import androidx.compose.runtime.Stable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
-import com.example.data.R
-import com.example.data.datasource.local.database.entity.WeekRecord
-import com.example.data.datasource.local.database.entity.WeekSchedule
-import com.example.data.datasource.local.database.entity.WeekTag
 import com.example.domain.model.Record
 import com.example.domain.model.Schedule
 import com.example.domain.model.Tag
 import com.example.domain.usecase.RecordUsecase
 import com.example.domain.usecase.ScheduleUsecase
 import com.example.domain.usecase.TagUsecase
-import com.example.workFlowy.utils.today
+import com.example.workFlowy.R
 import com.example.workFlowy.utils.transDayToKorean
-import com.google.android.material.bottomsheet.BottomSheetBehavior.StableState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.currentCoroutineContext
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -35,7 +23,6 @@ import kotlinx.coroutines.launch
 import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.LocalTime
 import java.util.Timer
 import java.util.TimerTask
 import javax.inject.Inject
@@ -57,7 +44,8 @@ class WeekViewModel @Inject constructor(
     private val _progressTimeFlow = MutableStateFlow(Duration.ZERO)
     private val _uiState = MutableStateFlow(WeekUiState())
     private val _selectDayFlow = MutableStateFlow<LocalDate>(LocalDate.now())
-    private val _selectedTagFlow = MutableStateFlow<Tag>(Tag(null, R.drawable.baseline_check_box_outline_blank_24, ""))
+    private val _selectedTagFlow = MutableStateFlow<Tag>(Tag(null,
+        R.drawable.baseline_check_box_outline_blank_24, ""))
     val selectDayFlow get() = _selectDayFlow.asStateFlow()
     val uiState get() = _uiState.asStateFlow()
     val selectedTagFlow get() = _selectedTagFlow.asStateFlow()

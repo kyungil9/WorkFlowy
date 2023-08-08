@@ -20,10 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.data.datasource.local.database.entity.WeekTag
 import com.example.domain.model.Tag
-import com.example.workFlowy.R
-import com.example.workFlowy.WeekViewModel
 import java.time.Duration
 
 @Composable

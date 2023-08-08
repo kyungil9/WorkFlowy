@@ -1,11 +1,17 @@
 package com.example.workFlowy.component
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.TweenSpec
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandHorizontally
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -14,20 +20,14 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.data.datasource.local.database.entity.WeekTag
 import com.example.domain.model.Tag
-import com.example.workFlowy.R
-import com.example.workFlowy.WeekUiState
-import com.example.workFlowy.WeekViewModel
-import java.util.Properties
+import com.example.workFlowy.screen.Home.WeekUiState
+import com.example.workFlowy.navigation.NavigationItem
 
 @Composable
 fun CustomAlertDialog(
@@ -51,7 +51,9 @@ fun TagSelectedDialog(
     onClickAct : (Tag) -> Unit,
     onDismissRequest: () -> Unit
 ){
-    if (visible) {
+    AnimatedVisibility(
+        visible = visible
+    ) {
         CustomAlertDialog(
             onDismissRequest = { onDismissRequest() },
             properties = DialogProperties(dismissOnClickOutside = true, dismissOnBackPress = true)
@@ -60,8 +62,9 @@ fun TagSelectedDialog(
                 columns = GridCells.Fixed(2),
                 verticalArrangement = Arrangement.spacedBy(space = 10.dp),
                 horizontalArrangement = Arrangement.spacedBy(space = 10.dp),
-                contentPadding = PaddingValues(all = 10.dp)){
-                items(uiState.tagList){tag ->
+                contentPadding = PaddingValues(all = 10.dp)
+            ) {
+                items(uiState.tagList) { tag ->
                     ActTagCard(tag = tag, onClickAct = onClickAct)
                 }
                 item {
@@ -72,9 +75,9 @@ fun TagSelectedDialog(
                             .clickable { onAddActTag },
                         shape = RoundedCornerShape(10.dp),
                         elevation = 5.dp
-                    ){
+                    ) {
                         Image(
-                            painter = painterResource(id = R.drawable.baseline_add_circle_24),
+                            painter = painterResource(id = NavigationItem.TAG.icon!!),
                             contentDescription = null,
                             modifier = Modifier
                                 .size(100.dp)
