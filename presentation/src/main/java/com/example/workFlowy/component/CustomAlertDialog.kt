@@ -49,6 +49,7 @@ fun TagSelectedDialog(
     uiState: WeekUiState,
     onAddActTag : () -> Unit,
     onClickAct : (Tag) -> Unit,
+    onClickDelect : (Tag) -> Unit,
     onDismissRequest: () -> Unit
 ){
     AnimatedVisibility(
@@ -65,7 +66,7 @@ fun TagSelectedDialog(
                 contentPadding = PaddingValues(all = 10.dp)
             ) {
                 items(uiState.tagList) { tag ->
-                    ActTagCard(tag = tag, onClickAct = onClickAct)
+                    ActTagCard(tag = tag, onClickAct = onClickAct, onClickDelect = onClickDelect)
                 }
                 item {
                     Card(

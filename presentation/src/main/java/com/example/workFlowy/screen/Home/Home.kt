@@ -110,7 +110,8 @@ fun HomeScreen(
                 weekViewModel.insertRecord(tag)
                 weekState = false
             },
-            onAddActTag = onAddTag
+            onAddActTag = onAddTag,
+            onClickDelect = {weekViewModel.deleteSelectTag(it)}
         )
     }
 }

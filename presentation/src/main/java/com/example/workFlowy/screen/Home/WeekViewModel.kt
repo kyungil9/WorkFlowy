@@ -124,6 +124,12 @@ class WeekViewModel @Inject constructor(
         }
     }
 
+    fun deleteSelectTag(tag: Tag){
+        viewModelScope.launch (Dispatchers.IO) {
+            tagUsecase.deleteTag(tag)
+        }
+    }
+
     fun changeRecordInfo(){
         if (uiState.value.recordList.isNotEmpty()){
             viewModelScope.launch(Dispatchers.IO) {
