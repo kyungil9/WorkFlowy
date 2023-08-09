@@ -21,7 +21,10 @@ class MainActivity : ComponentActivity() {
             weekViewModel.timer.schedule(weekViewModel.timerTask,0,1000)
 
             WorkFlowyTheme {
-                NavigationGraph(navController = navController, weekViewModel = weekViewModel)
+                NavigationGraph(
+                    navController = navController,
+                    weekViewModel = weekViewModel
+                )
             }
         }
     }

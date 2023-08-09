@@ -1,5 +1,7 @@
 package com.example.workFlowy.screen.Home
 
+import android.app.DatePickerDialog
+import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,11 +14,13 @@ import androidx.compose.material.ScaffoldState
 import androidx.compose.material.Text
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.currentCompositionLocalContext
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -30,34 +34,54 @@ import com.example.workFlowy.component.WeekAppBar
 import com.example.workFlowy.component.WeekLayout
 import com.example.workFlowy.component.WeekLazyList
 import com.example.workFlowy.navigation.NavigationItem
+import com.example.workFlowy.screen.MainActivity
+import com.example.workFlowy.utils.today
 import com.example.workFlowy.utils.transDayToKorean
+import java.time.LocalDate
+import java.time.ZoneId
+
 
 @Composable
 fun HomeScreen(
     weekViewModel: WeekViewModel,
     onTailIconClick : () -> Unit,
-    onAddTag : () -> Unit,
+    onAddTag : () -> Unit
 ){
+    val selectDay by weekViewModel.selectDayFlow.collectAsStateWithLifecycle()
+    val selectedTag by weekViewModel.selectedTagFlow.collectAsStateWithLifecycle()
+    val uiState by weekViewModel.uiState.collectAsStateWithLifecycle()
+    val progressTime by weekViewModel.progressTimeFlow.collectAsStateWithLifecycle()
+    val selectDayString by weekViewModel.selectDayStringFlow.collectAsStateWithLifecycle(initialValue = "")
+    var weekState by remember { mutableStateOf(false) }
+    val dateDialog = DatePickerDialog(
+        LocalContext.current,
+        { _, year, month, day ->
+            weekViewModel.changeSelectDay(LocalDate.of(year,month+1,day))
+        },selectDay.year,
+        selectDay.monthValue-1,
+        selectDay.dayOfMonth
+    )
+    dateDialog.datePicker.minDate = LocalDate.of(2021,12,28).atTime(0,0).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+    dateDialog.datePicker.maxDate = LocalDate.of(2026,1,3).atTime(0,0).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+
+
     WeekLayout(
         scaffoldState = rememberScaffoldState(),
         topBar = {
             WeekAppBar(
                 headerIcon = R.drawable.baseline_dehaze_24,
                 modifier = Modifier,
-                weekViewModel = weekViewModel,
+                selectDay = selectDayString,
+                onContentClick = {
+                    dateDialog.show()
+                },
                 tailIcon = NavigationItem.ANALYSIS.icon,
-                onTailIconClick = {onTailIconClick()}
+                onTailIconClick = onTailIconClick
             )
         }
     ) {
-        val selectDay by weekViewModel.selectDayFlow.collectAsStateWithLifecycle()
-        val selectedTag by weekViewModel.selectedTagFlow.collectAsStateWithLifecycle()
-        val uiState by weekViewModel.uiState.collectAsStateWithLifecycle()
-        val progressTime by weekViewModel.progressTimeFlow.collectAsStateWithLifecycle()
-        var weekState by remember { mutableStateOf(false) }
-
         Column(modifier = Modifier.fillMaxSize()) {
-            WeekLazyList(weekViewModel = weekViewModel)//주달력 표시
+            WeekLazyList(selectDay = selectDay, onClickItem = {weekViewModel.changeSelectDay(it)})//주달력 표시
             Row (modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween){
                 Text(text = "${selectDay.dayOfMonth}일 ${transDayToKorean(selectDay.dayOfWeek.value)}",
                     textAlign = TextAlign.Start,

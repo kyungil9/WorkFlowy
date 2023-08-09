@@ -28,13 +28,11 @@ fun WeekAppBar(
     @DrawableRes headerIcon : Int,
     modifier: Modifier,
     onHeaderIconClick: () -> Unit = {},
-    weekViewModel: WeekViewModel,
+    selectDay : String,
     onContentClick: () -> Unit = {},
     @DrawableRes tailIcon : Int? = null,
     onTailIconClick: () -> Unit = {}
 ){
-    val selectDay by weekViewModel.selectDayStringFlow.collectAsState(initial = today())
-
     Row(
         modifier = modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,

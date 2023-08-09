@@ -33,17 +33,17 @@ import java.time.temporal.ChronoUnit
 
 @Composable
 fun WeekLazyList(
-    weekViewModel: WeekViewModel
+    selectDay: LocalDate,
+    onClickItem : (LocalDate) -> Unit
 ){
     val listState = rememberLazyListState(initialFirstVisibleItemIndex = ChronoUnit.DAYS.between(LocalDate.of(2021,12,28),LocalDate.now()).toInt() -3)
     val coroutineScope = rememberCoroutineScope()
-    val selectDay by weekViewModel.selectDayFlow.collectAsState()
 
     LazyRow(
         state = listState
     ){
         items(makeDayList()){ day ->
-            dayItem(day = day, selectDay = selectDay, onItemClick = {weekViewModel.changeSelectDay(it)}, modifier = Modifier
+            dayItem(day = day, selectDay = selectDay, onItemClick = onClickItem, modifier = Modifier
                 .size(55.dp, 70.dp)
                 .background(white, shape = RoundedCornerShape(15.dp)))
         }
