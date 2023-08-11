@@ -1,7 +1,6 @@
 package com.example.workFlowy.screen.Home
 
 import android.app.DatePickerDialog
-import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,12 +8,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.Icon
-import androidx.compose.material.ScaffoldState
-import androidx.compose.material.Text
-import androidx.compose.material.rememberScaffoldState
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.currentCompositionLocalContext
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,11 +29,10 @@ import com.example.workFlowy.component.ActCard
 import com.example.workFlowy.component.ScheduleList
 import com.example.workFlowy.component.TagSelectedDialog
 import com.example.workFlowy.component.WeekAppBar
+import com.example.workFlowy.component.WeekBottomBar
 import com.example.workFlowy.component.WeekLayout
 import com.example.workFlowy.component.WeekLazyList
 import com.example.workFlowy.navigation.NavigationItem
-import com.example.workFlowy.screen.MainActivity
-import com.example.workFlowy.utils.today
 import com.example.workFlowy.utils.transDayToKorean
 import java.time.LocalDate
 import java.time.ZoneId
@@ -53,6 +50,8 @@ fun HomeScreen(
     val progressTime by weekViewModel.progressTimeFlow.collectAsStateWithLifecycle()
     val selectDayString by weekViewModel.selectDayStringFlow.collectAsStateWithLifecycle(initialValue = "")
     var weekState by remember { mutableStateOf(false) }
+    var scheduleState by remember { mutableStateOf(false) }
+    var snackbarHostState = remember {SnackbarHostState()}
     val dateDialog = DatePickerDialog(
         LocalContext.current,
         { _, year, month, day ->
@@ -66,7 +65,7 @@ fun HomeScreen(
 
 
     WeekLayout(
-        scaffoldState = rememberScaffoldState(),
+        snackbarHostState = snackbarHostState,
         topBar = {
             WeekAppBar(
                 headerIcon = R.drawable.baseline_dehaze_24,
@@ -78,9 +77,23 @@ fun HomeScreen(
                 tailIcon = NavigationItem.ANALYSIS.icon,
                 onTailIconClick = onTailIconClick
             )
+        },
+        bottomBar = {
+            WeekBottomBar(
+                checked = scheduleState,
+                onMoveMisson = {},
+                onCheckSchedule = { /*TODO*/ },
+                onDeleteSchedule = { /*TODO*/ },
+                onUpdateSchedule = { /*TODO*/ },
+                onAdditionalSchedule = {}
+            )
         }
     ) {
-        Column(modifier = Modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = it.calculateTopPadding(), bottom = it.calculateBottomPadding())
+        ) {
             WeekLazyList(selectDay = selectDay, onClickItem = {weekViewModel.changeSelectDay(it)})//주달력 표시
             Row (modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween){
                 Text(text = "${selectDay.dayOfMonth}일 ${transDayToKorean(selectDay.dayOfWeek.value)}",
@@ -99,7 +112,7 @@ fun HomeScreen(
                 onClickAct = {
                     weekState = true
                 })
-            ScheduleList(uiState)
+            ScheduleList(uiState, onClickSchedule = {scheduleState = scheduleState.not()})
         }
         TagSelectedDialog(
             visible = weekState,
@@ -110,7 +123,9 @@ fun HomeScreen(
                 weekViewModel.insertRecord(tag)
                 weekState = false
             },
-            onAddActTag = onAddTag,
+            onAddActTag = {
+                weekState = false
+                onAddTag()},
             onClickDelect = {weekViewModel.deleteSelectTag(it)}
         )
     }
