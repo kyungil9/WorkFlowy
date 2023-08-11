@@ -18,6 +18,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.example.domain.model.Schedule
 import com.example.workFlowy.R
 import com.example.workFlowy.navigation.NavigationItem
 

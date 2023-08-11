@@ -1,6 +1,7 @@
 package com.example.workFlowy.navigation
 
 import android.content.Context
+import android.content.res.TypedArray
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -17,12 +18,15 @@ import com.example.workFlowy.screen.Home.WeekViewModel
 import com.example.workFlowy.component.WeekAppBar
 import com.example.workFlowy.component.WeekLayout
 import com.example.workFlowy.screen.Home.HomeScreen
+import com.example.workFlowy.screen.Tag.TagScreen
+import com.example.workFlowy.screen.Tag.TagViewModel
 import com.example.workFlowy.ui.theme.black
 
 @Composable
 fun NavigationGraph(
     navController: NavHostController,
-    weekViewModel: WeekViewModel
+    weekViewModel: WeekViewModel,
+    tagViewModel: TagViewModel
 ){
     NavHost(
         navController = navController,
@@ -33,7 +37,8 @@ fun NavigationGraph(
             HomeScreen(
                 weekViewModel = weekViewModel,
                 onTailIconClick = {navController.navigate(NavigationItem.ANALYSIS.route)},
-                onAddTag = { navController.navigate(NavigationItem.TAG.route)}
+                onAddTag = { navController.navigate(NavigationItem.TAG.route)},
+                onMoveMisson = { navController.navigate(NavigationItem.MISSON.route)}
             )
         }
 
@@ -78,11 +83,12 @@ fun NavigationGraph(
                 )
             }
         ){
-            Box(modifier = Modifier
-                .background(black)
-                .fillMaxSize()) {
-                Text(text = "test")
-            }
+            TagScreen(
+                tagViewModel = tagViewModel,
+                onBackHome = {
+                    navController.navigate(NavigationItem.HOME.route)
+                }
+            )
         }
 
         composable(
@@ -101,6 +107,28 @@ fun NavigationGraph(
             }
         ){
 
+        }
+
+        composable(
+            route = NavigationItem.MISSON.route,
+            enterTransition = {
+                slideIntoContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Up,
+                    animationSpec = tween(700)
+                )
+            },
+            exitTransition = {
+                slideOutOfContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Down,
+                    animationSpec = tween(700)
+                )
+            }
+        ){
+            Box(modifier = Modifier
+                .background(black)
+                .fillMaxSize()) {
+                Text(text = "test")
+            }
         }
 
     }

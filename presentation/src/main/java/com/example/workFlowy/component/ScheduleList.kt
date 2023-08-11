@@ -29,7 +29,7 @@ import com.example.workFlowy.screen.Home.WeekUiState
 @Composable
 fun ScheduleList(
     uiState: WeekUiState,
-    onClickSchedule: () -> Unit
+    onClickSchedule: (Schedule) -> Unit
 ){
     val scrollState = rememberLazyListState()
     LazyColumn(modifier = Modifier
@@ -44,12 +44,12 @@ fun ScheduleList(
 @Composable
 fun ScheduleItem(
     schedule : Schedule,
-    onClickSchedule : () -> Unit
+    onClickSchedule : (Schedule) -> Unit
 ){
     Card(
         Modifier
             .fillMaxWidth()
-            .clickable { onClickSchedule() }
+            .clickable { onClickSchedule(schedule) }
             .height(80.dp)
             .padding(10.dp),
         shape = RoundedCornerShape(10.dp),

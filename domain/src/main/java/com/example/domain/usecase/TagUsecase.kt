@@ -11,6 +11,7 @@ interface TagUsecase {
 
     fun getTagSize() : Int
 
+    fun checkTagTitle(title : String) : Int
     fun insertTag(tag: Tag)
 
     fun deleteTag(tag : Tag)

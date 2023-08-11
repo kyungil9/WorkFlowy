@@ -23,17 +23,16 @@ import javax.inject.Singleton
 internal object DatabaseModule {
 
     @Singleton
-    val MIGRATION_2_3 = object : Migration(3,4){
+    val MIGRATION_2_3 = object : Migration(1,2){
         override fun migrate(database: SupportSQLiteDatabase) {
 
         }
-    }
+    }//
 
     @Provides
     @Singleton
     fun providesDatabase(@ApplicationContext context: Context) : Database {
-        return Room.databaseBuilder(context, Database::class.java,"mySchedule.db").addMigrations(
-            MIGRATION_2_3).build()
+        return Room.databaseBuilder(context, Database::class.java,"mySchedule.db").addMigrations(MIGRATION_2_3).build()
     }
 
     @Provides

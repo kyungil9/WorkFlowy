@@ -94,7 +94,12 @@ fun ActTagCard(
             .padding(10.dp)
             .pointerInput(Unit) {
                 detectTapGestures(
-                    onTap = { if (clicked) onClickDelect(tag) else onClickAct(tag) },
+                    onTap = {
+                        if (clicked) {
+                            onClickDelect(tag)
+                            clicked = clicked.not()
+                        }else
+                            onClickAct(tag) },
                     onLongPress = { clicked = clicked.not() }
                 )
             },

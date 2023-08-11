@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="tagList">
+        <item>@drawable/baseline_menu_book_24</item>
+        <item>@drawable/baseline_directions_run_24</item>
+        <item>@drawable/baseline_bed_24</item>
+        <item>@drawable/baseline_directions_bus_24</item>
+        <item>@drawable/baseline_hotel_24</item>
+        <item>@drawable/baseline_local_cafe_24</item>
+        <item>@drawable/baseline_fastfood_24</item>
+        <item>@drawable/baseline_desktop_windows_24</item>
+        <item>@drawable/baseline_dinner_dining_24</item>
+        <item>@drawable/baseline_flight_24</item>
+        <item>@drawable/baseline_liquor_24</item>
+        <item>@drawable/baseline_medical_services_24</item>
+    </array>
+</resources>

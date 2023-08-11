@@ -17,6 +17,9 @@ interface WeekTagDao {
     @Query("select count(*) from WeekTag")
     fun getTagSize() : Int
 
+    @Query("select count(*) from WeekTag where title = :title limit 1")
+    fun checkTagTitle(title : String) : Int
+
     @Insert
     fun insertTag(tag : WeekTag)
 

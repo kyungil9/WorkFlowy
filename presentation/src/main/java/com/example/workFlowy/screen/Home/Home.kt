@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.SnackbarHostState
@@ -24,6 +23,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.domain.model.Schedule
 import com.example.workFlowy.R
 import com.example.workFlowy.component.ActCard
 import com.example.workFlowy.component.ScheduleList
@@ -35,6 +35,7 @@ import com.example.workFlowy.component.WeekLazyList
 import com.example.workFlowy.navigation.NavigationItem
 import com.example.workFlowy.utils.transDayToKorean
 import java.time.LocalDate
+import java.time.LocalTime
 import java.time.ZoneId
 
 
@@ -42,6 +43,7 @@ import java.time.ZoneId
 fun HomeScreen(
     weekViewModel: WeekViewModel,
     onTailIconClick : () -> Unit,
+    onMoveMisson : () -> Unit,
     onAddTag : () -> Unit
 ){
     val selectDay by weekViewModel.selectDayFlow.collectAsStateWithLifecycle()
@@ -51,6 +53,8 @@ fun HomeScreen(
     val selectDayString by weekViewModel.selectDayStringFlow.collectAsStateWithLifecycle(initialValue = "")
     var weekState by remember { mutableStateOf(false) }
     var scheduleState by remember { mutableStateOf(false) }
+    var scheduleInfo by remember { mutableStateOf(Schedule(0, LocalDate.now(), LocalTime.now(),
+        LocalTime.now(),R.drawable.baseline_edit_24,"",""))}
     var snackbarHostState = remember {SnackbarHostState()}
     val dateDialog = DatePickerDialog(
         LocalContext.current,
@@ -81,9 +85,9 @@ fun HomeScreen(
         bottomBar = {
             WeekBottomBar(
                 checked = scheduleState,
-                onMoveMisson = {},
+                onMoveMisson = onMoveMisson,
                 onCheckSchedule = { /*TODO*/ },
-                onDeleteSchedule = { /*TODO*/ },
+                onDeleteSchedule = { weekViewModel.deleteSchedule(scheduleInfo) },
                 onUpdateSchedule = { /*TODO*/ },
                 onAdditionalSchedule = {}
             )
@@ -112,7 +116,11 @@ fun HomeScreen(
                 onClickAct = {
                     weekState = true
                 })
-            ScheduleList(uiState, onClickSchedule = {scheduleState = scheduleState.not()})
+            ScheduleList(uiState,
+                onClickSchedule = {schedule ->
+                    scheduleInfo = schedule
+                    scheduleState = scheduleState.not()
+                })
         }
         TagSelectedDialog(
             visible = weekState,

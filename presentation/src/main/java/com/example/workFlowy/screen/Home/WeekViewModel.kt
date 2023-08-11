@@ -124,6 +124,18 @@ class WeekViewModel @Inject constructor(
         }
     }
 
+    fun updateSchedule(schedule: Schedule){
+        viewModelScope.launch(Dispatchers.IO) {
+            scheduleUsecase.insertSchedule(schedule)
+        }
+    }
+
+    fun deleteSchedule(schedule: Schedule){
+        viewModelScope.launch(Dispatchers.IO) {
+            scheduleUsecase.insertSchedule(schedule)
+        }
+    }
+
     fun deleteSelectTag(tag: Tag){
         viewModelScope.launch (Dispatchers.IO) {
             tagUsecase.deleteTag(tag)

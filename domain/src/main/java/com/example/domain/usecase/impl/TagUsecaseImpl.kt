@@ -16,6 +16,8 @@ class TagUsecaseImpl @Inject constructor(
 
     override fun getTagSize(): Int = tagRepository.getTagSize()
 
+    override fun checkTagTitle(title: String): Int = tagRepository.checkTagTitle(title)
+
     override fun insertTag(tag: Tag) {
         tagRepository.insertTag(tag)
     }

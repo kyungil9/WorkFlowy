@@ -11,6 +11,8 @@ interface TagDatasource {
 
     fun getTagSize() : Int
 
+    fun checkTagTitle(title : String) : Int
+
     fun insertTag(tag: WeekTag)
 
     fun deleteTag(tag : WeekTag)
