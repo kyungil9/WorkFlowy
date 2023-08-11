@@ -37,4 +37,10 @@ sealed class NavigationItem(
         route = "Schedule",
         icon = R.drawable.baseline_post_add_24
     )
+
+    object MISSON: NavigationItem(
+        title = "미션",
+        route = "Misson",
+        icon = R.drawable.baseline_cookie_24
+    )
 }

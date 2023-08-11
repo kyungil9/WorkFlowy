@@ -1,4 +1,3 @@
 <resources>
-    <string name="app_name">WorkFlowy</string>
-    <string name="title_activity_main">MainActivity</string>
+    <string name="app_name">일상기록</string>
 </resources>

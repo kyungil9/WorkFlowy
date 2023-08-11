@@ -6,8 +6,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.Text
-import androidx.compose.material.rememberScaffoldState
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
@@ -66,20 +65,24 @@ fun NavigationGraph(
 
         composable(
             route = NavigationItem.TAG.route,
-            popEnterTransition = {
+            enterTransition = {
                 slideIntoContainer(
                     towards = AnimatedContentTransitionScope.SlideDirection.Up,
-                    animationSpec = tween(700)
+                    animationSpec = tween(700, delayMillis = 300)
                 )
             },
-            popExitTransition = {
+            exitTransition = {
                 slideOutOfContainer(
                     towards = AnimatedContentTransitionScope.SlideDirection.Down,
                     animationSpec = tween(700)
                 )
             }
         ){
-
+            Box(modifier = Modifier
+                .background(black)
+                .fillMaxSize()) {
+                Text(text = "test")
+            }
         }
 
         composable(

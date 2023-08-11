@@ -1,6 +1,7 @@
 package com.example.workFlowy.component
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -13,8 +14,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Card
-import androidx.compose.material.Text
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -26,27 +28,32 @@ import com.example.workFlowy.screen.Home.WeekUiState
 
 @Composable
 fun ScheduleList(
-    uiState: WeekUiState
+    uiState: WeekUiState,
+    onClickSchedule: () -> Unit
 ){
     val scrollState = rememberLazyListState()
     LazyColumn(modifier = Modifier
         .fillMaxWidth(),
         state = scrollState) {
         items(uiState.scheduleList){ schedule ->
-            ScheduleItem(schedule)
+            ScheduleItem(schedule, onClickSchedule = onClickSchedule)
         }
     }
 }
 
 @Composable
-fun ScheduleItem(schedule : Schedule){
+fun ScheduleItem(
+    schedule : Schedule,
+    onClickSchedule : () -> Unit
+){
     Card(
         Modifier
             .fillMaxWidth()
+            .clickable { onClickSchedule() }
             .height(80.dp)
             .padding(10.dp),
         shape = RoundedCornerShape(10.dp),
-        elevation = 5.dp
+        elevation = CardDefaults.cardElevation(defaultElevation = 5.dp)
     ) {
         Row(
             modifier = Modifier

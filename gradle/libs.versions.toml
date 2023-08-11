@@ -38,7 +38,6 @@ constraintLayout = { module = "androidx.constraintlayout:constraintlayout-compos
 
 compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
 compose-material3 = { group = "androidx.compose.material3", name = "material3" }
-compose-material = { group = "androidx.compose.material", name = "material" }
 compose-foundation = { group = "androidx.compose.foundation", name = "foundation", version.ref = "compose"  }
 compose-ui = { group = "androidx.compose.ui", name = "ui", version.ref = "compose"  }
 compose-ui-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview", version.ref = "compose"  }
@@ -76,7 +75,7 @@ test-espresso = { group = "androidx.test.espresso", name = "espresso-core", vers
 
 [bundles]
 navigation = ["navigation-fragment","navigation-ui","navigation-compose"]
-compose = ["compose-material3", "compose-material", "compose-foundation", "compose-ui", "compose-ui-preview", "compose-viewBinding"]
+compose = ["compose-material3", "compose-foundation", "compose-ui", "compose-ui-preview", "compose-viewBinding"]
 lifecycle = ["lifecycle-compose", "lifecycle-viewmodel-ktx", "lifecycle-runtime-ktx", "lifecycle-runtime-compose", "lifecycle-service"]
 coroutines = ["coroutines"]
 hilt = ["dagger-hilt-android"]
