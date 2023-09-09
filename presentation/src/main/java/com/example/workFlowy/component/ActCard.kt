@@ -28,6 +28,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -35,6 +36,7 @@ import com.example.domain.model.Tag
 import com.example.workFlowy.R
 import com.example.workFlowy.ui.theme.lightRed
 import com.example.workFlowy.ui.theme.white
+import com.example.workFlowy.utils.intToImage
 import java.time.Duration
 
 @Composable
@@ -58,7 +60,7 @@ fun ActCard(
                 .padding(horizontal = 10.dp)
         ) {
             Image(
-                painter = painterResource(id = selectedTag.icon),
+                painter = painterResource(id = intToImage(selectedTag.icon, LocalContext.current.resources.obtainTypedArray(R.array.tagList))),
                 contentDescription = null,
                 modifier = Modifier
                     .padding(15.dp)
@@ -130,7 +132,7 @@ fun ActTagCard(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Image(
-                        painter = painterResource(id = tag!!.icon),
+                        painter = painterResource(id = intToImage(tag.icon, LocalContext.current.resources.obtainTypedArray(R.array.tagList))),
                         contentDescription = null,
                         modifier = Modifier
                             .size(50.dp)

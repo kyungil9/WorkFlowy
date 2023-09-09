@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -31,23 +32,19 @@ import java.time.temporal.ChronoUnit
 @Composable
 fun WeekLazyList(
     selectDay: LocalDate,
+    weekListState : LazyListState,
     onClickItem : (LocalDate) -> Unit
 ){
-    val listState = rememberLazyListState(initialFirstVisibleItemIndex = ChronoUnit.DAYS.between(LocalDate.of(2021,12,28),LocalDate.now()).toInt() -3)
     val coroutineScope = rememberCoroutineScope()
 
     LazyRow(
-        state = listState
+        state = weekListState
     ){
         items(makeDayList()){ day ->
             dayItem(day = day, selectDay = selectDay, onItemClick = onClickItem, modifier = Modifier
                 .size(55.dp, 70.dp)
                 .background(white, shape = RoundedCornerShape(15.dp)))
         }
-        coroutineScope.launch {
-            listState.animateScrollToItem(ChronoUnit.DAYS.between(LocalDate.of(2021,12,28),selectDay).toInt()-3)
-        }
-
     }
 
 }

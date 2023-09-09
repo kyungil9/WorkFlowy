@@ -1,7 +1,5 @@
 package com.example.workFlowy.navigation
 
-import android.content.Context
-import android.content.res.TypedArray
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -13,20 +11,20 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.workFlowy.R
-import com.example.workFlowy.screen.Home.WeekViewModel
-import com.example.workFlowy.component.WeekAppBar
-import com.example.workFlowy.component.WeekLayout
-import com.example.workFlowy.screen.Home.HomeScreen
-import com.example.workFlowy.screen.Tag.TagScreen
-import com.example.workFlowy.screen.Tag.TagViewModel
+import com.example.workFlowy.screen.home.WeekViewModel
+import com.example.workFlowy.screen.home.HomeScreen
+import com.example.workFlowy.screen.schedule.ScheduleScreen
+import com.example.workFlowy.screen.schedule.ScheduleViewModel
+import com.example.workFlowy.screen.tag.TagScreen
+import com.example.workFlowy.screen.tag.TagViewModel
 import com.example.workFlowy.ui.theme.black
 
 @Composable
 fun NavigationGraph(
     navController: NavHostController,
     weekViewModel: WeekViewModel,
-    tagViewModel: TagViewModel
+    tagViewModel: TagViewModel,
+    scheduleViewModel: ScheduleViewModel
 ){
     NavHost(
         navController = navController,
@@ -37,8 +35,9 @@ fun NavigationGraph(
             HomeScreen(
                 weekViewModel = weekViewModel,
                 onTailIconClick = {navController.navigate(NavigationItem.ANALYSIS.route)},
-                onAddTag = { navController.navigate(NavigationItem.TAG.route)},
-                onMoveMisson = { navController.navigate(NavigationItem.MISSON.route)}
+                onMoveTag = { navController.navigate(NavigationItem.TAG.route)},
+                onMoveMisson = { navController.navigate(NavigationItem.MISSON.route)},
+                onMoveSchedule = { navController.navigate(NavigationItem.SCHEDULE.route) }
             )
         }
 
@@ -86,7 +85,7 @@ fun NavigationGraph(
             TagScreen(
                 tagViewModel = tagViewModel,
                 onBackHome = {
-                    navController.navigate(NavigationItem.HOME.route)
+                    navController.popBackStack()//현재화면 닫기
                 }
             )
         }
@@ -106,7 +105,11 @@ fun NavigationGraph(
                 )
             }
         ){
-
+            ScheduleScreen(
+                scheduleViewModel = scheduleViewModel,
+                onBackHome = {navController.popBackStack()//현재화면 닫기
+                }
+            )
         }
 
         composable(

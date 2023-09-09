@@ -26,6 +26,7 @@ import com.example.workFlowy.navigation.NavigationItem
 fun WeekBottomBar(
     checked : Boolean,
     onMoveMisson : () -> Unit,
+    onMoveToday : () -> Unit,
     onCheckSchedule : () -> Unit,
     onDeleteSchedule : () -> Unit,
     onUpdateSchedule : () -> Unit,
@@ -44,6 +45,20 @@ fun WeekBottomBar(
                         ),
                     painter = painterResource(id = NavigationItem.MISSON.icon!!),
                     contentDescription = "미션 이동")
+            }
+            AnimatedVisibility(visible = checked.not()) {
+                IconButton(onClick = onMoveToday) {
+                    Icon(
+                        modifier = Modifier
+                            .size(30.dp)
+                            .clickable(
+                                onClick = onMoveToday,
+                                interactionSource = remember { MutableInteractionSource() },
+                                indication = rememberRipple(bounded = false, radius = 20.dp)
+                            ),
+                        painter = painterResource(id = R.drawable.baseline_today_24),
+                        contentDescription = "오늘날짜 이동")
+                }
             }
             AnimatedVisibility(visible = checked) {
                 Row {

@@ -45,3 +45,18 @@ fun makeDayList() : List<LocalDate>{
     }
     return dayList
 }
+
+fun changeDayInfo(today : LocalDate) : Int {
+    var endDay : Int
+    when(today.monthValue){
+        2 -> {
+            if(today.isLeapYear)
+                endDay = 29
+            else
+                endDay = 28
+        }
+        1,3,5,7,8,10,12 -> endDay = 31
+        else -> endDay = 30
+    }
+    return endDay
+}

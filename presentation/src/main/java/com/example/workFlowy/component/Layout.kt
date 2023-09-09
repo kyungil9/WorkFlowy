@@ -17,12 +17,14 @@ fun WeekLayout(
     topBar : @Composable () -> Unit = {},
     bottomBar: @Composable () -> Unit = {},
     snackbarHostState: SnackbarHostState,
+    floatingActionButton : @Composable () -> Unit = {},
     content : @Composable (PaddingValues) -> Unit
 ){
     androidx.compose.material3.Scaffold (
         topBar = { topBar()},
         bottomBar = {bottomBar()},
         snackbarHost = { SnackbarHost(hostState = snackbarHostState)},
+        floatingActionButton = {floatingActionButton()},
         modifier = modifier
     ){
         content(it)

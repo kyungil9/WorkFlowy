@@ -20,11 +20,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.domain.model.Schedule
-import com.example.workFlowy.screen.Home.WeekUiState
+import com.example.workFlowy.R
+import com.example.workFlowy.screen.home.WeekUiState
+import com.example.workFlowy.utils.intToImage
 
 @Composable
 fun ScheduleList(
@@ -61,7 +64,7 @@ fun ScheduleItem(
                 .padding(horizontal = 5.dp)
         ) {
             Image(
-                painter = painterResource(id = schedule.icon),
+                painter = painterResource(id = intToImage(schedule.icon, LocalContext.current.resources.obtainTypedArray(R.array.scheduleList))),
                 contentDescription = null,
                 modifier = Modifier
                     .padding(5.dp)

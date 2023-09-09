@@ -26,7 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.example.domain.model.Tag
-import com.example.workFlowy.screen.Home.WeekUiState
+import com.example.workFlowy.screen.home.WeekUiState
 import com.example.workFlowy.navigation.NavigationItem
 import com.example.workFlowy.ui.theme.white
 

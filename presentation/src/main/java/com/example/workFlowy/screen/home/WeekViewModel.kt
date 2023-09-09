@@ -1,4 +1,4 @@
-package com.example.workFlowy.screen.Home
+package com.example.workFlowy.screen.home
 
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
@@ -45,7 +45,7 @@ class WeekViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(WeekUiState())
     private val _selectDayFlow = MutableStateFlow<LocalDate>(LocalDate.now())
     private val _selectedTagFlow = MutableStateFlow<Tag>(Tag(null,
-        R.drawable.baseline_check_box_outline_blank_24, ""))
+        0, ""))
     val selectDayFlow get() = _selectDayFlow.asStateFlow()
     val uiState get() = _uiState.asStateFlow()
     val selectedTagFlow get() = _selectedTagFlow.asStateFlow()
@@ -61,15 +61,16 @@ class WeekViewModel @Inject constructor(
         initRecord()
     }
 
+    //tag를 string으로 변경하여 int코드 변경에 상관없이 해결
     private fun initTag(){
         viewModelScope.launch(Dispatchers.IO) {
             if (tagUsecase.getTagSize() <= 0) {
-                tagUsecase.insertTag(Tag(null, R.drawable.baseline_menu_book_24, "공부중"))
-                tagUsecase.insertTag(Tag(null, R.drawable.baseline_directions_run_24, "운동중"))
-                tagUsecase.insertTag(Tag(null, R.drawable.baseline_bed_24, "휴식중"))
-                tagUsecase.insertTag(Tag(null, R.drawable.baseline_directions_bus_24, "이동중"))
-                tagUsecase.insertTag(Tag(null, R.drawable.baseline_hotel_24, "수면중"))
-                tagUsecase.insertTag(Tag(null, R.drawable.baseline_local_cafe_24, "개인시간"))
+                tagUsecase.insertTag(Tag(null, 0, "공부중"))
+                tagUsecase.insertTag(Tag(null, 1, "운동중"))
+                tagUsecase.insertTag(Tag(null,2, "휴식중"))
+                tagUsecase.insertTag(Tag(null, 3, "이동중"))
+                tagUsecase.insertTag(Tag(null, 4, "수면중"))
+                tagUsecase.insertTag(Tag(null, 5, "개인시간"))
             }
         }
     }
@@ -79,14 +80,14 @@ class WeekViewModel @Inject constructor(
             if (recordUsecase.getRecordSize() <= 0) {
                 recordUsecase.insertRecord(
                     Record(
-                        id = 0,
+                        id = null,
                         tag = "개인시간",
                         startTime = LocalDateTime.now(),
                         endTime = null,
                         progressTime = 0,
                         pause = true
                     ))
-                _selectedTagFlow.value = Tag(0, R.drawable.baseline_local_cafe_24, "개인시간")
+                _selectedTagFlow.value = Tag(null, 5, "개인시간")
             }
         }
     }
@@ -108,7 +109,7 @@ class WeekViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             recordUsecase.insertRecord(
                 Record(
-                    id = 0,
+                    id = null,
                     tag = tag.title,
                     startTime = LocalDateTime.now(),
                     endTime = null,
@@ -118,11 +119,7 @@ class WeekViewModel @Inject constructor(
         }
     }
 
-    fun insertSchedule(schedule: Schedule){
-        viewModelScope.launch(Dispatchers.IO) {
-            scheduleUsecase.insertSchedule(schedule)
-        }
-    }
+
 
     fun updateSchedule(schedule: Schedule){
         viewModelScope.launch(Dispatchers.IO) {
@@ -132,7 +129,7 @@ class WeekViewModel @Inject constructor(
 
     fun deleteSchedule(schedule: Schedule){
         viewModelScope.launch(Dispatchers.IO) {
-            scheduleUsecase.insertSchedule(schedule)
+            scheduleUsecase.deleteSchedule(schedule)
         }
     }
 
@@ -150,7 +147,7 @@ class WeekViewModel @Inject constructor(
                 recordUsecase.updateRecord(
                     endTime = endTime,
                     progressTime = progressTime,
-                    id = uiState.value.recordList[0].id,
+                    id = uiState.value.recordList[0].id!!,
                     pause = false
                 )
             }

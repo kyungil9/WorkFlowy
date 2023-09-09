@@ -11,22 +11,18 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.workFlowy.screen.Home.WeekViewModel
-import com.example.workFlowy.utils.today
 
 
 @Composable
 fun WeekAppBar(
     @DrawableRes headerIcon : Int,
-    modifier: Modifier,
+    modifier: Modifier = Modifier,
     onHeaderIconClick: () -> Unit = {},
     selectDay : String,
     onContentClick: () -> Unit = {},

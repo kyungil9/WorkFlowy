@@ -23,7 +23,7 @@ import javax.inject.Singleton
 internal object DatabaseModule {
 
     @Singleton
-    val MIGRATION_2_3 = object : Migration(1,2){
+    val MIGRATION_2_3 = object : Migration(4,5){
         override fun migrate(database: SupportSQLiteDatabase) {
 
         }

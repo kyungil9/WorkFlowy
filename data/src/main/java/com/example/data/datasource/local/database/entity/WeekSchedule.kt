@@ -9,7 +9,7 @@ import java.time.LocalTime
 
 @Entity
 data class WeekSchedule(
-    @PrimaryKey(autoGenerate = true) val id : Int = 0,
+    @PrimaryKey(autoGenerate = true) val id : Int? = 0,
     var date : LocalDate,
     var startTime : LocalTime,
     var endTime : LocalTime,

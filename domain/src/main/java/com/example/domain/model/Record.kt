@@ -3,7 +3,7 @@ package com.example.domain.model
 import java.time.LocalDateTime
 
 data class Record(
-    var id : Int = 0,
+    var id : Int? = 0,
     val tag : String,
     var startTime : LocalDateTime,
     var endTime: LocalDateTime?,
