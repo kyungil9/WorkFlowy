@@ -1,0 +1,19 @@
+package com.beank.domain.repository
+
+import com.beank.domain.model.Tag
+import kotlinx.coroutines.flow.Flow
+
+interface TagRepository {
+
+    fun getTagInfo() : Flow<List<Tag>>
+
+    fun getTagSingleInfo(tag : String) : Tag
+
+    fun getTagSize() : Int
+
+    fun checkTagTitle(title : String) : Int
+
+    fun insertTag(tag: Tag)
+
+    fun deleteTag(tag : Tag)
+}

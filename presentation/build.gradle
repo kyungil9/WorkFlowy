@@ -14,7 +14,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.example.workFlowy"
+        applicationId "com.beank.workFlowy"
         minSdk 28
         targetSdk 34
         versionCode 1
@@ -40,7 +40,7 @@ android {
     kotlinOptions {
         jvmTarget = '17'
     }
-    namespace 'com.example.workFlowy'
+    namespace 'com.beank.workFlowy'
     composeOptions {
         kotlinCompilerExtensionVersion '1.5.0'
     }
