@@ -16,23 +16,20 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     private val weekViewModel : WeekViewModel by viewModels()
-    private val tagViewModel : TagViewModel by viewModels()
-    private val scheduleViewModel : ScheduleViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        tagViewModel.initTagImages(resources.obtainTypedArray(R.array.tagList))
-        scheduleViewModel.initScheduleImages(resources.obtainTypedArray(R.array.scheduleList))
+        weekViewModel.initTagImages(resources.obtainTypedArray(R.array.tagList))
+        weekViewModel.initScheduleImages(resources.obtainTypedArray(R.array.scheduleList))
+        weekViewModel.timerJob.start()
 
         setContent {
             val navController = rememberNavController()
-            weekViewModel.timer.schedule(weekViewModel.timerTask,0,1000)
 
             WorkFlowyTheme {
                 NavigationGraph(
                     navController = navController,
-                    weekViewModel = weekViewModel,
-                    tagViewModel = tagViewModel,
-                    scheduleViewModel = scheduleViewModel
+                    weekViewModel = weekViewModel
                 )
             }
         }

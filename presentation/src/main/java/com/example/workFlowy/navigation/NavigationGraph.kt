@@ -22,9 +22,7 @@ import com.example.workFlowy.ui.theme.black
 @Composable
 fun NavigationGraph(
     navController: NavHostController,
-    weekViewModel: WeekViewModel,
-    tagViewModel: TagViewModel,
-    scheduleViewModel: ScheduleViewModel
+    weekViewModel: WeekViewModel
 ){
     NavHost(
         navController = navController,
@@ -83,7 +81,7 @@ fun NavigationGraph(
             }
         ){
             TagScreen(
-                tagViewModel = tagViewModel,
+                tagImages = weekViewModel.getTagImages(),
                 onBackHome = {
                     navController.popBackStack()//현재화면 닫기
                 }
@@ -106,7 +104,7 @@ fun NavigationGraph(
             }
         ){
             ScheduleScreen(
-                scheduleViewModel = scheduleViewModel,
+                scheduleImages = weekViewModel.getScheduleImages(),
                 onBackHome = {navController.popBackStack()//현재화면 닫기
                 }
             )

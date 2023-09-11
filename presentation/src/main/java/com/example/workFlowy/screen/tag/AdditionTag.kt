@@ -1,5 +1,6 @@
 package com.example.workFlowy.screen.tag
 
+import android.content.res.TypedArray
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -26,19 +27,24 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.workFlowy.component.HorizontalSpacer
 import com.example.workFlowy.component.VerticalSpacer
 import com.example.workFlowy.component.WeekLayout
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TagScreen(
-    tagViewModel: TagViewModel,
+    tagViewModel: TagViewModel = hiltViewModel(),
+    tagImages : TypedArray,
     onBackHome : () -> Unit
 ){
+    tagViewModel.initTagImages(tagImages)
     val selectTagImage by tagViewModel.selectTagImage.collectAsStateWithLifecycle()
     val selectTagText by tagViewModel.selectTagText.collectAsStateWithLifecycle()
     val uiState by tagViewModel.tagUiState.collectAsStateWithLifecycle()

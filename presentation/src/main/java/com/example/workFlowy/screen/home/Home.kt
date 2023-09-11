@@ -59,7 +59,7 @@ fun HomeScreen(
     val uiState by weekViewModel.uiState.collectAsStateWithLifecycle()
     val progressTime by weekViewModel.progressTimeFlow.collectAsStateWithLifecycle()
     val selectDayString by weekViewModel.selectDayStringFlow.collectAsStateWithLifecycle(initialValue = "")
-    val listCenter = ChronoUnit.DAYS.between(LocalDate.of(2021,12,28),LocalDate.now()).toInt() -3
+    val listCenter by remember { mutableStateOf(ChronoUnit.DAYS.between(LocalDate.of(2021,12,28),LocalDate.now()).toInt() -3)}
     val weekListState = rememberLazyListState(initialFirstVisibleItemIndex = listCenter)
     var weekState by remember { mutableStateOf(false) }
     var scheduleState by remember { mutableStateOf(false) }
@@ -97,9 +97,14 @@ fun HomeScreen(
             WeekBottomBar(
                 checked = scheduleState,
                 onMoveMisson = onMoveMisson,
-                onMoveToday = { scope.launch(Dispatchers.Default) {
-                    weekViewModel.changeSelectDay(LocalDate.now())
-                    weekListState.animateScrollToItem(listCenter) } },
+                onMoveToday = {
+                    scope.launch(Dispatchers.Default) {
+                        if (!selectDay.isEqual(LocalDate.now())){
+                            weekViewModel.changeSelectDay(LocalDate.now())
+                            weekListState.animateScrollToItem(listCenter)
+                        }
+                    }
+                },
                 onCheckSchedule = { /*TODO*/ },
                 onDeleteSchedule = {
                     weekViewModel.deleteSchedule(scheduleInfo)
@@ -144,8 +149,12 @@ fun HomeScreen(
             ScheduleList(
                 uiState = uiState,
                 onClickSchedule = {schedule ->
-                    scheduleInfo = schedule
-                    scheduleState = scheduleState.not()
+                    if (scheduleInfo === schedule) {
+                        scheduleState = scheduleState.not()
+                    }else{
+                        scheduleInfo = schedule
+                        scheduleState = true
+                    }
                 })
         }
         TagSelectedDialog(

@@ -1,8 +1,11 @@
 package com.example.workFlowy.utils
 
+import java.text.DecimalFormat
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 import java.util.Calendar
+
+val zeroFormat = DecimalFormat("##00")
 
 fun transDayToKorean(date : Int):String{
     return when(date){

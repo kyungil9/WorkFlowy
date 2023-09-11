@@ -37,6 +37,7 @@ import com.example.workFlowy.R
 import com.example.workFlowy.ui.theme.lightRed
 import com.example.workFlowy.ui.theme.white
 import com.example.workFlowy.utils.intToImage
+import com.example.workFlowy.utils.zeroFormat
 import java.time.Duration
 
 @Composable
@@ -74,7 +75,7 @@ fun ActCard(
             ) {
                 Text(text = selectedTag.title, fontSize = 32.sp, modifier = Modifier.padding(vertical = 20.dp))
                 Text(
-                    text = "${progressTime.toHours()}:${progressTime.toMinutes()%60}:${progressTime.seconds%60}",
+                    text = "${zeroFormat.format(progressTime.toHours())}:${zeroFormat.format(progressTime.toMinutes()%60)}:${zeroFormat.format(progressTime.seconds%60)}",
                     fontSize = 24.sp)
             }
         }

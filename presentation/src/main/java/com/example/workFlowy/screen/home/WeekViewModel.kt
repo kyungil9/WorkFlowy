@@ -1,5 +1,6 @@
 package com.example.workFlowy.screen.home
 
+import android.content.res.TypedArray
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -11,7 +12,9 @@ import com.example.domain.usecase.ScheduleUsecase
 import com.example.domain.usecase.TagUsecase
 import com.example.workFlowy.R
 import com.example.workFlowy.utils.transDayToKorean
+import com.example.workFlowy.utils.zeroFormat
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -20,6 +23,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -41,6 +45,9 @@ class WeekViewModel @Inject constructor(
     private val tagUsecase: TagUsecase
 ) : ViewModel() {
 
+    private lateinit var tagImages : TypedArray
+    private lateinit var scheduleImages : TypedArray
+    private var oldTimeMills : Long = 0
     private val _progressTimeFlow = MutableStateFlow(Duration.ZERO)
     private val _uiState = MutableStateFlow(WeekUiState())
     private val _selectDayFlow = MutableStateFlow<LocalDate>(LocalDate.now())
@@ -50,9 +57,8 @@ class WeekViewModel @Inject constructor(
     val uiState get() = _uiState.asStateFlow()
     val selectedTagFlow get() = _selectedTagFlow.asStateFlow()
     val progressTimeFlow get() = _progressTimeFlow.asStateFlow()
-    val selectDayStringFlow get() = _selectDayFlow.asStateFlow().map { "< ${it.year%100}/${it.monthValue}/${it.dayOfMonth} ${transDayToKorean(it.dayOfWeek.value)} >" }
+    val selectDayStringFlow get() = _selectDayFlow.asStateFlow().map { "< ${it.year%100}/${zeroFormat.format(it.monthValue)}/${zeroFormat.format(it.dayOfMonth)} ${transDayToKorean(it.dayOfWeek.value)} >" }
 
-    val timer = Timer()
     init {
         initTag()
         getAllTagInfo()
@@ -92,11 +98,19 @@ class WeekViewModel @Inject constructor(
         }
     }
 
-    val timerTask = object : TimerTask(){
-        override fun run() {
-            val record = uiState.value.recordList
-            if (!record.isNullOrEmpty()){
-                _progressTimeFlow.value = Duration.between(record[0].startTime, LocalDateTime.now())
+    val timerJob = viewModelScope.launch(start = CoroutineStart.LAZY) {
+        withContext(Dispatchers.IO){
+            oldTimeMills = System.currentTimeMillis()
+            while (true){
+                val delayMills = System.currentTimeMillis() - oldTimeMills
+                if (delayMills >= 1000L) {
+                    val record = uiState.value.recordList
+                    if (!record.isNullOrEmpty()) {
+                        _progressTimeFlow.value =
+                            Duration.between(record[0].startTime, LocalDateTime.now())
+                    }
+                    oldTimeMills = System.currentTimeMillis()
+                }
             }
         }
     }
@@ -153,6 +167,18 @@ class WeekViewModel @Inject constructor(
             }
         }
     }
+
+    fun initTagImages(tagImage : TypedArray){
+        tagImages = tagImage
+    }
+
+    fun initScheduleImages(scheduleImage : TypedArray){
+        scheduleImages = scheduleImage
+    }
+
+    fun getTagImages() = tagImages
+
+    fun getScheduleImages() = scheduleImages
 
     private fun getAllTagInfo() = tagUsecase.getTagInfo()
         .onEach { tagList ->
