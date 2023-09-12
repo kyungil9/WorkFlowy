@@ -4,26 +4,55 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
 
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" android:minSdkVersion="33"/>
+
     <application
-        android:name="com.beank.workFlowy.MainApplication"
+        android:name="com.beank.workFlowy.screen.WorkFlowyHiltApp"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:icon="@mipmap/workfolwy"
+        android:icon="@mipmap/workflowy"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/workfolwy_round"
+        android:roundIcon="@mipmap/workflowy_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.WorkFlowy"
-        tools:targetApi="31">
+        tools:targetApi="33">
         <activity
-            android:name="com.beank.workFlowy.screen.MainActivity"
+            android:name="com.beank.workFlowy.screen.WorkFlowyActivity"
             android:exported="true"
             android:theme="@style/Theme.WorkFlowy">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>>
+        </activity>
+
+        <service
+            android:name=".WorkFlowyMessagingService"
+            android:exported="false"
+            android:directBootAware="true">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/workflowy_foreground" />
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/black" />
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="@string/default_notification_channel_id" />
+        <meta-data
+            android:name="firebase_performance_logcat_enabled"
+            android:value="true" />
+        <meta-data
+            android:name="firebase_messaging_auto_init_enabled"
+            android:value="false" />
+        <meta-data
+            android:name="firebase_analytics_collection_enabled"
+            android:value="false" />
     </application>
 
 </manifest>

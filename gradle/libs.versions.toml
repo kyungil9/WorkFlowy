@@ -22,14 +22,19 @@ okhttp3 = "4.9.3"
 navigation = "2.7.0-rc01"
 compose = "1.5.0-beta01"
 number = "1.0.3"
+firebase = "32.2.3"
+message = "23.2.1"
+directboot = "20.2.0"
+permission = "0.32.0"
 
 # plugin
 androidStudioGradlePlugin = "8.0.2"
 kotlin = "1.8.20"
 androidNavigationSafeargs ="2.7.0-rc01"
+google = "4.3.15"
+crashlytics = "2.9.9"
 
 [libraries]
-
 
 core-ktx = { module = "androidx.core:core-ktx", version.ref = "coreKtx" }
 appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appCompat" }
@@ -75,6 +80,16 @@ jUnit = { group = "junit", name = "junit", version.ref = "junit" }
 test-ext = { group = "androidx.test.ext", name = "junit", version.ref = "android-test-ext" }
 test-espresso = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espresso" }
 
+firebase-bom = { group = "com.google.firebase", name = "firebase-bom" , version.ref = "firebase"}
+firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics-ktx"}
+firebase-auth = { group = "com.google.firebase", name = "firebase-auth-ktx"}
+firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore-ktx"}
+firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics-ktx"}
+firebase-message = { group = "com.google.firebase", name = "firebase-messaging-ktx", version.ref = "message" }
+firebase-message-directboot = { group = "com.google.firebase", name = "firebase-messaging-directboot", version.ref = "directboot" }
+
+permission = { group = "com.google.accompanist", name = "accompanist-permissions", version.ref = "permission"}
+
 [bundles]
 navigation = ["navigation-fragment","navigation-ui","navigation-compose"]
 compose = ["compose-material3", "compose-foundation", "compose-ui", "compose-ui-preview", "compose-viewBinding","compose_numberpicker"]
@@ -82,6 +97,7 @@ lifecycle = ["lifecycle-compose", "lifecycle-viewmodel-ktx", "lifecycle-runtime-
 coroutines = ["coroutines"]
 hilt = ["dagger-hilt-android"]
 testing = ["jUnit", "test-ext", "test-espresso"]
+firebase = ["firebase-analytics", "firebase-auth", "firebase-firestore", "firebase-crashlytics","firebase-message","firebase-message-directboot"]
 
 [plugins]
 
@@ -91,3 +107,5 @@ kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 android-navigation-safeargs = {id = "androidx.navigation.safeargs", version.ref = "androidNavigationSafeargs"}
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "dagger" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+google = { id = "com.google.gms.google-services", version.ref = "google"}
+crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "crashlytics"}
