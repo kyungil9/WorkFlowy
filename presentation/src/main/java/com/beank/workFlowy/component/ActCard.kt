@@ -139,7 +139,7 @@ fun ActTagCard(
                             .size(50.dp)
                     )
 
-                    Text(text = tag!!.title, fontSize = 24.sp)
+                    Text(text = tag.title, fontSize = 24.sp)
                 }
             }
         }

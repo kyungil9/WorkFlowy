@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.beank.workFlowy.screen.WorkFlowyState
 import com.beank.workFlowy.screen.home.WeekViewModel
 import com.beank.workFlowy.screen.home.HomeScreen
 import com.beank.workFlowy.screen.schedule.ScheduleScreen
@@ -19,21 +20,18 @@ import com.beank.workFlowy.ui.theme.black
 
 @Composable
 fun NavigationGraph(
-    navController: NavHostController,
-    weekViewModel: WeekViewModel
+    appState : WorkFlowyState
 ){
     NavHost(
-        navController = navController,
+        navController = appState.navController,
         startDestination = NavigationItem.HOME.route
     ){
-
         composable(route = NavigationItem.HOME.route){
             HomeScreen(
-                weekViewModel = weekViewModel,
-                onTailIconClick = {navController.navigate(NavigationItem.ANALYSIS.route)},
-                onMoveTag = { navController.navigate(NavigationItem.TAG.route)},
-                onMoveMisson = { navController.navigate(NavigationItem.MISSON.route)},
-                onMoveSchedule = { navController.navigate(NavigationItem.SCHEDULE.route) }
+                onTailIconClick = {appState.navigate(NavigationItem.ANALYSIS.route)},
+                onMoveTag = { appState.navigate(NavigationItem.TAG.route)},
+                onMoveMisson = { appState.navigate(NavigationItem.MISSON.route)},
+                onMoveSchedule = { appState.navigate(NavigationItem.SCHEDULE.route) }
             )
         }
 
@@ -43,18 +41,8 @@ fun NavigationGraph(
 
         composable(
             route = NavigationItem.ANALYSIS.route,
-            enterTransition = {
-                slideIntoContainer(
-                    towards = AnimatedContentTransitionScope.SlideDirection.Up,
-                    animationSpec = tween(700)
-                )
-            },
-            exitTransition = {
-                slideOutOfContainer(
-                    towards = AnimatedContentTransitionScope.SlideDirection.Down,
-                    animationSpec = tween(700)
-                )
-            }
+            enterTransition = appState.slideUpIn(700),
+            exitTransition = appState.slideDownOut(700)
         ){
             Box(modifier = Modifier
                 .background(black)
@@ -65,63 +53,30 @@ fun NavigationGraph(
 
         composable(
             route = NavigationItem.TAG.route,
-            enterTransition = {
-                slideIntoContainer(
-                    towards = AnimatedContentTransitionScope.SlideDirection.Up,
-                    animationSpec = tween(700, delayMillis = 300)
-                )
-            },
-            exitTransition = {
-                slideOutOfContainer(
-                    towards = AnimatedContentTransitionScope.SlideDirection.Down,
-                    animationSpec = tween(700)
-                )
-            }
+            enterTransition = appState.slideUpIn(700,300),
+            exitTransition = appState.slideDownOut(700)
         ){
             TagScreen(
-                tagImages = weekViewModel.getTagImages(),
-                onBackHome = {
-                    navController.popBackStack()//현재화면 닫기
-                }
+                resource = appState.resource,
+                onBackHome = { appState.popUp() }
             )
         }
 
         composable(
             route = NavigationItem.SCHEDULE.route,
-            enterTransition = {
-                slideIntoContainer(
-                    towards = AnimatedContentTransitionScope.SlideDirection.Up,
-                    animationSpec = tween(700)
-                )
-            },
-            exitTransition = {
-                slideOutOfContainer(
-                    towards = AnimatedContentTransitionScope.SlideDirection.Down,
-                    animationSpec = tween(700)
-                )
-            }
+            enterTransition = appState.slideUpIn(700),
+            exitTransition = appState.slideDownOut(700)
         ){
             ScheduleScreen(
-                scheduleImages = weekViewModel.getScheduleImages(),
-                onBackHome = {navController.popBackStack()//현재화면 닫기
-                }
+                resource = appState.resource,
+                onBackHome = { appState.popUp() }
             )
         }
 
         composable(
             route = NavigationItem.MISSON.route,
-            enterTransition = {
-                slideIntoContainer(
-                    towards = AnimatedContentTransitionScope.SlideDirection.Up,
-                    animationSpec = tween(700)
-                )
-            },
-            exitTransition = {
-                slideOutOfContainer(
-                    towards = AnimatedContentTransitionScope.SlideDirection.Down,
-                    animationSpec = tween(700)
-                )
-            }
+            enterTransition = appState.slideUpIn(700),
+            exitTransition = appState.slideDownOut(700)
         ){
             Box(modifier = Modifier
                 .background(black)

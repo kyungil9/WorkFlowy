@@ -42,8 +42,6 @@ class WeekViewModel @Inject constructor(
     private val tagUsecase: TagUsecase
 ) : ViewModel() {
 
-    private lateinit var tagImages : TypedArray
-    private lateinit var scheduleImages : TypedArray
     private var oldTimeMills : Long = 0
     private val _progressTimeFlow = MutableStateFlow(Duration.ZERO)
     private val _uiState = MutableStateFlow(WeekUiState())
@@ -165,17 +163,6 @@ class WeekViewModel @Inject constructor(
         }
     }
 
-    fun initTagImages(tagImage : TypedArray){
-        tagImages = tagImage
-    }
-
-    fun initScheduleImages(scheduleImage : TypedArray){
-        scheduleImages = scheduleImage
-    }
-
-    fun getTagImages() = tagImages
-
-    fun getScheduleImages() = scheduleImages
 
     private fun getAllTagInfo() = tagUsecase.getTagInfo()
         .onEach { tagList ->

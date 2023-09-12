@@ -1,5 +1,6 @@
 package com.beank.workFlowy.screen.schedule
 
+import android.content.res.Resources
 import android.content.res.TypedArray
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
@@ -36,6 +37,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
@@ -57,10 +59,10 @@ import com.beank.workFlowy.ui.theme.white
 @Composable
 fun ScheduleScreen(
     scheduleViewModel: ScheduleViewModel = hiltViewModel(),
-    scheduleImages : TypedArray,
+    resource : Resources,
     onBackHome : () -> Unit
 ){
-    scheduleViewModel.initScheduleImages(scheduleImages)
+    scheduleViewModel.initScheduleImages(resource.obtainTypedArray(R.array.scheduleList))
     val inputScheduleText by scheduleViewModel.inputScheduleText.collectAsStateWithLifecycle()
     val selectScheduleImage by scheduleViewModel.selectScheduleImage.collectAsStateWithLifecycle()
     val uiState by scheduleViewModel.scheduleUiState.collectAsStateWithLifecycle()

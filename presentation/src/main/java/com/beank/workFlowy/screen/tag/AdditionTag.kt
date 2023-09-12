@@ -1,5 +1,6 @@
 package com.beank.workFlowy.screen.tag
 
+import android.content.res.Resources
 import android.content.res.TypedArray
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -24,11 +25,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.beank.workFlowy.R
 import com.beank.workFlowy.component.HorizontalSpacer
 import com.beank.workFlowy.component.VerticalSpacer
 import com.beank.workFlowy.component.WeekLayout
@@ -39,17 +42,15 @@ import kotlinx.coroutines.launch
 @Composable
 fun TagScreen(
     tagViewModel: TagViewModel = hiltViewModel(),
-    tagImages : TypedArray,
+    resource : Resources,
     onBackHome : () -> Unit
 ){
-    tagViewModel.initTagImages(tagImages)
+    tagViewModel.initTagImages(resource.obtainTypedArray(R.array.tagList))
     val selectTagImage by tagViewModel.selectTagImage.collectAsStateWithLifecycle()
     val selectTagText by tagViewModel.selectTagText.collectAsStateWithLifecycle()
     val uiState by tagViewModel.tagUiState.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
     var snackbarHostState = remember { SnackbarHostState() }
-
-
 
     WeekLayout(snackbarHostState = snackbarHostState) {
         Column(

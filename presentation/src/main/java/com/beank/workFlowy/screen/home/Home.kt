@@ -1,6 +1,7 @@
 package com.beank.workFlowy.screen.home
 
 import android.app.DatePickerDialog
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -24,6 +25,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.beank.domain.model.Schedule
 import com.beank.workFlowy.R
@@ -36,6 +38,7 @@ import com.beank.workFlowy.component.WeekLayout
 import com.beank.workFlowy.component.WeekLazyList
 import com.beank.workFlowy.navigation.NavigationItem
 import com.beank.workFlowy.utils.transDayToKorean
+import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -46,12 +49,13 @@ import java.time.temporal.ChronoUnit
 
 @Composable
 fun HomeScreen(
-    weekViewModel: WeekViewModel,
+    weekViewModel: WeekViewModel = hiltViewModel(),
     onTailIconClick : () -> Unit,
     onMoveMisson : () -> Unit,
     onMoveSchedule : () -> Unit,
     onMoveTag : () -> Unit
 ){
+    weekViewModel.timerJob.start()
     val scope = rememberCoroutineScope()
     val selectDay by weekViewModel.selectDayFlow.collectAsStateWithLifecycle()
     val selectedTag by weekViewModel.selectedTagFlow.collectAsStateWithLifecycle()

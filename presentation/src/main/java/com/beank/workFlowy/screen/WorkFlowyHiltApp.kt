@@ -1,7 +1,7 @@
-package com.beank.workFlowy
+package com.beank.workFlowy.screen
 
 import android.app.Application
 import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp
-class MainApplication : Application()
+class WorkFlowyHiltApp : Application()
