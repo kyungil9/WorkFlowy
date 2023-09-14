@@ -7,9 +7,11 @@ import androidx.lifecycle.viewModelScope
 import com.beank.domain.model.Record
 import com.beank.domain.model.Schedule
 import com.beank.domain.model.Tag
+import com.beank.domain.service.LogService
 import com.beank.domain.usecase.RecordUsecase
 import com.beank.domain.usecase.ScheduleUsecase
 import com.beank.domain.usecase.TagUsecase
+import com.beank.workFlowy.screen.WorkFlowyViewModel
 import com.beank.workFlowy.utils.transDayToKorean
 import com.beank.workFlowy.utils.zeroFormat
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -39,8 +41,9 @@ data class WeekUiState(
 class WeekViewModel @Inject constructor(
     private val recordUsecase: RecordUsecase,
     private val scheduleUsecase: ScheduleUsecase,
-    private val tagUsecase: TagUsecase
-) : ViewModel() {
+    private val tagUsecase: TagUsecase,
+    logService: LogService
+) : WorkFlowyViewModel(logService) {
 
     private var oldTimeMills : Long = 0
     private val _progressTimeFlow = MutableStateFlow(Duration.ZERO)
@@ -64,7 +67,7 @@ class WeekViewModel @Inject constructor(
 
     //tag를 string으로 변경하여 int코드 변경에 상관없이 해결
     private fun initTag(){
-        viewModelScope.launch(Dispatchers.IO) {
+        launchCatching {
             if (tagUsecase.getTagSize() <= 0) {
                 tagUsecase.insertTag(Tag(null, 0, "공부중"))
                 tagUsecase.insertTag(Tag(null, 1, "운동중"))
@@ -77,7 +80,7 @@ class WeekViewModel @Inject constructor(
     }
 
     private fun initRecord(){
-        viewModelScope.launch (Dispatchers.IO){
+        launchCatching{
             if (recordUsecase.getRecordSize() <= 0) {
                 recordUsecase.insertRecord(
                     Record(
@@ -115,7 +118,7 @@ class WeekViewModel @Inject constructor(
     }
 
     fun insertRecord(tag : Tag){
-        viewModelScope.launch(Dispatchers.IO) {
+        launchCatching {
             recordUsecase.insertRecord(
                 Record(
                     id = null,
@@ -128,29 +131,27 @@ class WeekViewModel @Inject constructor(
         }
     }
 
-
-
     fun updateSchedule(schedule: Schedule){
-        viewModelScope.launch(Dispatchers.IO) {
+        launchCatching {
             scheduleUsecase.insertSchedule(schedule)
         }
     }
 
     fun deleteSchedule(schedule: Schedule){
-        viewModelScope.launch(Dispatchers.IO) {
+        launchCatching {
             scheduleUsecase.deleteSchedule(schedule)
         }
     }
 
     fun deleteSelectTag(tag: Tag){
-        viewModelScope.launch (Dispatchers.IO) {
+        launchCatching {
             tagUsecase.deleteTag(tag)
         }
     }
 
     fun changeRecordInfo(){
         if (uiState.value.recordList.isNotEmpty()){
-            viewModelScope.launch(Dispatchers.IO) {
+            launchCatching {
                 val endTime = LocalDateTime.now()
                 val progressTime = Duration.between(uiState.value.recordList[0].startTime,endTime).toMinutes()
                 recordUsecase.updateRecord(

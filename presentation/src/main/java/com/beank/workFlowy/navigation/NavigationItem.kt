@@ -43,4 +43,16 @@ sealed class NavigationItem(
         route = "Misson",
         icon = R.drawable.baseline_cookie_24
     )
+
+    object LOGIN: NavigationItem(
+        title = "로그인화면",
+        route = "Login",
+        icon = null
+    )
+
+    object SIGNUP: NavigationItem(
+        title = "계정생성",
+        route = "Signup",
+        icon = R.drawable.ic_create_account
+    )
 }

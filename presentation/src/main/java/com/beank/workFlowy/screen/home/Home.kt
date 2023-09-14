@@ -50,10 +50,7 @@ import java.time.temporal.ChronoUnit
 @Composable
 fun HomeScreen(
     weekViewModel: WeekViewModel = hiltViewModel(),
-    onTailIconClick : () -> Unit,
-    onMoveMisson : () -> Unit,
-    onMoveSchedule : () -> Unit,
-    onMoveTag : () -> Unit
+    openScreen: (String) -> Unit
 ){
     weekViewModel.timerJob.start()
     val scope = rememberCoroutineScope()
@@ -93,13 +90,13 @@ fun HomeScreen(
                     dateDialog.show()
                 },
                 tailIcon = NavigationItem.ANALYSIS.icon,
-                onTailIconClick = onTailIconClick
+                onTailIconClick = {openScreen(NavigationItem.ANALYSIS.route)}
             )
         },
         bottomBar = {
             WeekBottomBar(
                 checked = scheduleState,
-                onMoveMisson = onMoveMisson,
+                onMoveMisson = {openScreen(NavigationItem.MISSON.route)},
                 onMoveToday = {
                     scope.launch(Dispatchers.Default) {
                         if (!selectDay.isEqual(LocalDate.now())){
@@ -113,7 +110,7 @@ fun HomeScreen(
                     weekViewModel.deleteSchedule(scheduleInfo)
                     scheduleState = scheduleState.not()},
                 onUpdateSchedule = { /*TODO*/ },
-                onAdditionalSchedule = { onMoveSchedule() }
+                onAdditionalSchedule = { openScreen(NavigationItem.SCHEDULE.route) }
             )
         }
     ) {
@@ -171,7 +168,7 @@ fun HomeScreen(
             },
             onAddActTag = {
                 weekState = false
-                onMoveTag()},
+                openScreen(NavigationItem.TAG.route)},
             onClickDelect = {weekViewModel.deleteSelectTag(it)}
         )
     }

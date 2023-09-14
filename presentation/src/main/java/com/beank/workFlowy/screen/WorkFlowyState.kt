@@ -11,19 +11,43 @@ import androidx.compose.runtime.Stable
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import com.beank.workFlowy.component.snackbar.SnackbarManager
+import com.beank.workFlowy.component.snackbar.SnackbarMessage.Companion.toMessage
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.launch
 
 @Stable
 class WorkFlowyState(
+    val snackbarHostState: SnackbarHostState,
     val navController: NavHostController,
     val resource : Resources,
+    private val snackbarManager : SnackbarManager,
+    coroutineScope: CoroutineScope
 ) {
+    init {
+        coroutineScope.launch {
+            snackbarManager.snackbarMessages.filterNotNull().collect() {snackbarMessage ->
+                val text = snackbarMessage.toMessage(resource)
+                snackbarHostState.showSnackbar(text)
+            }
+        }
+    }
+
     fun popUp() {
         navController.popBackStack()
     }
 
     fun navigate(route : String) {
-        navController.navigate(route)
+        navController.navigate(route){ launchSingleTop = true }
+    }
+
+    fun navigatePopUp(route: String,popUp : String){
+        navController.navigate(route){
+            launchSingleTop = true
+            popUpTo(popUp) { inclusive = true}
+        }
     }
 
     fun slideUpIn(spec : Int) : (@JvmSuppressWildcards

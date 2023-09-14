@@ -14,7 +14,9 @@ import androidx.navigation.compose.composable
 import com.beank.workFlowy.screen.WorkFlowyState
 import com.beank.workFlowy.screen.home.WeekViewModel
 import com.beank.workFlowy.screen.home.HomeScreen
+import com.beank.workFlowy.screen.login.LoginScreen
 import com.beank.workFlowy.screen.schedule.ScheduleScreen
+import com.beank.workFlowy.screen.sign_up.SignUpScreen
 import com.beank.workFlowy.screen.tag.TagScreen
 import com.beank.workFlowy.ui.theme.black
 
@@ -24,15 +26,24 @@ fun NavigationGraph(
 ){
     NavHost(
         navController = appState.navController,
-        startDestination = NavigationItem.HOME.route
+        startDestination = NavigationItem.LOGIN.route
     ){
+        composable(route = NavigationItem.LOGIN.route){
+            LoginScreen(
+                openPopUpScreen = {route,popup ->  appState.navigatePopUp(route,popup)},
+                openScreen = {route -> appState.navigate(route)})
+        }
+
+        composable(
+            route = NavigationItem.SIGNUP.route,
+            enterTransition = appState.slideUpIn(700),
+            exitTransition = appState.slideDownOut(700)
+        ){
+            SignUpScreen(onBack = {appState.popUp()})
+        }
+
         composable(route = NavigationItem.HOME.route){
-            HomeScreen(
-                onTailIconClick = {appState.navigate(NavigationItem.ANALYSIS.route)},
-                onMoveTag = { appState.navigate(NavigationItem.TAG.route)},
-                onMoveMisson = { appState.navigate(NavigationItem.MISSON.route)},
-                onMoveSchedule = { appState.navigate(NavigationItem.SCHEDULE.route) }
-            )
+            HomeScreen(openScreen = {route -> appState.navigate(route)})
         }
 
         composable(route = NavigationItem.MENU.route){

@@ -5,8 +5,10 @@ import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.beank.domain.model.Tag
+import com.beank.domain.service.LogService
 import com.beank.domain.usecase.TagUsecase
 import com.beank.workFlowy.R
+import com.beank.workFlowy.screen.WorkFlowyViewModel
 import com.beank.workFlowy.utils.imageToInt
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -23,8 +25,9 @@ data class TagUiState(
 
 @HiltViewModel
 class TagViewModel @Inject constructor(
-    private val tagUsecase : TagUsecase
-) : ViewModel() {
+    private val tagUsecase : TagUsecase,
+    logService: LogService
+) : WorkFlowyViewModel(logService) {
     private val _tagUiState = MutableStateFlow(TagUiState())
     private val _selectTagText = MutableStateFlow("")
     private val _selectTagImage = MutableStateFlow(R.drawable.baseline_menu_book_24)
@@ -38,7 +41,7 @@ class TagViewModel @Inject constructor(
 
     fun initTagImages(tagList : TypedArray){
         typedTag = tagList
-        viewModelScope.launch(Dispatchers.IO) {
+        launchCatching {
             val tagImages = ArrayList<Int>()
             for (i in 0 until tagList.length()-2){
                 tagImages.add(tagList.getResourceId(i,-1))
@@ -56,7 +59,7 @@ class TagViewModel @Inject constructor(
     }
 
     fun insertTag() {
-        viewModelScope.launch(Dispatchers.IO) {
+        launchCatching {
             tagUsecase.insertTag(Tag(null, imageToInt(selectTagImage.value,typedTag), selectTagText.value))
         }
     }

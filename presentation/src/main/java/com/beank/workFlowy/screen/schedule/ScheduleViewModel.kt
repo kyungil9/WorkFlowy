@@ -7,8 +7,10 @@ import androidx.lifecycle.viewModelScope
 import com.chargemap.compose.numberpicker.FullHours
 import com.chargemap.compose.numberpicker.Hours
 import com.beank.domain.model.Schedule
+import com.beank.domain.service.LogService
 import com.beank.domain.usecase.ScheduleUsecase
 import com.beank.workFlowy.R
+import com.beank.workFlowy.screen.WorkFlowyViewModel
 import com.beank.workFlowy.utils.changeDayInfo
 import com.beank.workFlowy.utils.imageToInt
 import com.beank.workFlowy.utils.transDayToShortKorean
@@ -29,8 +31,9 @@ data class ScheduleUiState(
 
 @HiltViewModel
 class ScheduleViewModel @Inject constructor(
-    private val scheduleUsecase: ScheduleUsecase
-) : ViewModel(){
+    private val scheduleUsecase: ScheduleUsecase,
+    logService: LogService
+) : WorkFlowyViewModel(logService){
 
     private val _scheduleUiState = MutableStateFlow(ScheduleUiState())
     private val _inputScheduleText = MutableStateFlow("")
@@ -57,7 +60,7 @@ class ScheduleViewModel @Inject constructor(
 
     fun initScheduleImages(scheduleList : TypedArray){
         typedSchedule = scheduleList
-        viewModelScope.launch(Dispatchers.IO) {
+        launchCatching {
             val scheduleImages = ArrayList<Int>()
             for (i in 0 until scheduleList.length()){
                 scheduleImages.add(scheduleList.getResourceId(i,0))
@@ -107,7 +110,7 @@ class ScheduleViewModel @Inject constructor(
     }
 
     fun insertSchedule(){
-        viewModelScope.launch(Dispatchers.IO) {
+        launchCatching {
             scheduleUsecase.insertSchedule(Schedule(
                 id = null,
                 date = LocalDate.of(selectPickerYear.value,selectPickerMonth.value,selectPickerDay.value),
