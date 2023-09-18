@@ -1,28 +1,25 @@
-package com.beank.data.serviceimpl
+package com.beank.data.repositoryimpl
 
-import androidx.core.os.trace
-import com.beank.domain.service.AccountService
-import com.google.firebase.auth.EmailAuthProvider
+import com.beank.data.datasource.StorageDataSource
+import com.beank.domain.model.Record
+import com.beank.domain.model.Tag
+import com.beank.domain.repository.AccountRepository
+import com.beank.domain.usecase.record.InsertRecord
+import com.beank.domain.usecase.tag.InsertTag
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.flow.callbackFlow
 import javax.inject.Inject
 
-class AccountServiceImpl @Inject constructor(
+class AccountRepositoryImpl @Inject constructor(
     private val auth : FirebaseAuth
-) : AccountService{
+) : AccountRepository {
 
-    override val hasUser: Boolean
-        get() = auth.currentUser != null
-
-    override var currentUser: FirebaseUser? = null
-        get() = auth.currentUser
-
-    override suspend fun createAccount(email: String, password: String, onSuccess : () -> Unit, onFailMessage : () -> Unit) {
+    override fun createAccount(email: String, password: String, onSuccess : () -> Unit, onFailMessage : () -> Unit) {
         auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener { task ->
             if (task.isSuccessful){
-                currentUser = auth.currentUser
                 onSuccess()
             }else{
                 onFailMessage()
@@ -30,17 +27,16 @@ class AccountServiceImpl @Inject constructor(
         }
     }
 
-    override suspend fun loginAccount(email: String, password: String, onSuccess : () -> Unit, onFailMessage: () -> Unit) {
+    override fun loginAccount(email: String, password: String, onSuccess : () -> Unit, onFailMessage: () -> Unit) {
         auth.signInWithEmailAndPassword(email, password).addOnCompleteListener { task ->
             if (task.isSuccessful){
-                currentUser = auth.currentUser
                 onSuccess()
             }else
                 onFailMessage()
         }
     }
 
-    override suspend fun createAnonymousAccount(onSuccess : () -> Unit, onFailMessage : () -> Unit) {
+    override fun createAnonymousAccount(onSuccess : () -> Unit, onFailMessage : () -> Unit) {
         auth.signInAnonymously().addOnCompleteListener { task ->
             if(task.isSuccessful)
                 onSuccess()
@@ -49,7 +45,7 @@ class AccountServiceImpl @Inject constructor(
         }
     }
 
-    override suspend fun deleteAccount(onSuccess : () -> Unit, onFailMessage : () -> Unit) {
+    override fun deleteAccount(onSuccess : () -> Unit, onFailMessage : () -> Unit) {
         auth.currentUser!!.delete().addOnCompleteListener { task ->
             if (task.isSuccessful)
                 onSuccess()
@@ -58,7 +54,7 @@ class AccountServiceImpl @Inject constructor(
         }
     }
 
-    override suspend fun signOut() {
+    override fun signOut() {
         auth.signOut()
     }
 }

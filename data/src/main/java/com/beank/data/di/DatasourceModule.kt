@@ -1,11 +1,7 @@
 package com.beank.data.di
 
-import com.beank.data.datasource.local.RecordDatasource
-import com.beank.data.datasource.local.ScheduleDatasource
-import com.beank.data.datasource.local.TagDatasource
-import com.beank.data.datasource.local.impl.RecordDatasourceImpl
-import com.beank.data.datasource.local.impl.ScheduleDatasourceImpl
-import com.beank.data.datasource.local.impl.TagDatasourceImpl
+import com.beank.data.datasource.StorageDataSource
+import com.beank.data.datasource.impl.StorageDataSourceImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -14,17 +10,10 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-internal abstract class DatasourceModule {
+abstract class DatasourceModule {
 
     @Singleton
     @Binds
-    abstract fun bindsRecordDatasource(recordDatasourceImpl : RecordDatasourceImpl) : RecordDatasource
+    abstract fun bindsStorageDatasource(Impl : StorageDataSourceImpl) : StorageDataSource
 
-    @Singleton
-    @Binds
-    abstract fun bindsTagDatasource(tagDatasourceImpl : TagDatasourceImpl) : TagDatasource
-
-    @Singleton
-    @Binds
-    abstract fun bindsScheduleDatasource(scheduleDatasourceImpl : ScheduleDatasourceImpl) : ScheduleDatasource
 }

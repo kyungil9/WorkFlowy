@@ -7,11 +7,7 @@ interface TagRepository {
 
     fun getTagInfo() : Flow<List<Tag>>
 
-    fun getTagSingleInfo(tag : String) : Tag
-
-    fun getTagSize() : Int
-
-    fun checkTagTitle(title : String) : Int
+    suspend fun checkTagTitle(title : String) : Boolean
 
     fun insertTag(tag: Tag)
 

@@ -1,35 +1,38 @@
 package com.beank.data.repositoryimpl
 
-import com.beank.data.datasource.local.ScheduleDatasource
-import com.beank.data.datasource.local.mapper.toScheduleModel
-import com.beank.data.datasource.local.mapper.toWeekSchedule
+import com.beank.data.datasource.StorageDataSource
+import com.beank.data.entity.WeekSchedule
+import com.beank.data.mapper.localDateToInt
+import com.beank.data.mapper.toScheduleModel
+import com.beank.data.mapper.toWeekSchedule
 import com.beank.domain.model.Schedule
 import com.beank.domain.repository.ScheduleRepository
+import com.google.firebase.firestore.ktx.dataObjects
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import java.time.LocalDate
 import javax.inject.Inject
 
 class ScheduleRepositoryImpl @Inject constructor(
-    private val scheduleDatasource: ScheduleDatasource
+    private val storage : StorageDataSource
 ) : ScheduleRepository {
-
     override fun getScheduleInfo(today: LocalDate): Flow<List<Schedule>> =
-        scheduleDatasource.getScheduleInfo(today).map { scheduleList ->
-            scheduleList.map { schedule ->
-                schedule.toScheduleModel()
-            }
-        }
+        storage.store.document(storage.getUid()!!).collection(SCHEDULE).whereEqualTo("date",today.localDateToInt()).dataObjects<WeekSchedule>().map { scheduleList->
+            scheduleList.map { it.toScheduleModel() }
+        }.flowOn(Dispatchers.IO)
 
-    override fun insertSchedule(schedule: Schedule) {
-        scheduleDatasource.insertSchedule(schedule.toWeekSchedule())
-    }
+    override fun insertSchedule(schedule: Schedule) : Unit =
+        storage.save(SCHEDULE,schedule.toWeekSchedule())
 
-    override fun updateSchedule(schedule: Schedule) {
-        scheduleDatasource.updateSchedule(schedule.toWeekSchedule())
-    }
+    override fun updateSchedule(schedule: Schedule) : Unit =
+        storage.replace(SCHEDULE,schedule.id!!,schedule.toWeekSchedule())
 
-    override fun deleteSchedule(schedule: Schedule) {
-        scheduleDatasource.deleteSchedule(schedule.toWeekSchedule())
+    override fun deleteSchedule(schedule: Schedule) : Unit =
+        storage.delete(SCHEDULE,schedule.id!!)
+
+    companion object {
+        private const val SCHEDULE = "Schedule"
     }
 }
