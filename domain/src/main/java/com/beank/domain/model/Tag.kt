@@ -1,7 +1,8 @@
 package com.beank.domain.model
 
+
 data class Tag(
-    var id : Int?,
-    var icon : Int,
-    val title : String
+    var id : String? = null,
+    var icon : Int = 0,
+    val title : String = ""
 )
