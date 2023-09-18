@@ -81,10 +81,10 @@ fun TagScreen(
                         scope.launch(Dispatchers.IO) {
                             if (tagViewModel.selectTagText.value.isEmpty())
                                 snackbarHostState.showSnackbar("이름을 입력해주세요.")
-                            else if (tagViewModel.checkTagText() > 0)
+                            else if (!tagViewModel.checkTagText())
                                 snackbarHostState.showSnackbar("중복된 이름이 있습니다.")
                             else{
-                                tagViewModel.insertTag()
+                                tagViewModel.insertTagInfo()
                                 scope.launch(Dispatchers.Main) { onBackHome() }
                             }
                         }},

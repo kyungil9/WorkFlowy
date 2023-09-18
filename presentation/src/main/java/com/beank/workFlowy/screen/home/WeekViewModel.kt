@@ -1,16 +1,18 @@
 package com.beank.workFlowy.screen.home
 
-import android.content.res.TypedArray
 import androidx.compose.runtime.Stable
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.beank.domain.model.Record
 import com.beank.domain.model.Schedule
 import com.beank.domain.model.Tag
-import com.beank.domain.service.LogService
-import com.beank.domain.usecase.RecordUsecase
-import com.beank.domain.usecase.ScheduleUsecase
-import com.beank.domain.usecase.TagUsecase
+import com.beank.domain.repository.LogRepository
+import com.beank.domain.usecase.record.GetNowRecord
+import com.beank.domain.usecase.record.InsertRecord
+import com.beank.domain.usecase.record.UpdateRecord
+import com.beank.domain.usecase.schedule.DeleteSchedule
+import com.beank.domain.usecase.schedule.GetTodaySchedule
+import com.beank.domain.usecase.tag.DeleteTag
+import com.beank.domain.usecase.tag.GetAllTag
 import com.beank.workFlowy.screen.WorkFlowyViewModel
 import com.beank.workFlowy.utils.transDayToKorean
 import com.beank.workFlowy.utils.zeroFormat
@@ -39,18 +41,21 @@ data class WeekUiState(
 
 @HiltViewModel
 class WeekViewModel @Inject constructor(
-    private val recordUsecase: RecordUsecase,
-    private val scheduleUsecase: ScheduleUsecase,
-    private val tagUsecase: TagUsecase,
-    logService: LogService
-) : WorkFlowyViewModel(logService) {
+    private val insertRecord: InsertRecord,
+    private val deleteSchedule: DeleteSchedule,
+    private val deleteTag: DeleteTag,
+    private val updateRecord : UpdateRecord,
+    private val getTodaySchedule: GetTodaySchedule,
+    private val getNowRecord: GetNowRecord,
+    private val getAllTag: GetAllTag,
+    logRepository: LogRepository
+) : WorkFlowyViewModel(logRepository) {
 
     private var oldTimeMills : Long = 0
     private val _progressTimeFlow = MutableStateFlow(Duration.ZERO)
     private val _uiState = MutableStateFlow(WeekUiState())
     private val _selectDayFlow = MutableStateFlow<LocalDate>(LocalDate.now())
-    private val _selectedTagFlow = MutableStateFlow<Tag>(Tag(null,
-        0, ""))
+    private val _selectedTagFlow = MutableStateFlow(Tag())
     val selectDayFlow get() = _selectDayFlow.asStateFlow()
     val uiState get() = _uiState.asStateFlow()
     val selectedTagFlow get() = _selectedTagFlow.asStateFlow()
@@ -58,42 +63,9 @@ class WeekViewModel @Inject constructor(
     val selectDayStringFlow get() = _selectDayFlow.asStateFlow().map { "< ${it.year%100}/${zeroFormat.format(it.monthValue)}/${zeroFormat.format(it.dayOfMonth)} ${transDayToKorean(it.dayOfWeek.value)} >" }
 
     init {
-        initTag()
         getAllTagInfo()
         getTodaySchedule()
         getSelectedRecordInfo()
-        initRecord()
-    }
-
-    //tag를 string으로 변경하여 int코드 변경에 상관없이 해결
-    private fun initTag(){
-        launchCatching {
-            if (tagUsecase.getTagSize() <= 0) {
-                tagUsecase.insertTag(Tag(null, 0, "공부중"))
-                tagUsecase.insertTag(Tag(null, 1, "운동중"))
-                tagUsecase.insertTag(Tag(null,2, "휴식중"))
-                tagUsecase.insertTag(Tag(null, 3, "이동중"))
-                tagUsecase.insertTag(Tag(null, 4, "수면중"))
-                tagUsecase.insertTag(Tag(null, 5, "개인시간"))
-            }
-        }
-    }
-
-    private fun initRecord(){
-        launchCatching{
-            if (recordUsecase.getRecordSize() <= 0) {
-                recordUsecase.insertRecord(
-                    Record(
-                        id = null,
-                        tag = "개인시간",
-                        startTime = LocalDateTime.now(),
-                        endTime = null,
-                        progressTime = 0,
-                        pause = true
-                    ))
-                _selectedTagFlow.value = Tag(null, 5, "개인시간")
-            }
-        }
     }
 
     val timerJob = viewModelScope.launch(start = CoroutineStart.LAZY) {
@@ -117,9 +89,9 @@ class WeekViewModel @Inject constructor(
         _selectDayFlow.value = day
     }
 
-    fun insertRecord(tag : Tag){
+    fun insertRecordInfo(tag : Tag){
         launchCatching {
-            recordUsecase.insertRecord(
+            insertRecord(
                 Record(
                     id = null,
                     tag = tag.title,
@@ -131,21 +103,15 @@ class WeekViewModel @Inject constructor(
         }
     }
 
-    fun updateSchedule(schedule: Schedule){
+    fun deleteSelectSchedule(schedule: Schedule){
         launchCatching {
-            scheduleUsecase.insertSchedule(schedule)
-        }
-    }
-
-    fun deleteSchedule(schedule: Schedule){
-        launchCatching {
-            scheduleUsecase.deleteSchedule(schedule)
+            deleteSchedule(schedule)
         }
     }
 
     fun deleteSelectTag(tag: Tag){
         launchCatching {
-            tagUsecase.deleteTag(tag)
+            deleteTag(tag)
         }
     }
 
@@ -154,7 +120,7 @@ class WeekViewModel @Inject constructor(
             launchCatching {
                 val endTime = LocalDateTime.now()
                 val progressTime = Duration.between(uiState.value.recordList[0].startTime,endTime).toMinutes()
-                recordUsecase.updateRecord(
+                updateRecord(
                     endTime = endTime,
                     progressTime = progressTime,
                     id = uiState.value.recordList[0].id!!,
@@ -164,25 +130,23 @@ class WeekViewModel @Inject constructor(
         }
     }
 
-
-    private fun getAllTagInfo() = tagUsecase.getTagInfo()
+    private fun getAllTagInfo() = getAllTag()
         .onEach { tagList ->
             _uiState.update { state -> state.copy(tagList = tagList) }
         }.launchIn(viewModelScope)
 
-    private fun getSelectedRecordInfo() = recordUsecase.getPauseRecord(true)
-        .onEach { recordList ->
-            _uiState.update { state -> state.copy(recordList = recordList) }
-            viewModelScope.launch(Dispatchers.IO) {
-                if (recordList.isNotEmpty())
-                    _selectedTagFlow.value = tagUsecase.getTagSingleInfo(recordList[0].tag)
+    private fun getSelectedRecordInfo() = getNowRecord(true)
+        .onEach { nowRecord ->
+            nowRecord.record.id?.let {
+                _uiState.update { state -> state.copy(recordList = listOf(nowRecord.record)) }
+                _selectedTagFlow.value = nowRecord.tag
             }
         }.launchIn(viewModelScope)
 
     private fun getTodaySchedule() {
         viewModelScope.launch (Dispatchers.IO){
             selectDayFlow.collect{
-                scheduleUsecase.getScheduleInfo(selectDayFlow.value)
+                getTodaySchedule(it)
                     .onEach { scheduleList ->
                         _uiState.update { state -> state.copy(scheduleList = scheduleList) }
                     }.launchIn(viewModelScope)

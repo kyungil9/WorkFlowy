@@ -2,11 +2,11 @@ package com.beank.workFlowy.screen.tag
 
 import android.content.res.TypedArray
 import androidx.compose.runtime.Stable
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.beank.domain.model.Tag
-import com.beank.domain.service.LogService
-import com.beank.domain.usecase.TagUsecase
+import com.beank.domain.repository.LogRepository
+import com.beank.domain.usecase.tag.CheckTagTitle
+import com.beank.domain.usecase.tag.InsertTag
 import com.beank.workFlowy.R
 import com.beank.workFlowy.screen.WorkFlowyViewModel
 import com.beank.workFlowy.utils.imageToInt
@@ -25,9 +25,10 @@ data class TagUiState(
 
 @HiltViewModel
 class TagViewModel @Inject constructor(
-    private val tagUsecase : TagUsecase,
-    logService: LogService
-) : WorkFlowyViewModel(logService) {
+    private val checkTagTitle: CheckTagTitle,
+    private val insertTag: InsertTag,
+    logRepository: LogRepository
+) : WorkFlowyViewModel(logRepository) {
     private val _tagUiState = MutableStateFlow(TagUiState())
     private val _selectTagText = MutableStateFlow("")
     private val _selectTagImage = MutableStateFlow(R.drawable.baseline_menu_book_24)
@@ -58,12 +59,18 @@ class TagViewModel @Inject constructor(
         _selectTagImage.value = image
     }
 
-    fun insertTag() {
+    fun insertTagInfo() {
         launchCatching {
-            tagUsecase.insertTag(Tag(null, imageToInt(selectTagImage.value,typedTag), selectTagText.value))
+            insertTag(Tag(null, imageToInt(selectTagImage.value,typedTag), selectTagText.value))
         }
     }
 
-    fun checkTagText() = tagUsecase.checkTagTitle(selectTagText.value)
+    fun checkTagText() : Boolean {
+        var result = false
+        viewModelScope.launch (Dispatchers.IO) {
+            result = checkTagTitle(selectTagText.value)
+        }
+        return result
+    }
 
 }

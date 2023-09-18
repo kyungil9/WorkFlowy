@@ -2,24 +2,22 @@ package com.beank.workFlowy.screen.schedule
 
 import android.content.res.TypedArray
 import androidx.compose.runtime.Stable
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.SavedStateHandle
+import com.beank.data.mapper.intToLocalDate
 import com.chargemap.compose.numberpicker.FullHours
 import com.chargemap.compose.numberpicker.Hours
 import com.beank.domain.model.Schedule
-import com.beank.domain.service.LogService
-import com.beank.domain.usecase.ScheduleUsecase
+import com.beank.domain.repository.LogRepository
+import com.beank.domain.usecase.schedule.InsertSchedule
 import com.beank.workFlowy.R
 import com.beank.workFlowy.screen.WorkFlowyViewModel
 import com.beank.workFlowy.utils.changeDayInfo
 import com.beank.workFlowy.utils.imageToInt
 import com.beank.workFlowy.utils.transDayToShortKorean
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalTime
 import javax.inject.Inject
@@ -31,16 +29,18 @@ data class ScheduleUiState(
 
 @HiltViewModel
 class ScheduleViewModel @Inject constructor(
-    private val scheduleUsecase: ScheduleUsecase,
-    logService: LogService
-) : WorkFlowyViewModel(logService){
+    private val savedStateHandle : SavedStateHandle,
+    private val insertSchedule: InsertSchedule,
+    logRepository: LogRepository
+) : WorkFlowyViewModel(logRepository){
 
+    private val today = savedStateHandle.get<Int>("today")!!.intToLocalDate()
     private val _scheduleUiState = MutableStateFlow(ScheduleUiState())
     private val _inputScheduleText = MutableStateFlow("")
     private val _selectScheduleImage = MutableStateFlow(R.drawable.baseline_calendar_today_24)
-    private val _selectPickerYear = MutableStateFlow(LocalDate.now().year)
-    private val _selectPickerMonth = MutableStateFlow(LocalDate.now().monthValue)
-    private val _selectPickerDay = MutableStateFlow(LocalDate.now().dayOfMonth)
+    private val _selectPickerYear = MutableStateFlow(today.year)
+    private val _selectPickerMonth = MutableStateFlow(today.monthValue)
+    private val _selectPickerDay = MutableStateFlow(today.dayOfMonth)
     private val _selectPickerStartTime = MutableStateFlow(FullHours(LocalTime.now().hour,LocalTime.now().minute))
     private val _selectPickerEndTime = MutableStateFlow(FullHours(LocalTime.now().hour,LocalTime.now().minute))
     private val _endMonthDay = MutableStateFlow(changeDayInfo(LocalDate.now()))
@@ -109,9 +109,9 @@ class ScheduleViewModel @Inject constructor(
         _inputCommentText.value = text
     }
 
-    fun insertSchedule(){
+    fun insertScheduleInfo(){
         launchCatching {
-            scheduleUsecase.insertSchedule(Schedule(
+            insertSchedule(Schedule(
                 id = null,
                 date = LocalDate.of(selectPickerYear.value,selectPickerMonth.value,selectPickerDay.value),
                 startTime = LocalTime.of(selectPickerStartTime.value.hours,selectPickerStartTime.value.minutes,0),
