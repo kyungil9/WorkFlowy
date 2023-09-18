@@ -6,24 +6,23 @@
     <string name="password">비밀번호</string>
     <string name="repeat_password">비밀번호 확인</string>
     <string name="sign_in">로그인</string>
-    <string name="generic_error">Something wrong happened. Please try again.</string>
+    <string name="generic_error">일시적인 오류가 발생하였습니다. 다시 시도해주세요</string>
     <string name="email_error">잘못된 이메일 주소 입니다.</string>
     <string name="password_error">비밀번호를 8자리 이상 입력해주세요.</string>
     <string name="empty_password_error">비밀번호를 입력해주세요.</string>
     <string name="password_match_error">비밀번호가 일치하지 않습니다.</string>
-    <string name="google_login">Sign in with Google</string>
+    <string name="google_login">Google 간편 로그인</string>
     <string name="create_account">계정 생성</string>
     <string name="login_server_error">로그인 서버에 문제가 발생하였습니다.</string>
     <!-- Dialogs -->
-    <string name="sign_out_title">Sign out?</string>
-    <string name="sign_out_description">You will have to sign in again to see your tasks.</string>
-    <string name="delete_account_title">Delete account?</string>
-    <string name="delete_account_description">You will lose all your tasks and your account will be deleted. This action is irreversible.</string>
+    <string name="sign_out_title">로그아웃</string>
+    <string name="delete_account_title">계정삭제</string>
+    <string name="delete_account_description">계정삭제시 모든 데이터가 사라지고 복구할 수 없습니다.</string>
 
     <!-- FCM -->
     <string name="default_notification_channel_id" translatable="false">fcm_default_channel</string>
     <string name="request_notification_permission">Request permission</string>
-    <string name="notification_permission_title">Notification permission</string>
-    <string name="notification_permission_description">The notification permission is important for this app. Please grant the permission.</string>
-    <string name="notification_permission_settings">The notification permission is important for this app. Please navigate to your device settings and enable notifications for Make it So.</string>
+    <string name="notification_permission_title">알림 권한</string>
+    <string name="notification_permission_description">알림설정은 어플에서 다양한 알림을 받을수있는 권한입니다. 다양한 알림을 받고싶다면 권한을 허용해주세요.</string>
+    <string name="notification_permission_settings">알림설정은 어플에서 다양한 알림을 받을수있는 권한입니다. 다양한 알림을 받고싶다면 권한을 허용해주세요.</string>
 </resources>

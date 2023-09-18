@@ -50,7 +50,8 @@ import java.time.temporal.ChronoUnit
 @Composable
 fun HomeScreen(
     weekViewModel: WeekViewModel = hiltViewModel(),
-    openScreen: (String) -> Unit
+    openScreen: (String) -> Unit,
+    openSchedule: (String,LocalDate) -> Unit
 ){
     weekViewModel.timerJob.start()
     val scope = rememberCoroutineScope()
@@ -96,7 +97,7 @@ fun HomeScreen(
         bottomBar = {
             WeekBottomBar(
                 checked = scheduleState,
-                onMoveMisson = {openScreen(NavigationItem.MISSON.route)},
+                onMoveMisson = { openScreen(NavigationItem.MISSON.route)},
                 onMoveToday = {
                     scope.launch(Dispatchers.Default) {
                         if (!selectDay.isEqual(LocalDate.now())){
@@ -107,10 +108,10 @@ fun HomeScreen(
                 },
                 onCheckSchedule = { /*TODO*/ },
                 onDeleteSchedule = {
-                    weekViewModel.deleteSchedule(scheduleInfo)
+                    weekViewModel.deleteSelectSchedule(scheduleInfo)
                     scheduleState = scheduleState.not()},
                 onUpdateSchedule = { /*TODO*/ },
-                onAdditionalSchedule = { openScreen(NavigationItem.SCHEDULE.route) }
+                onAdditionalSchedule = { openSchedule(NavigationItem.SCHEDULE.route,selectDay) }
             )
         }
     ) {
@@ -122,11 +123,14 @@ fun HomeScreen(
             WeekLazyList(
                 selectDay = selectDay,
                 weekListState = weekListState,
-                onClickItem = {
-                    scope.launch(Dispatchers.Default) {
-                        weekListState.animateScrollToItem(ChronoUnit.DAYS.between(LocalDate.of(2021,12,28),it).toInt()-3)
+                onClickItem = {date ->
+                    if (!date.isEqual(selectDay)) {
+                        scope.launch(Dispatchers.Default) {
+                            weekListState.animateScrollToItem(ChronoUnit.DAYS.between(LocalDate.of(2021, 12, 28), date).toInt() - 3)
+                        }
+                        weekViewModel.changeSelectDay(date)
+                        scheduleState = false
                     }
-                    weekViewModel.changeSelectDay(it)
                 }
             )//주달력 표시
             Row (modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween){
@@ -164,7 +168,7 @@ fun HomeScreen(
             onClickAct = {tag ->
                 weekViewModel.changeRecordInfo()
                 weekState = false
-                weekViewModel.insertRecord(tag)
+                weekViewModel.insertRecordInfo(tag)
             },
             onAddActTag = {
                 weekState = false

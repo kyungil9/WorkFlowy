@@ -9,8 +9,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
+import com.beank.data.mapper.localDateToInt
 import com.beank.workFlowy.screen.WorkFlowyState
 import com.beank.workFlowy.screen.home.WeekViewModel
 import com.beank.workFlowy.screen.home.HomeScreen
@@ -19,6 +22,7 @@ import com.beank.workFlowy.screen.schedule.ScheduleScreen
 import com.beank.workFlowy.screen.sign_up.SignUpScreen
 import com.beank.workFlowy.screen.tag.TagScreen
 import com.beank.workFlowy.ui.theme.black
+import java.time.LocalDate
 
 @Composable
 fun NavigationGraph(
@@ -43,7 +47,9 @@ fun NavigationGraph(
         }
 
         composable(route = NavigationItem.HOME.route){
-            HomeScreen(openScreen = {route -> appState.navigate(route)})
+            HomeScreen(
+                openScreen = {route -> appState.navigate(route)},
+                openSchedule = {route,date -> appState.navigate(route,date)})
         }
 
         composable(route = NavigationItem.MENU.route){
@@ -74,7 +80,13 @@ fun NavigationGraph(
         }
 
         composable(
-            route = NavigationItem.SCHEDULE.route,
+            route = "${NavigationItem.SCHEDULE.route}/{today}"
+            ,arguments = listOf(
+                navArgument("today"){
+                    type = NavType.IntType
+                    defaultValue = LocalDate.now().localDateToInt()
+                }
+            ),
             enterTransition = appState.slideUpIn(700),
             exitTransition = appState.slideDownOut(700)
         ){

@@ -61,6 +61,8 @@ fun LoginScreen(
     var user by remember { mutableStateOf(Firebase.auth.currentUser) }
     val launcher = rememberFirebaseAuthLauncher(
         onAuthSuccess = { result ->
+            if(result.additionalUserInfo!!.isNewUser)
+                loginViewModel.initSetting()
             user = result.user
         },
         onAuthError = {
@@ -105,9 +107,6 @@ fun LoginScreen(
             openPopUpScreen(NavigationItem.HOME.route,NavigationItem.LOGIN.route)
         }
     }
-
-
-
 }
 
 @Composable
