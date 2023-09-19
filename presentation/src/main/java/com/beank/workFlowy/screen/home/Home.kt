@@ -1,7 +1,6 @@
 package com.beank.workFlowy.screen.home
 
 import android.app.DatePickerDialog
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -38,7 +37,6 @@ import com.beank.workFlowy.component.WeekLayout
 import com.beank.workFlowy.component.WeekLazyList
 import com.beank.workFlowy.navigation.NavigationItem
 import com.beank.workFlowy.utils.transDayToKorean
-import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -51,7 +49,8 @@ import java.time.temporal.ChronoUnit
 fun HomeScreen(
     weekViewModel: WeekViewModel = hiltViewModel(),
     openScreen: (String) -> Unit,
-    openSchedule: (String,LocalDate) -> Unit
+    openSchedule: (String,LocalDate) -> Unit,
+    openEditSchedule: (String,Schedule) -> Unit
 ){
     weekViewModel.timerJob.start()
     val scope = rememberCoroutineScope()
@@ -110,7 +109,7 @@ fun HomeScreen(
                 onDeleteSchedule = {
                     weekViewModel.deleteSelectSchedule(scheduleInfo)
                     scheduleState = scheduleState.not()},
-                onUpdateSchedule = { /*TODO*/ },
+                onUpdateSchedule = { openEditSchedule(NavigationItem.SCHEDULE.route,scheduleInfo) },
                 onAdditionalSchedule = { openSchedule(NavigationItem.SCHEDULE.route,selectDay) }
             )
         }
@@ -166,9 +165,8 @@ fun HomeScreen(
             uiState = uiState,
             onDismissRequest = {weekState = false},
             onClickAct = {tag ->
-                weekViewModel.changeRecordInfo()
+                weekViewModel.changeRecordInfo(tag)
                 weekState = false
-                weekViewModel.insertRecordInfo(tag)
             },
             onAddActTag = {
                 weekState = false

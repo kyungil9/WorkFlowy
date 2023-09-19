@@ -89,7 +89,10 @@ fun ScheduleScreen(
                 selectDay = "일정",
                 tailIcon = R.drawable.baseline_check_24,
                 onTailIconClick = {
-                    scheduleViewModel.insertScheduleInfo()
+                    if (scheduleViewModel.updateId.isNotEmpty())
+                        scheduleViewModel.updateScheduleInfo()
+                    else
+                        scheduleViewModel.insertScheduleInfo()
                     onBackHome()
                 }
             )

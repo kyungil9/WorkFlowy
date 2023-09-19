@@ -17,8 +17,6 @@ fun LocalDate.localDateToInt() = ((this.year * 10000) + (this.monthValue * 100) 
 
 fun Int.intToLocalDate() =LocalDate.of(this!!/10000,(this!!%10000)/100,this!!%100)
 
-
-
 fun LocalTime.localTimeToString() = "${timeFormat.format(this.hour)}:${timeFormat.format(this.minute)}"
 
 

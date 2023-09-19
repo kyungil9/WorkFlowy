@@ -9,10 +9,13 @@ import com.chargemap.compose.numberpicker.Hours
 import com.beank.domain.model.Schedule
 import com.beank.domain.repository.LogRepository
 import com.beank.domain.usecase.schedule.InsertSchedule
+import com.beank.domain.usecase.schedule.UpdateSchedule
 import com.beank.workFlowy.R
 import com.beank.workFlowy.screen.WorkFlowyViewModel
 import com.beank.workFlowy.utils.changeDayInfo
+import com.beank.workFlowy.utils.fromScheduleJson
 import com.beank.workFlowy.utils.imageToInt
+import com.beank.workFlowy.utils.intToImage
 import com.beank.workFlowy.utils.transDayToShortKorean
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -31,22 +34,23 @@ data class ScheduleUiState(
 class ScheduleViewModel @Inject constructor(
     private val savedStateHandle : SavedStateHandle,
     private val insertSchedule: InsertSchedule,
+    private val updateSchedule: UpdateSchedule,
     logRepository: LogRepository
 ) : WorkFlowyViewModel(logRepository){
 
-    private val today = savedStateHandle.get<Int>("today")!!.intToLocalDate()
     private val _scheduleUiState = MutableStateFlow(ScheduleUiState())
     private val _inputScheduleText = MutableStateFlow("")
     private val _selectScheduleImage = MutableStateFlow(R.drawable.baseline_calendar_today_24)
-    private val _selectPickerYear = MutableStateFlow(today.year)
-    private val _selectPickerMonth = MutableStateFlow(today.monthValue)
-    private val _selectPickerDay = MutableStateFlow(today.dayOfMonth)
+    private val _selectPickerYear = MutableStateFlow(LocalDate.now().year)
+    private val _selectPickerMonth = MutableStateFlow(LocalDate.now().monthValue)
+    private val _selectPickerDay = MutableStateFlow(LocalDate.now().dayOfMonth)
     private val _selectPickerStartTime = MutableStateFlow(FullHours(LocalTime.now().hour,LocalTime.now().minute))
     private val _selectPickerEndTime = MutableStateFlow(FullHours(LocalTime.now().hour,LocalTime.now().minute))
     private val _endMonthDay = MutableStateFlow(changeDayInfo(LocalDate.now()))
     private val _inputCommentText = MutableStateFlow("")
     private lateinit var typedSchedule : TypedArray
 
+    var updateId = ""
     val scheduleUiState get() = _scheduleUiState.asStateFlow()
     val inputScheduleText get() = _inputScheduleText.asStateFlow()
     val selectScheduleImage get() = _selectScheduleImage.asStateFlow()
@@ -66,6 +70,26 @@ class ScheduleViewModel @Inject constructor(
                 scheduleImages.add(scheduleList.getResourceId(i,0))
             }
             _scheduleUiState.update { state -> state.copy(scheduleImageList = scheduleImages) }
+        }
+        val today = savedStateHandle.get<Int>("today")!!
+        if (today == 0){
+            val schedule = savedStateHandle.get<String>("schedule")?.let {json ->
+                json.fromScheduleJson()
+            }!!
+            updateId = schedule.id!!
+            _inputScheduleText.value = schedule.title
+            _inputCommentText.value = schedule.comment
+            _selectPickerYear.value = schedule.date.year
+            _selectPickerMonth.value = schedule.date.monthValue
+            _selectPickerDay.value = schedule.date.dayOfMonth
+            _selectPickerStartTime.value = FullHours(schedule.startTime.hour,schedule.startTime.minute)
+            _selectPickerEndTime.value = FullHours(schedule.endTime.hour,schedule.endTime.minute)
+            _selectScheduleImage.value = intToImage(schedule.icon,typedSchedule)
+        }else{
+            val day = today.intToLocalDate()
+            _selectPickerYear.value = day.year
+            _selectPickerMonth.value = day.monthValue
+            _selectPickerDay.value = day.dayOfMonth
         }
     }
 
@@ -113,6 +137,20 @@ class ScheduleViewModel @Inject constructor(
         launchCatching {
             insertSchedule(Schedule(
                 id = null,
+                date = LocalDate.of(selectPickerYear.value,selectPickerMonth.value,selectPickerDay.value),
+                startTime = LocalTime.of(selectPickerStartTime.value.hours,selectPickerStartTime.value.minutes,0),
+                endTime = LocalTime.of(selectPickerEndTime.value.hours,selectPickerEndTime.value.minutes,0),
+                icon = imageToInt(selectScheduleImage.value,typedSchedule),
+                title = inputScheduleText.value,
+                comment = inputCommentText.value
+            ))
+        }
+    }
+
+    fun updateScheduleInfo(){
+        launchCatching {
+            updateSchedule(Schedule(
+                id = updateId,
                 date = LocalDate.of(selectPickerYear.value,selectPickerMonth.value,selectPickerDay.value),
                 startTime = LocalTime.of(selectPickerStartTime.value.hours,selectPickerStartTime.value.minutes,0),
                 endTime = LocalTime.of(selectPickerEndTime.value.hours,selectPickerEndTime.value.minutes,0),

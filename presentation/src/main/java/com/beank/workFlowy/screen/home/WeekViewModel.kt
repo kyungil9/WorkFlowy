@@ -8,6 +8,7 @@ import com.beank.domain.model.Tag
 import com.beank.domain.repository.LogRepository
 import com.beank.domain.usecase.record.GetNowRecord
 import com.beank.domain.usecase.record.InsertRecord
+import com.beank.domain.usecase.record.StartNewRecord
 import com.beank.domain.usecase.record.UpdateRecord
 import com.beank.domain.usecase.schedule.DeleteSchedule
 import com.beank.domain.usecase.schedule.GetTodaySchedule
@@ -41,13 +42,12 @@ data class WeekUiState(
 
 @HiltViewModel
 class WeekViewModel @Inject constructor(
-    private val insertRecord: InsertRecord,
     private val deleteSchedule: DeleteSchedule,
     private val deleteTag: DeleteTag,
-    private val updateRecord : UpdateRecord,
     private val getTodaySchedule: GetTodaySchedule,
     private val getNowRecord: GetNowRecord,
     private val getAllTag: GetAllTag,
+    private val startNewRecord: StartNewRecord,
     logRepository: LogRepository
 ) : WorkFlowyViewModel(logRepository) {
 
@@ -89,20 +89,6 @@ class WeekViewModel @Inject constructor(
         _selectDayFlow.value = day
     }
 
-    fun insertRecordInfo(tag : Tag){
-        launchCatching {
-            insertRecord(
-                Record(
-                    id = null,
-                    tag = tag.title,
-                    startTime = LocalDateTime.now(),
-                    endTime = null,
-                    progressTime = 0,
-                    pause = true
-            ))
-        }
-    }
-
     fun deleteSelectSchedule(schedule: Schedule){
         launchCatching {
             deleteSchedule(schedule)
@@ -115,16 +101,17 @@ class WeekViewModel @Inject constructor(
         }
     }
 
-    fun changeRecordInfo(){
+    fun changeRecordInfo(tag: Tag){
         if (uiState.value.recordList.isNotEmpty()){
             launchCatching {
                 val endTime = LocalDateTime.now()
                 val progressTime = Duration.between(uiState.value.recordList[0].startTime,endTime).toMinutes()
-                updateRecord(
+                startNewRecord(
+                    id = uiState.value.recordList[0].id!!,
                     endTime = endTime,
                     progressTime = progressTime,
-                    id = uiState.value.recordList[0].id!!,
-                    pause = false
+                    pause = false,
+                    record = Record(tag = tag.title)
                 )
             }
         }

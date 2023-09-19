@@ -27,6 +27,7 @@ message = "23.2.1"
 directboot = "20.2.0"
 permission = "0.32.0"
 
+
 # plugin
 androidStudioGradlePlugin = "8.0.2"
 kotlin = "1.8.20"

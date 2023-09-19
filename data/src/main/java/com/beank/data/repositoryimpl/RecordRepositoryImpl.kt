@@ -3,6 +3,7 @@ package com.beank.data.repositoryimpl
 import com.beank.data.datasource.StorageDataSource
 import com.beank.data.entity.WeekRecord
 import com.beank.data.entity.WeekTag
+import com.beank.data.mapper.localDateTimeToLong
 import com.beank.data.mapper.toRecordModel
 import com.beank.data.mapper.toTagModel
 import com.beank.data.mapper.toWeekRecord
@@ -79,7 +80,7 @@ class RecordRepositoryImpl @Inject constructor(
 
     override fun updateRecord(id: String, endTime: LocalDateTime, progressTime: Long, pause: Boolean) {
         storage.update(RECORD,id, mapOf(
-            "endTime" to endTime,
+            "endTime" to endTime.localDateTimeToLong(),
             "progressTime" to progressTime,
             "pause" to pause
         ))

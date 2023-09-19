@@ -1,21 +1,18 @@
 package com.beank.workFlowy.navigation
 
-import androidx.compose.animation.AnimatedContentTransitionScope
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.beank.data.mapper.localDateToInt
+import com.beank.domain.model.Schedule
 import com.beank.workFlowy.screen.WorkFlowyState
-import com.beank.workFlowy.screen.home.WeekViewModel
 import com.beank.workFlowy.screen.home.HomeScreen
 import com.beank.workFlowy.screen.login.LoginScreen
 import com.beank.workFlowy.screen.schedule.ScheduleScreen
@@ -49,7 +46,8 @@ fun NavigationGraph(
         composable(route = NavigationItem.HOME.route){
             HomeScreen(
                 openScreen = {route -> appState.navigate(route)},
-                openSchedule = {route,date -> appState.navigate(route,date)})
+                openSchedule = {route,date -> appState.navigate(route,date)},
+                openEditSchedule = {route,schedule -> appState.navigate(route,schedule)})
         }
 
         composable(route = NavigationItem.MENU.route){
@@ -80,11 +78,15 @@ fun NavigationGraph(
         }
 
         composable(
-            route = "${NavigationItem.SCHEDULE.route}/{today}"
+            route = "${NavigationItem.SCHEDULE.route}?today={today}&schedule={schedule}"
             ,arguments = listOf(
                 navArgument("today"){
                     type = NavType.IntType
-                    defaultValue = LocalDate.now().localDateToInt()
+                    defaultValue = 0
+                },
+                navArgument("schedule"){
+                    type = NavType.StringType
+                    defaultValue = ""
                 }
             ),
             enterTransition = appState.slideUpIn(700),
