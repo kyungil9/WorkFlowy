@@ -14,6 +14,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -156,6 +157,16 @@ fun HomeScreen(
 
             ScheduleList(
                 uiState = uiState,
+                onRightDrag = {
+                    val date = weekViewModel.plusSelectDay()
+                    scope.launch(Dispatchers.Default) {
+                        weekListState.animateScrollToItem(ChronoUnit.DAYS.between(LocalDate.of(2021, 12, 28), date).toInt() - 3)
+                    }},
+                onLeftDrag = {
+                    val date = weekViewModel.minusSelectDay()
+                    scope.launch(Dispatchers.Default) {
+                        weekListState.animateScrollToItem(ChronoUnit.DAYS.between(LocalDate.of(2021, 12, 28), date).toInt() - 3)
+                    }},
                 onClickSchedule = {schedule ->
                     if (scheduleInfo === schedule) {
                         scheduleState = scheduleState.not()

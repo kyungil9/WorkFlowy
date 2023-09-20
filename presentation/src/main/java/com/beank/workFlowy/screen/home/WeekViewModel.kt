@@ -11,9 +11,7 @@ import com.beank.domain.model.onLoading
 import com.beank.domain.model.onSuccess
 import com.beank.domain.repository.LogRepository
 import com.beank.domain.usecase.record.GetNowRecord
-import com.beank.domain.usecase.record.InsertRecord
 import com.beank.domain.usecase.record.StartNewRecord
-import com.beank.domain.usecase.record.UpdateRecord
 import com.beank.domain.usecase.schedule.DeleteSchedule
 import com.beank.domain.usecase.schedule.GetTodaySchedule
 import com.beank.domain.usecase.tag.DeleteTag
@@ -97,6 +95,17 @@ class WeekViewModel @Inject constructor(
 
     fun changeSelectDay(day : LocalDate){
         _selectDayFlow.value = day
+    }
+
+    fun plusSelectDay() : LocalDate {
+        _selectDayFlow.value = selectDayFlow.value.plusDays(1)
+        return selectDayFlow.value
+    }
+
+
+    fun minusSelectDay() : LocalDate {
+        _selectDayFlow.value = selectDayFlow.value.minusDays(1)
+        return selectDayFlow.value
     }
 
     fun deleteSelectSchedule(schedule: Schedule){
