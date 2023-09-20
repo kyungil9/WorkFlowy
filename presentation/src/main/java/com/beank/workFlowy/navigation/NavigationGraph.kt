@@ -13,6 +13,7 @@ import androidx.navigation.navArgument
 import com.beank.data.mapper.localDateToInt
 import com.beank.domain.model.Schedule
 import com.beank.workFlowy.screen.WorkFlowyState
+import com.beank.workFlowy.screen.analysis.AnalysisScreen
 import com.beank.workFlowy.screen.home.HomeScreen
 import com.beank.workFlowy.screen.login.LoginScreen
 import com.beank.workFlowy.screen.schedule.ScheduleScreen
@@ -59,11 +60,7 @@ fun NavigationGraph(
             enterTransition = appState.slideUpIn(700),
             exitTransition = appState.slideDownOut(700)
         ){
-            Box(modifier = Modifier
-                .background(black)
-                .fillMaxSize()) {
-                Text(text = "test")
-            }
+            AnalysisScreen()
         }
 
         composable(
