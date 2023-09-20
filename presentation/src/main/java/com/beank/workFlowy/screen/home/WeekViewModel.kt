@@ -61,11 +61,15 @@ class WeekViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(WeekUiState())
     private val _selectDayFlow = MutableStateFlow<LocalDate>(LocalDate.now())
     private val _selectedTagFlow = MutableStateFlow(Tag())
+    private val _actBoxProgressFlow = MutableStateFlow(true)
+
     val selectDayFlow get() = _selectDayFlow.asStateFlow()
     val uiState get() = _uiState.asStateFlow()
     val selectedTagFlow get() = _selectedTagFlow.asStateFlow()
     val progressTimeFlow get() = _progressTimeFlow.asStateFlow()
     val selectDayStringFlow get() = _selectDayFlow.asStateFlow().map { "< ${it.year%100}/${zeroFormat.format(it.monthValue)}/${zeroFormat.format(it.dayOfMonth)} ${transDayToKorean(it.dayOfWeek.value)} >" }
+    val actBoxProgressFlow get() = _actBoxProgressFlow.asStateFlow()
+
 
     init {
         getAllTagInfo()
@@ -135,9 +139,10 @@ class WeekViewModel @Inject constructor(
     private fun getSelectedRecordInfo() = getNowRecord(true)
         .onEach { state ->
             state.onLoading { //프로그래스바 실행
-
+                _actBoxProgressFlow.value = true
             }
             state.onSuccess { nowRecord ->
+                _actBoxProgressFlow.value = false
                 _uiState.update { state -> state.copy(recordList = listOf(nowRecord.record)) }
                 _selectedTagFlow.value = nowRecord.tag
             }
@@ -152,7 +157,6 @@ class WeekViewModel @Inject constructor(
                 getTodaySchedule(it)
                     .onEach { state ->
                         state.onLoading {
-
                         }
                         state.onSuccess {scheduleList ->
                             _uiState.update { state -> state.copy(scheduleList = scheduleList) }

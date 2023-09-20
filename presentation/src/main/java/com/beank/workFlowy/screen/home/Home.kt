@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.SnackbarHostState
@@ -59,6 +60,7 @@ fun HomeScreen(
     val uiState by weekViewModel.uiState.collectAsStateWithLifecycle()
     val progressTime by weekViewModel.progressTimeFlow.collectAsStateWithLifecycle()
     val selectDayString by weekViewModel.selectDayStringFlow.collectAsStateWithLifecycle(initialValue = "")
+    val actProgress by weekViewModel.actBoxProgressFlow.collectAsStateWithLifecycle()
     val listCenter by remember { mutableStateOf(ChronoUnit.DAYS.between(LocalDate.of(2021,12,28),LocalDate.now()).toInt() -3)}
     val weekListState = rememberLazyListState(initialFirstVisibleItemIndex = listCenter)
     var weekState by remember { mutableStateOf(false) }
@@ -144,11 +146,14 @@ fun HomeScreen(
                         .size(50.dp)
                         .padding(top = 10.dp, end = 15.dp))
             }
+
             ActCard(selectedTag = selectedTag,
                 progressTime = progressTime,
+                progress = actProgress,
                 onClickAct = {
                     weekState = true
                 })
+
             ScheduleList(
                 uiState = uiState,
                 onClickSchedule = {schedule ->

@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.getValue
@@ -44,6 +45,7 @@ import java.time.Duration
 fun ActCard(
     selectedTag: Tag,
     progressTime : Duration,
+    progress : Boolean,
     onClickAct : () -> Unit
 ){
     Card(
@@ -53,30 +55,41 @@ fun ActCard(
             .padding(20.dp)
             .clickable { onClickAct() },
         shape = RoundedCornerShape(10.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 5.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 5.dp),
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 10.dp)
-        ) {
-            Image(
-                painter = painterResource(id = intToImage(selectedTag.icon, LocalContext.current.resources.obtainTypedArray(R.array.tagList))),
-                contentDescription = null,
-                modifier = Modifier
-                    .padding(15.dp)
-                    .size(150.dp)
-            )
-            Column(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .padding(15.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+        if (progress){
+            Row(
+                modifier = Modifier.fillMaxSize(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
             ) {
-                Text(text = selectedTag.title, fontSize = 32.sp, modifier = Modifier.padding(vertical = 20.dp))
-                Text(
-                    text = "${zeroFormat.format(progressTime.toHours())}:${zeroFormat.format(progressTime.toMinutes()%60)}:${zeroFormat.format(progressTime.seconds%60)}",
-                    fontSize = 24.sp)
+                CircularProgressIndicator()
+            }
+        }
+        AnimatedVisibility(visible = !progress) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 10.dp)
+            ) {
+                Image(
+                    painter = painterResource(id = intToImage(selectedTag.icon, LocalContext.current.resources.obtainTypedArray(R.array.tagList))),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .padding(15.dp)
+                        .size(150.dp)
+                )
+                Column(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .padding(15.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(text = selectedTag.title, fontSize = 32.sp, modifier = Modifier.padding(vertical = 20.dp))
+                    Text(
+                        text = "${zeroFormat.format(progressTime.toHours())}:${zeroFormat.format(progressTime.toMinutes()%60)}:${zeroFormat.format(progressTime.seconds%60)}",
+                        fontSize = 24.sp)
+                }
             }
         }
     }
@@ -101,8 +114,9 @@ fun ActTagCard(
                         if (clicked) {
                             onClickDelect(tag)
                             clicked = clicked.not()
-                        }else
-                            onClickAct(tag) },
+                        } else
+                            onClickAct(tag)
+                    },
                     onLongPress = { clicked = clicked.not() }
                 )
             },
