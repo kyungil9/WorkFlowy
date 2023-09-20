@@ -49,7 +49,10 @@ inline fun <reified T : Any, reified E : Any> Query.dataStateObjects(
                     trySendBlocking(FireStoreState.Exception("Error getting DocumentReference snapshot",exception))
                     cancel(message = "Error getting DocumentReference snapshot", cause = exception)
                 } else if (snapshot != null) {
-                    trySendBlocking(FireStoreState.Success(snapshot.toObjects(T::class.java,E::class.java)))
+                    if (snapshot.documents.isEmpty())
+                        trySendBlocking(FireStoreState.Empty)
+                    else
+                        trySendBlocking(FireStoreState.Success(snapshot.toObjects(T::class.java,E::class.java)))
                 } else {
                     trySendBlocking(FireStoreState.Empty)
                 }

@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.beank.domain.model.Record
 import com.beank.domain.model.Schedule
 import com.beank.domain.model.Tag
+import com.beank.domain.model.onEmpty
 import com.beank.domain.model.onException
 import com.beank.domain.model.onLoading
 import com.beank.domain.model.onSuccess
@@ -156,13 +157,14 @@ class WeekViewModel @Inject constructor(
             selectDayFlow.collect{
                 getTodaySchedule(it)
                     .onEach { state ->
-                        state.onLoading {
-                        }
                         state.onSuccess {scheduleList ->
                             _uiState.update { state -> state.copy(scheduleList = scheduleList) }
                         }
                         state.onException { message, e ->
                             SnackbarManager.showMessage(AppText.firebase_server_error)
+                        }
+                        state.onEmpty {
+                            _uiState.update { state -> state.copy(scheduleList = emptyList()) }
                         }
                     }.launchIn(viewModelScope)
             }

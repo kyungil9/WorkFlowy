@@ -74,8 +74,8 @@ class RecordRepositoryImpl @Inject constructor(
                         .await().documents[0].toObject<WeekTag>()!!.toTagModel()
                     send(FireStoreState.Success(NowRecord(record[0],tag)))
                 }
-                state.onEmpty {
-                    send(FireStoreState.Empty)
+                state.onLoading {
+                    send(FireStoreState.Loading)
                 }
                 state.onException { message, e ->
                     send(FireStoreState.Exception(message, e))
