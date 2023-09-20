@@ -5,6 +5,9 @@ import androidx.lifecycle.viewModelScope
 import com.beank.domain.model.Record
 import com.beank.domain.model.Schedule
 import com.beank.domain.model.Tag
+import com.beank.domain.model.onException
+import com.beank.domain.model.onLoading
+import com.beank.domain.model.onSuccess
 import com.beank.domain.repository.LogRepository
 import com.beank.domain.usecase.record.GetNowRecord
 import com.beank.domain.usecase.record.InsertRecord
@@ -14,6 +17,7 @@ import com.beank.domain.usecase.schedule.DeleteSchedule
 import com.beank.domain.usecase.schedule.GetTodaySchedule
 import com.beank.domain.usecase.tag.DeleteTag
 import com.beank.domain.usecase.tag.GetAllTag
+import com.beank.workFlowy.component.snackbar.SnackbarManager
 import com.beank.workFlowy.screen.WorkFlowyViewModel
 import com.beank.workFlowy.utils.transDayToKorean
 import com.beank.workFlowy.utils.zeroFormat
@@ -32,6 +36,7 @@ import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
 import javax.inject.Inject
+import com.beank.workFlowy.R.string as AppText
 
 @Stable
 data class WeekUiState(
@@ -118,15 +123,26 @@ class WeekViewModel @Inject constructor(
     }
 
     private fun getAllTagInfo() = getAllTag()
-        .onEach { tagList ->
-            _uiState.update { state -> state.copy(tagList = tagList) }
+        .onEach { state ->
+            state.onSuccess { tagList ->
+                _uiState.update { state -> state.copy(tagList = tagList) }
+            }
+            state.onException { message, e ->
+                SnackbarManager.showMessage(AppText.firebase_server_error)
+            }
         }.launchIn(viewModelScope)
 
     private fun getSelectedRecordInfo() = getNowRecord(true)
-        .onEach { nowRecord ->
-            nowRecord.record.id?.let {
+        .onEach { state ->
+            state.onLoading { //프로그래스바 실행
+
+            }
+            state.onSuccess { nowRecord ->
                 _uiState.update { state -> state.copy(recordList = listOf(nowRecord.record)) }
                 _selectedTagFlow.value = nowRecord.tag
+            }
+            state.onException { message, e ->
+                SnackbarManager.showMessage(AppText.firebase_server_error)
             }
         }.launchIn(viewModelScope)
 
@@ -134,8 +150,16 @@ class WeekViewModel @Inject constructor(
         viewModelScope.launch (Dispatchers.IO){
             selectDayFlow.collect{
                 getTodaySchedule(it)
-                    .onEach { scheduleList ->
-                        _uiState.update { state -> state.copy(scheduleList = scheduleList) }
+                    .onEach { state ->
+                        state.onLoading {
+
+                        }
+                        state.onSuccess {scheduleList ->
+                            _uiState.update { state -> state.copy(scheduleList = scheduleList) }
+                        }
+                        state.onException { message, e ->
+                            SnackbarManager.showMessage(AppText.firebase_server_error)
+                        }
                     }.launchIn(viewModelScope)
             }
         }

@@ -4,6 +4,8 @@ import com.beank.data.datasource.StorageDataSource
 import com.beank.data.entity.WeekTag
 import com.beank.data.mapper.toTagModel
 import com.beank.data.mapper.toWeekTag
+import com.beank.data.utils.dataStateObjects
+import com.beank.domain.model.FireStoreState
 import com.beank.domain.model.Tag
 import com.beank.domain.repository.TagRepository
 import com.google.firebase.firestore.ktx.dataObjects
@@ -18,10 +20,8 @@ import javax.inject.Inject
 class TagRepositoryImpl @Inject constructor(
     private val storage : StorageDataSource
 ): TagRepository {
-    override fun getTagInfo(): Flow<List<Tag>> =
-        storage.store.document(storage.getUid()!!).collection(TAG).dataObjects<WeekTag>().map { tagList ->
-            tagList.map { it.toTagModel() }
-        }.flowOn(Dispatchers.IO)
+    override fun getTagInfo(): Flow<FireStoreState<List<Tag>>> =
+        storage.store.document(storage.getUid()!!).collection(TAG).dataStateObjects<WeekTag,Tag>().flowOn(Dispatchers.IO)
 
     override suspend fun checkTagTitle(title: String): Boolean =
         storage.store.document(storage.getUid()!!).collection(TAG).whereEqualTo("title",title).get().await().documents.isEmpty()

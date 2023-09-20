@@ -5,6 +5,8 @@ import com.beank.data.entity.WeekSchedule
 import com.beank.data.mapper.localDateToInt
 import com.beank.data.mapper.toScheduleModel
 import com.beank.data.mapper.toWeekSchedule
+import com.beank.data.utils.dataStateObjects
+import com.beank.domain.model.FireStoreState
 import com.beank.domain.model.Schedule
 import com.beank.domain.repository.ScheduleRepository
 import com.google.firebase.firestore.ktx.dataObjects
@@ -18,10 +20,9 @@ import javax.inject.Inject
 class ScheduleRepositoryImpl @Inject constructor(
     private val storage : StorageDataSource
 ) : ScheduleRepository {
-    override fun getScheduleInfo(today: LocalDate): Flow<List<Schedule>> =
-        storage.store.document(storage.getUid()!!).collection(SCHEDULE).whereEqualTo("date",today.localDateToInt()).dataObjects<WeekSchedule>().map { scheduleList->
-            scheduleList.map { it.toScheduleModel() }
-        }.flowOn(Dispatchers.IO)
+    override fun getScheduleInfo(today: LocalDate): Flow<FireStoreState<List<Schedule>>> =
+        storage.store.document(storage.getUid()!!).collection(SCHEDULE).whereEqualTo("date",today.localDateToInt())
+            .dataStateObjects<WeekSchedule,Schedule>().flowOn(Dispatchers.IO)
 
     override fun insertSchedule(schedule: Schedule) : Unit =
         storage.save(SCHEDULE,schedule.toWeekSchedule())

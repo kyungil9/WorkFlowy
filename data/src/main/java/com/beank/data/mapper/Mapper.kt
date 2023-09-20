@@ -56,3 +56,11 @@ fun Tag.toWeekTag() = WeekTag(
     icon = icon,
     title = title
 )
+
+fun modelCasting(model : Any) : Any = when(model){
+    is String -> "oo"
+    is WeekRecord -> model.toRecordModel()
+    is WeekSchedule -> model.toScheduleModel()
+    is WeekTag -> model.toTagModel()
+    else -> model
+}
