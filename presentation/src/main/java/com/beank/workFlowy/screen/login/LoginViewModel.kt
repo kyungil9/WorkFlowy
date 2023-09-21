@@ -3,6 +3,7 @@ package com.beank.workFlowy.screen.login
 import com.beank.domain.repository.AccountRepository
 import com.beank.domain.repository.LogRepository
 import com.beank.data.datasource.StorageDataSource
+import com.beank.domain.usecase.LoginUsecases
 import com.beank.domain.usecase.account.LoginAccount
 import com.beank.domain.usecase.tag.InitDataSetting
 import com.beank.workFlowy.component.snackbar.SnackbarManager
@@ -20,8 +21,7 @@ import com.beank.workFlowy.R.string as AppText
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val loginAccount: LoginAccount,
-    private val initDataSetting: InitDataSetting,
+    private val loginUsecases: LoginUsecases,
     logRepository: LogRepository
 ) : WorkFlowyViewModel(logRepository){
 
@@ -41,7 +41,7 @@ class LoginViewModel @Inject constructor(
 
     fun initSetting(){
         launchCatching {
-            initDataSetting()
+            loginUsecases.initDataSetting()
         }
     }
 
@@ -62,7 +62,7 @@ class LoginViewModel @Inject constructor(
         }
 
         launchCatching {
-            loginAccount(
+            loginUsecases.loginAccount(
                 email = inputEmail.value,
                 password = inputPassword.value,
                 onSuccess = { openAndPopUp(NavigationItem.HOME.route, NavigationItem.LOGIN.route) },

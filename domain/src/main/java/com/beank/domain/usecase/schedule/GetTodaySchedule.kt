@@ -5,8 +5,7 @@ import java.time.LocalDate
 import javax.inject.Inject
 import javax.inject.Singleton
 
-@Singleton
-class GetTodaySchedule @Inject constructor(
+class GetTodaySchedule(
     private val scheduleRepository: ScheduleRepository
 ) {
     operator fun invoke(today: LocalDate) = scheduleRepository.getScheduleInfo(today)

@@ -10,6 +10,7 @@ import com.beank.domain.model.onException
 import com.beank.domain.model.onLoading
 import com.beank.domain.model.onSuccess
 import com.beank.domain.repository.LogRepository
+import com.beank.domain.usecase.WeekUsecases
 import com.beank.domain.usecase.record.GetNowRecord
 import com.beank.domain.usecase.record.StartNewRecord
 import com.beank.domain.usecase.schedule.DeleteSchedule
@@ -46,12 +47,7 @@ data class WeekUiState(
 
 @HiltViewModel
 class WeekViewModel @Inject constructor(
-    private val deleteSchedule: DeleteSchedule,
-    private val deleteTag: DeleteTag,
-    private val getTodaySchedule: GetTodaySchedule,
-    private val getNowRecord: GetNowRecord,
-    private val getAllTag: GetAllTag,
-    private val startNewRecord: StartNewRecord,
+    private val weekUsecases: WeekUsecases,
     logRepository: LogRepository
 ) : WorkFlowyViewModel(logRepository) {
 
@@ -83,7 +79,7 @@ class WeekViewModel @Inject constructor(
                 val delayMills = System.currentTimeMillis() - oldTimeMills
                 if (delayMills >= 1000L) {
                     val record = uiState.value.recordList
-                    if (!record.isNullOrEmpty()) {
+                    if (record.isNotEmpty()) {
                         _progressTimeFlow.value =
                             Duration.between(record[0].startTime, LocalDateTime.now())
                     }
@@ -110,13 +106,13 @@ class WeekViewModel @Inject constructor(
 
     fun deleteSelectSchedule(schedule: Schedule){
         launchCatching {
-            deleteSchedule(schedule)
+            weekUsecases.deleteSchedule(schedule)
         }
     }
 
     fun deleteSelectTag(tag: Tag){
         launchCatching {
-            deleteTag(tag)
+            weekUsecases.deleteTag(tag)
         }
     }
 
@@ -125,7 +121,7 @@ class WeekViewModel @Inject constructor(
             launchCatching {
                 val endTime = LocalDateTime.now()
                 val progressTime = Duration.between(uiState.value.recordList[0].startTime,endTime).toMinutes()
-                startNewRecord(
+                weekUsecases.startNewRecord(
                     id = uiState.value.recordList[0].id!!,
                     endTime = endTime,
                     progressTime = progressTime,
@@ -136,7 +132,7 @@ class WeekViewModel @Inject constructor(
         }
     }
 
-    private fun getAllTagInfo() = getAllTag()
+    private fun getAllTagInfo() = weekUsecases.getAllTag()
         .onEach { state ->
             state.onSuccess { tagList ->
                 _uiState.update { state -> state.copy(tagList = tagList) }
@@ -146,7 +142,7 @@ class WeekViewModel @Inject constructor(
             }
         }.launchIn(viewModelScope)
 
-    private fun getSelectedRecordInfo() = getNowRecord(true)
+    private fun getSelectedRecordInfo() = weekUsecases.getNowRecord(true)
         .onEach { state ->
             state.onLoading { //프로그래스바 실행
                 _actBoxProgressFlow.value = true
@@ -164,7 +160,7 @@ class WeekViewModel @Inject constructor(
     private fun getTodaySchedule() {
         viewModelScope.launch (Dispatchers.IO){
             selectDayFlow.collect{
-                getTodaySchedule(it)
+                weekUsecases.getTodaySchedule(it)
                     .onEach { state ->
                         state.onSuccess {scheduleList ->
                             _uiState.update { state -> state.copy(scheduleList = scheduleList) }

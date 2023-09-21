@@ -2,6 +2,7 @@ package com.beank.workFlowy.screen.sign_up
 
 import com.beank.domain.repository.AccountRepository
 import com.beank.domain.repository.LogRepository
+import com.beank.domain.usecase.SignUpUsecases
 import com.beank.domain.usecase.account.CreateAccount
 import com.beank.domain.usecase.tag.InitDataSetting
 import com.beank.workFlowy.R
@@ -17,8 +18,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SignUpViewModel @Inject constructor(
-    private val createAccount: CreateAccount,
-    private val initDataSetting: InitDataSetting,
+    private val signUpUsecases: SignUpUsecases,
     logRepository: LogRepository
 ) : WorkFlowyViewModel(logRepository){
 
@@ -59,11 +59,11 @@ class SignUpViewModel @Inject constructor(
         }
 
         launchCatching {
-            createAccount(
+            signUpUsecases.createAccount(
                 email = inputEmail.value,
                 password = inputPassword.value,
                 onSuccess = {
-                    initDataSetting()
+                    signUpUsecases.initDataSetting()
                     onBack()},
                 onFailMessage = {SnackbarManager.showMessage(R.string.login_server_error)}
             )

@@ -6,8 +6,7 @@ import java.time.LocalDate
 import javax.inject.Inject
 import javax.inject.Singleton
 
-@Singleton
-class InsertSchedule @Inject constructor(
+class InsertSchedule (
     private val scheduleRepository: ScheduleRepository
 ) {
     operator fun invoke(schedule: Schedule) = scheduleRepository.insertSchedule(schedule)

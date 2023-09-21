@@ -5,6 +5,7 @@ import androidx.compose.runtime.Stable
 import androidx.lifecycle.viewModelScope
 import com.beank.domain.model.Tag
 import com.beank.domain.repository.LogRepository
+import com.beank.domain.usecase.TagUsecases
 import com.beank.domain.usecase.tag.CheckTagTitle
 import com.beank.domain.usecase.tag.InsertTag
 import com.beank.workFlowy.R
@@ -25,8 +26,7 @@ data class TagUiState(
 
 @HiltViewModel
 class TagViewModel @Inject constructor(
-    private val checkTagTitle: CheckTagTitle,
-    private val insertTag: InsertTag,
+    private val tagUsecases: TagUsecases,
     logRepository: LogRepository
 ) : WorkFlowyViewModel(logRepository) {
     private val _tagUiState = MutableStateFlow(TagUiState())
@@ -61,14 +61,14 @@ class TagViewModel @Inject constructor(
 
     fun insertTagInfo() {
         launchCatching {
-            insertTag(Tag(null, imageToInt(selectTagImage.value,typedTag), selectTagText.value))
+            tagUsecases.insertTag(Tag(null, imageToInt(selectTagImage.value,typedTag), selectTagText.value))
         }
     }
 
     fun checkTagText() : Boolean {
         var result = false
         viewModelScope.launch (Dispatchers.IO) {
-            result = checkTagTitle(selectTagText.value)
+            result = tagUsecases.checkTagTitle(selectTagText.value)
         }
         return result
     }

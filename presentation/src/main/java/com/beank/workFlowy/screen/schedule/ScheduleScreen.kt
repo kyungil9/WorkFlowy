@@ -48,6 +48,7 @@ import com.beank.workFlowy.component.HorizontalSpacer
 import com.beank.workFlowy.component.VerticalSpacer
 import com.beank.workFlowy.component.WeekAppBar
 import com.beank.workFlowy.component.WeekLayout
+import com.beank.workFlowy.component.snackbar.SnackbarManager
 import com.beank.workFlowy.ui.theme.black
 import com.beank.workFlowy.ui.theme.gray
 import com.beank.workFlowy.ui.theme.white
@@ -57,6 +58,7 @@ import com.beank.workFlowy.ui.theme.white
 @Composable
 fun ScheduleScreen(
     scheduleViewModel: ScheduleViewModel = hiltViewModel(),
+    snackbarHostState: SnackbarHostState,
     resource : Resources,
     onBackHome : () -> Unit
 ){
@@ -72,7 +74,6 @@ fun ScheduleScreen(
     val endMonthDay by scheduleViewModel.endMonthDay.collectAsStateWithLifecycle()
     val inputCommentText by scheduleViewModel.inputCommentText.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
-    var snackbarHostState = remember { SnackbarHostState() }
     var checkImage by remember { mutableStateOf(false) }
     var checkDate by remember { mutableStateOf(false) }
     var checkTime by remember { mutableStateOf(false) }

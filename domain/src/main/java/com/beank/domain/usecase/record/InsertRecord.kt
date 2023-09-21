@@ -5,8 +5,7 @@ import com.beank.domain.repository.RecordRepository
 import javax.inject.Inject
 import javax.inject.Singleton
 
-@Singleton
-class InsertRecord @Inject constructor(
+class InsertRecord(
     private val recordRepository: RecordRepository
 ){
     operator fun invoke(record: Record) = recordRepository.insertRecord(record)

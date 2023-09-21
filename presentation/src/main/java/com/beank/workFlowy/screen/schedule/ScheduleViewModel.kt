@@ -8,6 +8,7 @@ import com.chargemap.compose.numberpicker.FullHours
 import com.chargemap.compose.numberpicker.Hours
 import com.beank.domain.model.Schedule
 import com.beank.domain.repository.LogRepository
+import com.beank.domain.usecase.ScheduleUsecases
 import com.beank.domain.usecase.schedule.InsertSchedule
 import com.beank.domain.usecase.schedule.UpdateSchedule
 import com.beank.workFlowy.R
@@ -33,8 +34,7 @@ data class ScheduleUiState(
 @HiltViewModel
 class ScheduleViewModel @Inject constructor(
     private val savedStateHandle : SavedStateHandle,
-    private val insertSchedule: InsertSchedule,
-    private val updateSchedule: UpdateSchedule,
+    private val scheduleUsecases: ScheduleUsecases,
     logRepository: LogRepository
 ) : WorkFlowyViewModel(logRepository){
 
@@ -135,7 +135,7 @@ class ScheduleViewModel @Inject constructor(
 
     fun insertScheduleInfo(){
         launchCatching {
-            insertSchedule(Schedule(
+            scheduleUsecases.insertSchedule(Schedule(
                 id = null,
                 date = LocalDate.of(selectPickerYear.value,selectPickerMonth.value,selectPickerDay.value),
                 startTime = LocalTime.of(selectPickerStartTime.value.hours,selectPickerStartTime.value.minutes,0),
@@ -149,7 +149,7 @@ class ScheduleViewModel @Inject constructor(
 
     fun updateScheduleInfo(){
         launchCatching {
-            updateSchedule(Schedule(
+            scheduleUsecases.updateSchedule(Schedule(
                 id = updateId,
                 date = LocalDate.of(selectPickerYear.value,selectPickerMonth.value,selectPickerDay.value),
                 startTime = LocalTime.of(selectPickerStartTime.value.hours,selectPickerStartTime.value.minutes,0),

@@ -5,8 +5,7 @@ import com.beank.domain.repository.ScheduleRepository
 import javax.inject.Inject
 import javax.inject.Singleton
 
-@Singleton
-class DeleteSchedule @Inject constructor(
+class DeleteSchedule(
     private val scheduleRepository: ScheduleRepository
 ) {
     operator fun invoke(schedule: Schedule) = scheduleRepository.deleteSchedule(schedule)
