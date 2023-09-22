@@ -1,5 +1,8 @@
 package com.beank.workFlowy.screen.sign_up
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import com.beank.domain.repository.AccountRepository
 import com.beank.domain.repository.LogRepository
 import com.beank.domain.usecase.SignUpUsecases
@@ -22,46 +25,45 @@ class SignUpViewModel @Inject constructor(
     logRepository: LogRepository
 ) : WorkFlowyViewModel(logRepository){
 
-    private val _inputEmail = MutableStateFlow("")
-    private val _inputPassword = MutableStateFlow("")
-    private val _inputRepeatPassword = MutableStateFlow("")
-
-    val inputEmail get() = _inputEmail.asStateFlow()
-    val inputPassword get() = _inputPassword.asStateFlow()
-    val inputRepeatPassword get() = _inputRepeatPassword.asStateFlow()
+    var inputEmail by mutableStateOf("")
+        private set
+    var inputPassword by mutableStateOf("")
+        private set
+    var inputRepeatPassword by mutableStateOf("")
+        private set
 
     fun onEmailChange(newValue : String){
-        _inputEmail.value = newValue
+        inputEmail = newValue
     }
 
     fun onPasswordChange(newValue: String){
-        _inputPassword.value = newValue
+        inputPassword = newValue
     }
 
     fun onRepeatPassword(newValue: String){
-        _inputRepeatPassword.value = newValue
+        inputRepeatPassword = newValue
     }
 
     fun onSignInClick(onBack: () -> Unit) {
-        if (!inputEmail.value.isValidEmail()) {
+        if (!inputEmail.isValidEmail()) {
             SnackbarManager.showMessage(R.string.email_error)
             return
         }
 
-        if (inputPassword.value.isValidPassword()) {
+        if (inputPassword.isValidPassword()) {
             SnackbarManager.showMessage(R.string.password_error)
             return
         }
 
-        if (!inputPassword.value.passwordMatches(inputRepeatPassword.value)) {
+        if (!inputPassword.passwordMatches(inputRepeatPassword)) {
             SnackbarManager.showMessage(R.string.password_match_error)
             return
         }
 
         launchCatching {
             signUpUsecases.createAccount(
-                email = inputEmail.value,
-                password = inputPassword.value,
+                email = inputEmail,
+                password = inputPassword,
                 onSuccess = {
                     signUpUsecases.initDataSetting()
                     onBack()},

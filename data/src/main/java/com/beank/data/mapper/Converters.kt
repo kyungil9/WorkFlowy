@@ -12,21 +12,21 @@ import java.time.format.DateTimeFormatter
 
 val timeFormat = DecimalFormat("00")
 
-fun LocalDate.localDateToInt() = ((this.year * 10000) + (this.monthValue * 100) + this.dayOfMonth)
+fun LocalDate.toInt() = ((this.year * 10000) + (this.monthValue * 100) + this.dayOfMonth)
 
 
-fun Int.intToLocalDate() =LocalDate.of(this!!/10000,(this!!%10000)/100,this!!%100)
+fun Int.toLocalDate() = LocalDate.of(this/10000,(this%10000)/100,this%100)
 
-fun LocalTime.localTimeToString() = "${timeFormat.format(this.hour)}:${timeFormat.format(this.minute)}"
+fun LocalTime.toFormatString() = "${timeFormat.format(this.hour)}:${timeFormat.format(this.minute)}"
 
 
-fun String.stringToLocalTime() : LocalTime {
+fun String.toLocalTime() : LocalTime {
     val format = DateTimeFormatter.ofPattern("HH:mm")
     return LocalTime.parse(this,format)
 }
 
-fun LocalDateTime.localDateTimeToLong() = this.atZone(ZoneOffset.UTC)?.toInstant()?.toEpochMilli()!!
+fun LocalDateTime.toLong() = this.atZone(ZoneOffset.UTC)?.toInstant()?.toEpochMilli()!!
 
 
-fun Long.longToLocalDateTime() = LocalDateTime.ofInstant(Instant.ofEpochMilli(this), ZoneOffset.UTC)
+fun Long.toLocalDateTime() = LocalDateTime.ofInstant(Instant.ofEpochMilli(this), ZoneOffset.UTC)
 

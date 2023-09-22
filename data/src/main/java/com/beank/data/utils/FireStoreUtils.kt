@@ -46,7 +46,7 @@ inline fun <reified T : Any, reified E : Any> Query.dataStateObjects(
         val registration =
             addSnapshotListener(Executors.BACKGROUND_EXECUTOR, metadataChanges) { snapshot, exception ->
                 if (exception != null) {
-                    trySendBlocking(FireStoreState.Exception("Error getting DocumentReference snapshot",exception))
+                    trySendBlocking(FireStoreState.Exception("Error getting DocumentReference snapshot",exception!!))
                     cancel(message = "Error getting DocumentReference snapshot", cause = exception)
                 } else if (snapshot != null) {
                     if (snapshot.documents.isEmpty())

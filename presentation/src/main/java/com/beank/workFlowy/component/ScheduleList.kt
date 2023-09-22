@@ -43,6 +43,8 @@ import com.beank.workFlowy.R
 import com.beank.workFlowy.screen.home.WeekUiState
 import com.beank.workFlowy.utils.intToImage
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.setValue
 import java.time.LocalDate
 import kotlin.math.abs
@@ -56,8 +58,8 @@ fun ScheduleList(
     onClickSchedule: (Schedule) -> Unit
 ){
     val scrollState = rememberLazyListState()
-    var dragOffsetX by remember { mutableStateOf(0f)}
-    var direction by remember { mutableStateOf(-1)}
+    var dragOffsetX by remember { mutableFloatStateOf(0f) }
+    var direction by remember { mutableIntStateOf(-1) }
 
     LazyColumn(
         modifier = Modifier

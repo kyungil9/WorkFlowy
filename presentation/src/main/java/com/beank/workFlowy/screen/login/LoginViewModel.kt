@@ -1,11 +1,10 @@
 package com.beank.workFlowy.screen.login
 
-import com.beank.domain.repository.AccountRepository
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import com.beank.domain.repository.LogRepository
-import com.beank.data.datasource.StorageDataSource
 import com.beank.domain.usecase.LoginUsecases
-import com.beank.domain.usecase.account.LoginAccount
-import com.beank.domain.usecase.tag.InitDataSetting
 import com.beank.workFlowy.component.snackbar.SnackbarManager
 import com.beank.workFlowy.navigation.NavigationItem
 import com.beank.workFlowy.screen.WorkFlowyViewModel
@@ -25,18 +24,17 @@ class LoginViewModel @Inject constructor(
     logRepository: LogRepository
 ) : WorkFlowyViewModel(logRepository){
 
-    private val _inputEmail = MutableStateFlow("")
-    private val _inputPassword = MutableStateFlow("")
-
-    val inputEmail get() = _inputEmail.asStateFlow()
-    val inputPassword get() = _inputPassword.asStateFlow()
+    var inputEmail by mutableStateOf("")
+        private set
+    var inputPassword by mutableStateOf("")
+        private set
 
     fun onEmailChange(newValue : String){
-        _inputEmail.value = newValue
+        inputEmail = newValue
     }
 
     fun onPasswordChange(newValue: String){
-        _inputPassword.value = newValue
+        inputPassword = newValue
     }
 
     fun initSetting(){
@@ -46,25 +44,25 @@ class LoginViewModel @Inject constructor(
     }
 
     fun onSignInClick(openAndPopUp: (String, String) -> Unit) {
-        if (!inputEmail.value.isValidEmail()) {
+        if (!inputEmail.isValidEmail()) {
             SnackbarManager.showMessage(AppText.email_error)
             return
         }
 
-        if (inputPassword.value.isBlank()) {
+        if (inputPassword.isBlank()) {
             SnackbarManager.showMessage(AppText.empty_password_error)
             return
         }
 
-        if (!inputPassword.value.isValidPassword()) {
+        if (!inputPassword.isValidPassword()) {
             SnackbarManager.showMessage(AppText.password_error)
             return
         }
 
         launchCatching {
             loginUsecases.loginAccount(
-                email = inputEmail.value,
-                password = inputPassword.value,
+                email = inputEmail,
+                password = inputPassword,
                 onSuccess = { openAndPopUp(NavigationItem.HOME.route, NavigationItem.LOGIN.route) },
                 onFailMessage = {SnackbarManager.showMessage(AppText.login_server_error)}
             )

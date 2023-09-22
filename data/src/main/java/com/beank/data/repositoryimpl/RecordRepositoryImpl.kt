@@ -3,31 +3,27 @@ package com.beank.data.repositoryimpl
 import com.beank.data.datasource.StorageDataSource
 import com.beank.data.entity.WeekRecord
 import com.beank.data.entity.WeekTag
-import com.beank.data.mapper.localDateTimeToLong
-import com.beank.data.mapper.toRecordModel
+import com.beank.data.mapper.toInt
+import com.beank.data.mapper.toLong
 import com.beank.data.mapper.toTagModel
 import com.beank.data.mapper.toWeekRecord
 import com.beank.data.utils.dataStateObjects
 import com.beank.domain.model.FireStoreState
 import com.beank.domain.model.NowRecord
 import com.beank.domain.model.Record
-import com.beank.domain.model.Tag
-import com.beank.domain.model.onEmpty
 import com.beank.domain.model.onException
 import com.beank.domain.model.onLoading
 import com.beank.domain.model.onSuccess
 import com.beank.domain.repository.RecordRepository
 import com.google.firebase.firestore.Filter
-import com.google.firebase.firestore.ktx.dataObjects
 import com.google.firebase.firestore.ktx.toObject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.tasks.await
+import java.time.LocalDate
 import java.time.LocalDateTime
 import javax.inject.Inject
 
@@ -37,32 +33,10 @@ class RecordRepositoryImpl @Inject constructor(
 
     override fun getRecordInfo(): Flow<FireStoreState<List<Record>>> =
         storage.store.document(storage.getUid()!!).collection(RECORD)
-            .dataStateObjects<WeekRecord,Record>().flowOn(Dispatchers.IO)
+            .dataStateObjects<WeekRecord,Record>()
 
-
-    override fun getTodayRecord(startDateTime: Long, endDateTime: Long): Flow<FireStoreState<List<Record>>> =
-        storage.store.document(storage.getUid()!!).collection(RECORD).where(Filter.or(
-            Filter.and(
-                Filter.greaterThanOrEqualTo("startTime",startDateTime),
-                Filter.lessThanOrEqualTo("endTime",endDateTime)
-            ),
-            Filter.and(
-                Filter.greaterThanOrEqualTo("startTime",startDateTime),
-                Filter.lessThanOrEqualTo("startTime",endDateTime)
-            ),
-            Filter.and(
-                Filter.greaterThanOrEqualTo("endTime",startDateTime),
-                Filter.lessThanOrEqualTo("endTime",endDateTime)
-            ),
-            Filter.and(
-                Filter.lessThan("startTime",startDateTime),
-                Filter.equalTo("endTime",null)
-            ),
-            Filter.and(
-                Filter.lessThan("startTime",startDateTime),
-                Filter.greaterThan("endTime",endDateTime)
-            )
-        )).dataStateObjects<WeekRecord,Record>().flowOn(Dispatchers.IO)
+    override fun getTodayRecord(date: LocalDate): Flow<FireStoreState<List<Record>>> =
+        storage.store.document(storage.getUid()!!).collection(RECORD).whereEqualTo("date",date.toInt()).dataStateObjects<WeekRecord,Record>()
 
     override fun getPauseRecord(pause: Boolean): Flow<FireStoreState<NowRecord>> = channelFlow {
         send(FireStoreState.Loading)
@@ -81,7 +55,7 @@ class RecordRepositoryImpl @Inject constructor(
                     send(FireStoreState.Exception(message, e))
                 }
             }
-    }.flowOn(Dispatchers.IO)
+    }
 
     override fun insertRecord(record: Record) : Unit =
         storage.save(RECORD,record.toWeekRecord())
@@ -89,7 +63,7 @@ class RecordRepositoryImpl @Inject constructor(
 
     override fun updateRecord(id: String, endTime: LocalDateTime, progressTime: Long, pause: Boolean) {
         storage.update(RECORD,id, mapOf(
-            "endTime" to endTime.localDateTimeToLong(),
+            "endTime" to endTime.toLong(),
             "progressTime" to progressTime,
             "pause" to pause
         ))

@@ -17,6 +17,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -48,6 +49,7 @@ import java.time.temporal.ChronoUnit
 @Composable
 fun HomeScreen(
     weekViewModel: WeekViewModel = hiltViewModel(),
+    snackbarHostState: SnackbarHostState,
     openScreen: (String) -> Unit,
     openSchedule: (String,LocalDate) -> Unit,
     openEditSchedule: (String,Schedule) -> Unit
@@ -55,18 +57,14 @@ fun HomeScreen(
     weekViewModel.timerJob.start()
     val scope = rememberCoroutineScope()
     val selectDay by weekViewModel.selectDayFlow.collectAsStateWithLifecycle()
-    val selectedTag by weekViewModel.selectedTagFlow.collectAsStateWithLifecycle()
-    val uiState by weekViewModel.uiState.collectAsStateWithLifecycle()
-    val progressTime by weekViewModel.progressTimeFlow.collectAsStateWithLifecycle()
-    val selectDayString by weekViewModel.selectDayStringFlow.collectAsStateWithLifecycle(initialValue = "")
-    val actProgress by weekViewModel.actBoxProgressFlow.collectAsStateWithLifecycle()
-    val listCenter by remember { mutableStateOf(ChronoUnit.DAYS.between(LocalDate.of(2021,12,28),LocalDate.now()).toInt() -3)}
+    val selectDayString by weekViewModel.selectDayStringFlow.collectAsStateWithLifecycle()
+    val selectedTag = weekViewModel.selectedTag
+    val uiState = weekViewModel.uiState
+    val progressTime = weekViewModel.progressTime
+    val actProgress = weekViewModel.actBoxProgress
+    val listCenter by rememberSaveable { mutableStateOf(ChronoUnit.DAYS.between(LocalDate.of(2021,12,28),LocalDate.now()).toInt() -3)}
     val weekListState = rememberLazyListState(initialFirstVisibleItemIndex = listCenter)
-    var weekState by remember { mutableStateOf(false) }
-    var scheduleState by remember { mutableStateOf(false) }
-    var scheduleInfo by remember { mutableStateOf(Schedule(null, LocalDate.now(), LocalTime.now(),
-        LocalTime.now(),0,"",""))}
-    var snackbarHostState = remember { SnackbarHostState() }
+
     val dateDialog = DatePickerDialog(
         LocalContext.current,
         { _, year, month, day ->
@@ -96,7 +94,7 @@ fun HomeScreen(
         },
         bottomBar = {
             WeekBottomBar(
-                checked = scheduleState,
+                checked = weekViewModel.scheduleState,
                 onMoveMisson = { openScreen(NavigationItem.MISSON.route)},
                 onMoveToday = {
                     scope.launch(Dispatchers.Default) {
@@ -108,9 +106,9 @@ fun HomeScreen(
                 },
                 onCheckSchedule = { /*TODO*/ },
                 onDeleteSchedule = {
-                    weekViewModel.deleteSelectSchedule(scheduleInfo)
-                    scheduleState = scheduleState.not()},
-                onUpdateSchedule = { openEditSchedule(NavigationItem.SCHEDULE.route,scheduleInfo) },
+                    weekViewModel.deleteSelectSchedule()
+                    weekViewModel.changeScheduleState(false)},
+                onUpdateSchedule = { openEditSchedule(NavigationItem.SCHEDULE.route,weekViewModel.scheduleInfo) },
                 onAdditionalSchedule = { openSchedule(NavigationItem.SCHEDULE.route,selectDay) }
             )
         }
@@ -129,7 +127,7 @@ fun HomeScreen(
                             weekListState.animateScrollToItem(ChronoUnit.DAYS.between(LocalDate.of(2021, 12, 28), date).toInt() - 3)
                         }
                         weekViewModel.changeSelectDay(date)
-                        scheduleState = false
+                        weekViewModel.changeScheduleState(false)
                     }
                 }
             )//주달력 표시
@@ -150,7 +148,7 @@ fun HomeScreen(
                 progressTime = progressTime,
                 progress = actProgress,
                 onClickAct = {
-                    weekState = true
+                    weekViewModel.changeWeekState(true)
                 })
 
             ScheduleList(
@@ -166,24 +164,24 @@ fun HomeScreen(
                         weekListState.animateScrollToItem(ChronoUnit.DAYS.between(LocalDate.of(2021, 12, 28), date).toInt() - 3)
                     }},
                 onClickSchedule = {schedule ->
-                    if (scheduleInfo === schedule) {
-                        scheduleState = scheduleState.not()
+                    if (weekViewModel.scheduleInfo == schedule) {
+                        weekViewModel.changeScheduleState(false)
                     }else{
-                        scheduleInfo = schedule
-                        scheduleState = true
+                        weekViewModel.setSelectScheduleInfo(schedule)
+                        weekViewModel.changeScheduleState(true)
                     }
                 })
         }
         TagSelectedDialog(
-            visible = weekState,
+            visible = weekViewModel.weekState,
             uiState = uiState,
-            onDismissRequest = {weekState = false},
+            onDismissRequest = {weekViewModel.changeWeekState(false)},
             onClickAct = {tag ->
                 weekViewModel.changeRecordInfo(tag)
-                weekState = false
+                weekViewModel.changeWeekState(false)
             },
             onAddActTag = {
-                weekState = false
+                weekViewModel.changeWeekState(false)
                 openScreen(NavigationItem.TAG.route)},
             onClickDelect = {weekViewModel.deleteSelectTag(it)}
         )

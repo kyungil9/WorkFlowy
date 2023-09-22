@@ -6,7 +6,7 @@ sealed class FireStoreState<out T> {
     object Loading : FireStoreState<Nothing>()
     object Empty : FireStoreState<Nothing>()
     data class Success<out T>(val data: T) : FireStoreState<T>()
-    data class Exception(val message: String?, val e: FirebaseException?) : FireStoreState<Nothing>()
+    data class Exception(val message: String, val e: FirebaseException) : FireStoreState<Nothing>()
 
 }
 
@@ -22,6 +22,6 @@ inline fun <reified T : Any> FireStoreState<T>.onSuccess(action: (data: T) -> Un
     if (this is FireStoreState.Success) action(data)
 }
 
-inline fun <reified T : Any> FireStoreState<T>.onException(action: (message: String?,e: FirebaseException?) -> Unit) {
+inline fun <reified T : Any> FireStoreState<T>.onException(action: (message: String,e: FirebaseException) -> Unit) {
     if (this is FireStoreState.Exception) action(message,e)
 }

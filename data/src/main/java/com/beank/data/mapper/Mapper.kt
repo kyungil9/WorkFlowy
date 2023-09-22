@@ -9,9 +9,9 @@ import com.beank.domain.model.Tag
 
 fun WeekSchedule.toScheduleModel() = Schedule(
     id = id,
-    date = date.intToLocalDate(),
-    startTime = startTime.stringToLocalTime(),
-    endTime = endTime.stringToLocalTime(),
+    date = date.toLocalDate(),
+    startTime = startTime.toLocalTime(),
+    endTime = endTime.toLocalTime(),
     icon = icon,
     title = title,
     comment = comment
@@ -20,8 +20,9 @@ fun WeekSchedule.toScheduleModel() = Schedule(
 fun WeekRecord.toRecordModel() = Record(
     id = id,
     tag = tag,
-    startTime = startTime.longToLocalDateTime(),
-    endTime = endTime?.longToLocalDateTime(),
+    date = date.toLocalDate(),
+    startTime = startTime.toLocalDateTime(),
+    endTime = endTime?.toLocalDateTime(),
     progressTime = progressTime,
     pause = pause
 )
@@ -34,9 +35,9 @@ fun WeekTag.toTagModel() = Tag(
 
 fun Schedule.toWeekSchedule() = WeekSchedule(
     id = id,
-    date = date.localDateToInt(),
-    startTime = startTime.localTimeToString(),
-    endTime = endTime.localTimeToString(),
+    date = date.toInt(),
+    startTime = startTime.toFormatString(),
+    endTime = endTime.toFormatString(),
     icon = icon,
     title = title,
     comment = comment
@@ -45,8 +46,9 @@ fun Schedule.toWeekSchedule() = WeekSchedule(
 fun Record.toWeekRecord() = WeekRecord(
     id = id,
     tag = tag,
-    startTime = startTime.localDateTimeToLong(),
-    endTime = endTime?.localDateTimeToLong(),
+    date = date.toInt(),
+    startTime = startTime.toLong(),
+    endTime = endTime?.toLong(),
     progressTime = progressTime,
     pause = pause
 )

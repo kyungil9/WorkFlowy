@@ -19,3 +19,17 @@ val red = Color(0xFFE0302D)
 val blue = Color(0xFF007AFF)
 val lightGreen = Color(0xFF6AFD60)
 val lightRed = Color(0xF4E4502D)
+
+val colors = arrayOf(
+    Color(0xFFABDEE6),
+    Color(0xFFCBAACB),
+    Color(0xFFFFFFB5),
+    Color(0xFF55CBCD),
+    Color(0xFFFFCCB6),
+    Color(0xFFFF968A),
+    Color(0xFF8FCACA),
+    Color(0xFFF3B0C3),
+    Color(0xFFCCE2CB),
+    Color(0xFFFFC5BF),
+    Color(0xFFA2E1DB)
+)

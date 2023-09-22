@@ -11,10 +11,10 @@ import androidx.compose.runtime.Stable
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
-import com.beank.data.mapper.localDateToInt
 import com.beank.domain.model.Schedule
 import com.beank.workFlowy.component.snackbar.SnackbarManager
 import com.beank.workFlowy.component.snackbar.SnackbarMessage.Companion.toMessage
+import com.beank.workFlowy.utils.toInt
 import com.beank.workFlowy.utils.toScheduleJson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.collect
@@ -48,7 +48,7 @@ class WorkFlowyState(
     }
 
     fun navigate(route: String, date: LocalDate){
-        navController.navigate("${route}?today=${date.localDateToInt()}"){
+        navController.navigate("${route}?today=${date.toInt()}"){
             launchSingleTop = true
         }
     }

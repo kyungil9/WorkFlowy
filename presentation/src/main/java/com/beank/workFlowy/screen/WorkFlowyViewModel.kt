@@ -5,9 +5,11 @@ import androidx.lifecycle.viewModelScope
 import com.beank.domain.repository.LogRepository
 import com.beank.workFlowy.component.snackbar.SnackbarManager
 import com.beank.workFlowy.component.snackbar.SnackbarMessage.Companion.toSnackbarMessage
+import com.google.firebase.FirebaseException
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import kotlin.math.log
 
 open class WorkFlowyViewModel(private val logRepository : LogRepository) : ViewModel() {
     fun launchCatching(snackbar : Boolean = true, block: suspend CoroutineScope.() -> Unit) =
@@ -19,4 +21,8 @@ open class WorkFlowyViewModel(private val logRepository : LogRepository) : ViewM
             },
             block = block
         )
+    fun logFirebaseFatalCrash(message: String,e: FirebaseException){
+        logRepository.logCrash(message)
+        logRepository.logNonFatalCrash(e.fillInStackTrace())
+    }
 }

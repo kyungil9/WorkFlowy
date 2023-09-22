@@ -32,8 +32,6 @@ fun WeekLazyList(
     weekListState : LazyListState,
     onClickItem : (LocalDate) -> Unit
 ){
-    val coroutineScope = rememberCoroutineScope()
-
     LazyRow(
         state = weekListState
     ){

@@ -10,8 +10,6 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.beank.data.mapper.localDateToInt
-import com.beank.domain.model.Schedule
 import com.beank.workFlowy.screen.WorkFlowyState
 import com.beank.workFlowy.screen.analysis.AnalysisScreen
 import com.beank.workFlowy.screen.home.HomeScreen
@@ -20,7 +18,7 @@ import com.beank.workFlowy.screen.schedule.ScheduleScreen
 import com.beank.workFlowy.screen.sign_up.SignUpScreen
 import com.beank.workFlowy.screen.tag.TagScreen
 import com.beank.workFlowy.ui.theme.black
-import java.time.LocalDate
+
 
 @Composable
 fun NavigationGraph(
@@ -46,6 +44,7 @@ fun NavigationGraph(
 
         composable(route = NavigationItem.HOME.route){
             HomeScreen(
+                snackbarHostState = appState.snackbarHostState,
                 openScreen = {route -> appState.navigate(route)},
                 openSchedule = {route,date -> appState.navigate(route,date)},
                 openEditSchedule = {route,schedule -> appState.navigate(route,schedule)})
@@ -60,7 +59,9 @@ fun NavigationGraph(
             enterTransition = appState.slideUpIn(700),
             exitTransition = appState.slideDownOut(700)
         ){
-            AnalysisScreen()
+            AnalysisScreen(
+                snackbarHostState = appState.snackbarHostState,
+                onBack = {appState.popUp()})
         }
 
         composable(
@@ -69,6 +70,7 @@ fun NavigationGraph(
             exitTransition = appState.slideDownOut(700)
         ){
             TagScreen(
+                snackbarHostState = appState.snackbarHostState,
                 resource = appState.resource,
                 onBackHome = { appState.popUp() }
             )
@@ -90,6 +92,7 @@ fun NavigationGraph(
             exitTransition = appState.slideDownOut(700)
         ){
             ScheduleScreen(
+                snackbarHostState = appState.snackbarHostState,
                 resource = appState.resource,
                 onBackHome = { appState.popUp() }
             )

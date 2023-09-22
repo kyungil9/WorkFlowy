@@ -2,6 +2,9 @@ package com.beank.workFlowy.screen.tag
 
 import android.content.res.TypedArray
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
 import com.beank.domain.model.Tag
 import com.beank.domain.repository.LogRepository
@@ -35,9 +38,12 @@ class TagViewModel @Inject constructor(
     private lateinit var typedTag: TypedArray
 
 
-    val selectTagText get() = _selectTagText.asStateFlow()
-    val selectTagImage get() = _selectTagImage.asStateFlow()
-    val tagUiState get() = _tagUiState.asStateFlow()
+    var selectTagText by mutableStateOf("")
+        private set
+    var selectTagImage by mutableStateOf(R.drawable.baseline_menu_book_24)
+        private set
+    var tagUiState by mutableStateOf(TagUiState())
+        private set
 
 
     fun initTagImages(tagList : TypedArray){
@@ -61,14 +67,14 @@ class TagViewModel @Inject constructor(
 
     fun insertTagInfo() {
         launchCatching {
-            tagUsecases.insertTag(Tag(null, imageToInt(selectTagImage.value,typedTag), selectTagText.value))
+            tagUsecases.insertTag(Tag(null, imageToInt(selectTagImage,typedTag), selectTagText))
         }
     }
 
     fun checkTagText() : Boolean {
         var result = false
-        viewModelScope.launch (Dispatchers.IO) {
-            result = tagUsecases.checkTagTitle(selectTagText.value)
+        launchCatching {
+            result = tagUsecases.checkTagTitle(selectTagText)
         }
         return result
     }

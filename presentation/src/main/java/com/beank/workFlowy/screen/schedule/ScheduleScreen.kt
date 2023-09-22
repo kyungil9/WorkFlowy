@@ -62,22 +62,16 @@ fun ScheduleScreen(
     resource : Resources,
     onBackHome : () -> Unit
 ){
+
     scheduleViewModel.initScheduleImages(resource.obtainTypedArray(R.array.scheduleList))
-    val inputScheduleText by scheduleViewModel.inputScheduleText.collectAsStateWithLifecycle()
-    val selectScheduleImage by scheduleViewModel.selectScheduleImage.collectAsStateWithLifecycle()
-    val uiState by scheduleViewModel.scheduleUiState.collectAsStateWithLifecycle()
-    val selectYear by scheduleViewModel.selectPickerYear.collectAsStateWithLifecycle()
-    val selectMonth by scheduleViewModel.selectPickerMonth.collectAsStateWithLifecycle()
-    val selectDay by scheduleViewModel.selectPickerDay.collectAsStateWithLifecycle()
-    val selectStartTime by scheduleViewModel.selectPickerStartTime.collectAsStateWithLifecycle()
-    val selectEndTime by scheduleViewModel.selectPickerEndTime.collectAsStateWithLifecycle()
-    val endMonthDay by scheduleViewModel.endMonthDay.collectAsStateWithLifecycle()
-    val inputCommentText by scheduleViewModel.inputCommentText.collectAsStateWithLifecycle()
-    val scope = rememberCoroutineScope()
-    var checkImage by remember { mutableStateOf(false) }
-    var checkDate by remember { mutableStateOf(false) }
-    var checkTime by remember { mutableStateOf(false) }
-    var checkendTime by remember { mutableStateOf(false) }
+    val uiState = scheduleViewModel.scheduleUiState
+    val selectYear = scheduleViewModel.selectPickerYear
+    val selectMonth = scheduleViewModel.selectPickerMonth
+    val selectDay = scheduleViewModel.selectPickerDay
+    val selectStartTime = scheduleViewModel.selectPickerStartTime
+    val selectEndTime = scheduleViewModel.selectPickerEndTime
+    var checkTime = scheduleViewModel.checkTime
+    var checkendTime = scheduleViewModel.checkendTime
 
     WeekLayout(
         snackbarHostState = snackbarHostState,
@@ -112,21 +106,21 @@ fun ScheduleScreen(
                     .padding(end = 10.dp)
             ) {
                 TextField(
-                    value = inputScheduleText,
+                    value = scheduleViewModel.inputScheduleText,
                     onValueChange = {scheduleViewModel.updateScheduleText(it)},
                     label = { Text(text = "일정")}
                 )
                 Image(
-                    painter = painterResource(id = selectScheduleImage),
+                    painter = painterResource(id = scheduleViewModel.selectScheduleImage),
                     contentDescription = "스캐줄사진",
                     modifier = Modifier
                         .size(50.dp)
                         .clickable {
-                            checkImage = checkImage.not()
+                            scheduleViewModel.updateCheckImage()
                         }
                 )
             }
-            AnimatedVisibility(visible = checkImage) {
+            AnimatedVisibility(visible = scheduleViewModel.checkImage) {
                 LazyVerticalGrid(
                     columns = GridCells.Adaptive(40.dp),
                     verticalArrangement = Arrangement.spacedBy(space = 5.dp),
@@ -165,8 +159,8 @@ fun ScheduleScreen(
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = Modifier.clickable {
-                            checkDate = checkDate.not()
-                            checkendTime = false
+                            scheduleViewModel.updateCheckDate()
+                            scheduleViewModel.updateCheckEndTime(false)
                         }
                     ) {
                         Text(
@@ -192,8 +186,8 @@ fun ScheduleScreen(
                                 verticalArrangement = Arrangement.Center,
                                 horizontalAlignment = Alignment.CenterHorizontally,
                                 modifier = Modifier.clickable {
-                                    checkendTime = checkendTime.not()
-                                    checkDate = false
+                                    scheduleViewModel.updateCheckEndTime(checkendTime.not())
+                                    scheduleViewModel.updateCheckDate(false)
                                 }
                             ) {
                                 Text(
@@ -209,9 +203,9 @@ fun ScheduleScreen(
 
                 AssistChip(
                     onClick = {
-                        checkTime = checkTime.not()
+                        scheduleViewModel.updateCheckTime()
                         if (checkendTime && !checkTime)
-                            checkDate = true
+                            scheduleViewModel.updateCheckDate(true)
                     },
                     label = {
                         Text(text = "시간선택")
@@ -219,7 +213,7 @@ fun ScheduleScreen(
                 )
 
             }
-            AnimatedVisibility(visible = checkDate || checkendTime) {
+            AnimatedVisibility(visible = scheduleViewModel.checkDate || checkendTime) {
                 if (checkendTime){
                     DaysPicker(
                         timeVisibility = checkTime,
@@ -227,7 +221,7 @@ fun ScheduleScreen(
                         monthPick = selectMonth,
                         dayPick = selectDay,
                         timePick = selectEndTime,
-                        endDay = endMonthDay,
+                        endDay = scheduleViewModel.endMonthDay,
                         onDayChange = {day -> scheduleViewModel.updateSelectDay(day)},
                         onMonthChange = {month -> scheduleViewModel.updateSelectMonth(month) },
                         onYearChange = {year -> scheduleViewModel.updateSelectYear(year)},
@@ -240,7 +234,7 @@ fun ScheduleScreen(
                         monthPick = selectMonth,
                         dayPick = selectDay,
                         timePick = selectStartTime,
-                        endDay = endMonthDay,
+                        endDay = scheduleViewModel.endMonthDay,
                         onDayChange = {day -> scheduleViewModel.updateSelectDay(day)},
                         onMonthChange = {month -> scheduleViewModel.updateSelectMonth(month) },
                         onYearChange = {year -> scheduleViewModel.updateSelectYear(year)},
@@ -261,7 +255,7 @@ fun ScheduleScreen(
                     .padding(start = 15.dp, top = 10.dp, end = 15.dp)
                     .background(white, RoundedCornerShape(5.dp)),
                 shape = RoundedCornerShape(5.dp),
-                value = inputCommentText,
+                value = scheduleViewModel.inputCommentText,
                 onValueChange = { scheduleViewModel.updateCommentText(it) },
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                 maxLines = 3

@@ -62,11 +62,24 @@ fun IconButton(
     @StringRes text : Int,
     onClick: () -> Unit
 ) {
+    IconButton(
+        icon = icon,
+        text = stringResource(id = text),
+        modifier = Modifier.fillMaxWidth().padding(start = 20.dp, end = 20.dp),
+        onClick
+    )
+}
+
+@Composable
+fun IconButton(
+    @DrawableRes icon : Int,
+    text : String,
+    modifier: Modifier,
+    onClick: () -> Unit,
+) {
     Surface(
-        modifier = Modifier
-            .clickable(onClick = onClick)
-            .fillMaxWidth()
-            .padding(start = 20.dp, end = 20.dp),
+        modifier = modifier
+            .clickable(onClick = onClick),
         border = BorderStroke(width = 1.dp, color = Color.LightGray),
         color = MaterialTheme.colorScheme.surface,
         shape = MaterialTheme.shapes.small,
@@ -82,8 +95,8 @@ fun IconButton(
                 bottom = 11.dp
             )
         ) {
-            Icon(painter = painterResource(id = icon), contentDescription = "Google sign button", tint = Color.Unspecified, modifier = Modifier.size(35.dp))
-            Text(text = stringResource(text), style = MaterialTheme.typography.headlineMedium, color = Color.Gray, fontSize = 17.sp, fontWeight = FontWeight.Bold, modifier = Modifier.fillMaxWidth() , textAlign = TextAlign.Center)
+            Icon(painter = painterResource(id = icon), contentDescription = "icon button", tint = Color.Unspecified, modifier = Modifier.size(35.dp))
+            Text(text = text, style = MaterialTheme.typography.headlineMedium, color = Color.Gray, fontSize = 17.sp, fontWeight = FontWeight.Bold, modifier = Modifier.fillMaxWidth() , textAlign = TextAlign.Center)
         }
     }
 }

@@ -3,6 +3,8 @@ package com.beank.workFlowy.utils
 import java.text.DecimalFormat
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
+import java.time.temporal.WeekFields
+import java.util.Locale
 
 val zeroFormat = DecimalFormat("##00")
 
@@ -36,6 +38,18 @@ fun today():String {
     var today = LocalDate.now()
     return "< ${today.year}/${today.monthValue}/${today.dayOfMonth} ${transDayToKorean(today.dayOfWeek.value)} >"
 }
+
+fun LocalDate.toFormatString() = "${this.year%100}/${zeroFormat.format(this.monthValue)}/${zeroFormat.format(this.dayOfMonth)} ${transDayToKorean(this.dayOfWeek.value)}"
+
+fun LocalDate.toWeekString() : String {
+    val startDate = this.minusDays((this.dayOfWeek.value-1).toLong())
+    val endDate = startDate.plusDays(6)
+    return "${startDate.year%100}/${zeroFormat.format(startDate.monthValue)}/${zeroFormat.format(startDate.dayOfMonth)}~${zeroFormat.format(endDate.dayOfMonth)}"
+}
+
+fun LocalDate.toMonthString() = "${this.year%100}/${zeroFormat.format(this.monthValue)}"
+
+fun LocalDate.toYearString() = "${this.year}"
 
 fun makeDayList() : List<LocalDate>{
     val dayList = ArrayList<LocalDate>()

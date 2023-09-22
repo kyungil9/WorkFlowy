@@ -17,6 +17,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -51,9 +52,7 @@ fun LoginScreen(
     openPopUpScreen : (String,String) -> Unit,
     openScreen : (String) -> Unit
 ){
-    val email by loginViewModel.inputEmail.collectAsStateWithLifecycle()
-    val password by loginViewModel.inputPassword.collectAsStateWithLifecycle()
-    var user by remember { mutableStateOf(Firebase.auth.currentUser) }
+    var user by rememberSaveable { mutableStateOf(Firebase.auth.currentUser) }
     val launcher = rememberFirebaseAuthLauncher(
         onAuthSuccess = { result ->
             if(result.additionalUserInfo!!.isNewUser)
@@ -75,8 +74,8 @@ fun LoginScreen(
         if (user == null){
             Image(painter = painterResource(id = R.drawable.workflowy_foreground), contentDescription = "어플화면",
                 modifier = Modifier.size(300.dp,300.dp))
-            EmailField(value = email, onNewValue = loginViewModel::onEmailChange, Modifier.fieldModifier())
-            PasswordField(value = password, onNewValue = loginViewModel::onPasswordChange, Modifier.fieldModifier())
+            EmailField(value = loginViewModel.inputEmail, onNewValue = loginViewModel::onEmailChange, Modifier.fieldModifier())
+            PasswordField(value = loginViewModel.inputPassword, onNewValue = loginViewModel::onPasswordChange, Modifier.fieldModifier())
 
             BasicButton(text = AppText.sign_in, modifier = Modifier.basicButton()) {
                 loginViewModel.onSignInClick(openPopUpScreen)

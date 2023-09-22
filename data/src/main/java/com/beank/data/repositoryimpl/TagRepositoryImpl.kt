@@ -21,7 +21,7 @@ class TagRepositoryImpl @Inject constructor(
     private val storage : StorageDataSource
 ): TagRepository {
     override fun getTagInfo(): Flow<FireStoreState<List<Tag>>> =
-        storage.store.document(storage.getUid()!!).collection(TAG).dataStateObjects<WeekTag,Tag>().flowOn(Dispatchers.IO)
+        storage.store.document(storage.getUid()!!).collection(TAG).dataStateObjects<WeekTag,Tag>()
 
     override suspend fun checkTagTitle(title: String): Boolean =
         storage.store.document(storage.getUid()!!).collection(TAG).whereEqualTo("title",title).get().await().documents.isEmpty()

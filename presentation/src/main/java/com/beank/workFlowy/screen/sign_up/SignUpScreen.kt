@@ -23,10 +23,6 @@ fun SignUpScreen(
     signUpViewModel: SignUpViewModel = hiltViewModel(),
     onBack : () -> Unit
 ){
-    val email by signUpViewModel.inputEmail.collectAsStateWithLifecycle()
-    val password by signUpViewModel.inputPassword.collectAsStateWithLifecycle()
-    val repeatPassword by signUpViewModel.inputRepeatPassword.collectAsStateWithLifecycle()
-
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -35,9 +31,9 @@ fun SignUpScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        EmailField(value = email, onNewValue = signUpViewModel::onEmailChange, Modifier.fieldModifier())
-        PasswordField(value = password, onNewValue = signUpViewModel::onPasswordChange, Modifier.fieldModifier())
-        RepeatPasswordField(value = repeatPassword, onNewValue = signUpViewModel::onRepeatPassword, Modifier.fieldModifier())
+        EmailField(value = signUpViewModel.inputEmail, onNewValue = signUpViewModel::onEmailChange, Modifier.fieldModifier())
+        PasswordField(value = signUpViewModel.inputPassword, onNewValue = signUpViewModel::onPasswordChange, Modifier.fieldModifier())
+        RepeatPasswordField(value = signUpViewModel.inputRepeatPassword, onNewValue = signUpViewModel::onRepeatPassword, Modifier.fieldModifier())
 
         BasicButton(text = R.string.create_account, modifier = Modifier.basicButton()) {
             signUpViewModel.onSignInClick(onBack)

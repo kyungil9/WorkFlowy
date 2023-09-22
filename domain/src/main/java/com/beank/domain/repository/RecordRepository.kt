@@ -4,13 +4,14 @@ import com.beank.domain.model.FireStoreState
 import com.beank.domain.model.NowRecord
 import com.beank.domain.model.Record
 import kotlinx.coroutines.flow.Flow
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 interface RecordRepository {
 
     fun getRecordInfo() : Flow<FireStoreState<List<Record>>>
 
-    fun getTodayRecord(startDateTime: Long ,endDateTime: Long) : Flow<FireStoreState<List<Record>>>
+    fun getTodayRecord(date: LocalDate) : Flow<FireStoreState<List<Record>>>
 
     fun getPauseRecord(pause: Boolean) : Flow<FireStoreState<NowRecord>> //??수정?
 

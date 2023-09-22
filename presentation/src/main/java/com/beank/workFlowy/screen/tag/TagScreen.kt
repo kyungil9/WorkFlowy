@@ -40,15 +40,12 @@ import kotlinx.coroutines.launch
 @Composable
 fun TagScreen(
     tagViewModel: TagViewModel = hiltViewModel(),
+    snackbarHostState: SnackbarHostState,
     resource : Resources,
     onBackHome : () -> Unit
 ){
     tagViewModel.initTagImages(resource.obtainTypedArray(R.array.tagList))
-    val selectTagImage by tagViewModel.selectTagImage.collectAsStateWithLifecycle()
-    val selectTagText by tagViewModel.selectTagText.collectAsStateWithLifecycle()
-    val uiState by tagViewModel.tagUiState.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
-    var snackbarHostState = remember { SnackbarHostState() }
 
     WeekLayout(snackbarHostState = snackbarHostState) {
         Column(
@@ -58,7 +55,7 @@ fun TagScreen(
         ) {
             VerticalSpacer(height = 30.dp)
             Image(
-                painter = painterResource(id = selectTagImage),
+                painter = painterResource(id = tagViewModel.selectTagImage),
                 modifier = Modifier.size(180.dp),
                 contentDescription = null
             )
@@ -69,7 +66,7 @@ fun TagScreen(
             ) {
                 HorizontalSpacer(width = 10.dp)
                 TextField(
-                    value = selectTagText,
+                    value = tagViewModel.selectTagText,
                     onValueChange = {tagViewModel.updateSelectTagText(it)},
                     modifier = Modifier.weight(0.5f)
                 )
@@ -77,7 +74,7 @@ fun TagScreen(
                 Button(
                     onClick = {
                         scope.launch(Dispatchers.IO) {
-                            if (tagViewModel.selectTagText.value.isEmpty())
+                            if (tagViewModel.selectTagText.isEmpty())
                                 snackbarHostState.showSnackbar("이름을 입력해주세요.")
                             else if (!tagViewModel.checkTagText())
                                 snackbarHostState.showSnackbar("중복된 이름이 있습니다.")
@@ -99,7 +96,7 @@ fun TagScreen(
                 horizontalArrangement = Arrangement.spacedBy(space = 5.dp),
                 contentPadding = PaddingValues(all = 5.dp)
             ){
-                items(uiState.tagImageList){image ->
+                items(tagViewModel.tagUiState.tagImageList){image ->
                     Image(
                         painter = painterResource(id = image),
                         contentDescription = "태그사진",
