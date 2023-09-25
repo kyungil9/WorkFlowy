@@ -13,7 +13,7 @@ import com.beank.domain.usecase.WeekUsecases
 import com.beank.domain.usecase.account.CreateAccount
 import com.beank.domain.usecase.account.LoginAccount
 import com.beank.domain.usecase.record.GetNowRecord
-import com.beank.domain.usecase.record.GetTodayRecord
+import com.beank.domain.usecase.record.GetPeriodRecord
 import com.beank.domain.usecase.record.InsertRecord
 import com.beank.domain.usecase.record.StartNewRecord
 import com.beank.domain.usecase.schedule.DeleteSchedule
@@ -25,7 +25,6 @@ import com.beank.domain.usecase.tag.DeleteTag
 import com.beank.domain.usecase.tag.GetAllTag
 import com.beank.domain.usecase.tag.InitDataSetting
 import com.beank.domain.usecase.tag.InsertTag
-import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -87,7 +86,7 @@ object UsecaseModule {
     @Provides
     @Singleton
     fun provideAnalysisUseCases(recordRepository: RecordRepository) = AnalysisUsecases(
-        getTodayRecord = GetTodayRecord(recordRepository)
+        getPeriodRecord = GetPeriodRecord(recordRepository)
     )
 
 }

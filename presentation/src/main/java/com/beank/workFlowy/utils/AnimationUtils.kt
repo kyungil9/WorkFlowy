@@ -1,5 +1,6 @@
 package com.beank.workFlowy.utils
 
+import android.util.Log
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.animation.core.SpringSpec
@@ -50,8 +51,9 @@ fun animateTargetFloatAsState(
             launch {
                 if (trigger == initialValue) {
                     animatable.animateTo(trigger, animSpec)
-                }else
+                }else {
                     animatable.animateTo(trigger, tween(0))
+                }
             }
         }
     }

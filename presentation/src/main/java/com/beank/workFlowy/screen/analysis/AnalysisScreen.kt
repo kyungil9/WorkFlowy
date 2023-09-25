@@ -1,6 +1,8 @@
 package com.beank.workFlowy.screen.analysis
 
 import android.app.DatePickerDialog
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -50,6 +52,7 @@ import java.time.ZoneId
 import java.time.temporal.ChronoUnit
 import kotlin.math.abs
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun AnalysisScreen(
     analysisViewModel: AnalysisViewModel = hiltViewModel(),
@@ -84,6 +87,7 @@ fun AnalysisScreen(
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RecordCard(
@@ -115,7 +119,7 @@ fun RecordCard(
     Card(
         modifier = Modifier
             .padding(10.dp)
-            .fillMaxWidth()
+            .fillMaxWidth()//높이 조절???
             .pointerInput(Unit) {
                 detectDragGestures(
                     onDrag = { change, dragAmount ->
@@ -181,8 +185,6 @@ fun RecordCard(
                     },
                     modifier = Modifier.size(150.dp,40.dp)
                 ) {
-                    //updateAnimate(false)
-                    //다이얼로그 띄우기
                     dateDialog.show()
                 }
 
@@ -205,7 +207,7 @@ fun RecordCard(
                 }
             }
             AnimatedVisibility(visible = !actProgress) {
-                LaunchedEffect(key1 = selectDay){
+                LaunchedEffect(key1 = selectDay, key2 = toggle){
                     updateAnimate(true)
                 }
                 StackBar(

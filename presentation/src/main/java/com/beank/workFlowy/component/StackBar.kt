@@ -62,7 +62,7 @@ fun StackBar(
     val animationProgress by animateTargetFloatAsState(
         initialValue = 1f,
         targetValue = if(animate) 1f else 0f,
-        tween(2000)
+        tween(2000,500)
     )
 
     Column(

@@ -36,9 +36,9 @@ class RecordRepositoryImpl @Inject constructor(
         storage.store.document(storage.getUid()!!).collection(RECORD)
             .dataStateObjects<WeekRecord,Record>()
 
-    override fun getTodayRecord(date: LocalDate): Flow<FireStoreState<List<Record>>> =
-        storage.store.document(storage.getUid()!!).collection(RECORD).whereEqualTo("date",date.toInt())
-            .orderBy("progressTime", Query.Direction.DESCENDING).dataStateObjects<WeekRecord,Record>()
+    override fun getPeriodRecord(startDate: LocalDate, endDate: LocalDate): Flow<FireStoreState<List<Record>>> =
+        storage.store.document(storage.getUid()!!).collection(RECORD).whereLessThanOrEqualTo("date",endDate.toInt())
+            .whereGreaterThanOrEqualTo("date",startDate.toInt()).dataStateObjects<WeekRecord,Record>()
 
     override fun getPauseRecord(pause: Boolean): Flow<FireStoreState<NowRecord>> = channelFlow {
         send(FireStoreState.Loading)

@@ -1,7 +1,7 @@
 package com.beank.domain.usecase
 
-import com.beank.domain.usecase.record.GetTodayRecord
+import com.beank.domain.usecase.record.GetPeriodRecord
 
 data class AnalysisUsecases(
-    val getTodayRecord: GetTodayRecord
+    val getPeriodRecord: GetPeriodRecord
 )

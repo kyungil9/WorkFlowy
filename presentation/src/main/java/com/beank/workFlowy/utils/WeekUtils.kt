@@ -1,5 +1,7 @@
 package com.beank.workFlowy.utils
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import java.text.DecimalFormat
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
@@ -34,23 +36,36 @@ fun transDayToShortKorean(date : Int):String{
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 fun today():String {
     var today = LocalDate.now()
     return "< ${today.year}/${today.monthValue}/${today.dayOfMonth} ${transDayToKorean(today.dayOfWeek.value)} >"
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 fun LocalDate.toFormatString() = "${this.year%100}/${zeroFormat.format(this.monthValue)}/${zeroFormat.format(this.dayOfMonth)} ${transDayToShortKorean(this.dayOfWeek.value)}"
 
+@RequiresApi(Build.VERSION_CODES.O)
 fun LocalDate.toWeekString() : String {
-    val startDate = this.minusDays((this.dayOfWeek.value-1).toLong())
-    val endDate = startDate.plusDays(6)
+    val startDate = this.toWeekStart()
+    val endDate = this.toWeekEnd()
     return "${startDate.year%100}/${zeroFormat.format(startDate.monthValue)}/${zeroFormat.format(startDate.dayOfMonth)}~${zeroFormat.format(endDate.dayOfMonth)}"
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
+fun LocalDate.toWeekStart(): LocalDate = this.minusDays((this.dayOfWeek.value-1).toLong())
+
+@RequiresApi(Build.VERSION_CODES.O)
+fun LocalDate.toWeekEnd(): LocalDate = this.toWeekStart().plusDays(6)
+
+
+@RequiresApi(Build.VERSION_CODES.O)
 fun LocalDate.toMonthString() = "${this.year%100}/${zeroFormat.format(this.monthValue)}"
 
+@RequiresApi(Build.VERSION_CODES.O)
 fun LocalDate.toYearString() = "${this.year}"
 
+@RequiresApi(Build.VERSION_CODES.O)
 fun makeDayList() : List<LocalDate>{
     val dayList = ArrayList<LocalDate>()
     var startDay = LocalDate.of(2021,12,28)
@@ -62,6 +77,7 @@ fun makeDayList() : List<LocalDate>{
     return dayList
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 fun changeDayInfo(today : LocalDate) : Int {
     var endDay : Int
     when(today.monthValue){

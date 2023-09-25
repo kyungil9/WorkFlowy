@@ -1,5 +1,7 @@
 package com.beank.workFlowy.screen.analysis
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -16,8 +18,11 @@ import com.beank.domain.usecase.AnalysisUsecases
 import com.beank.presentation.R
 import com.beank.workFlowy.component.snackbar.SnackbarManager
 import com.beank.workFlowy.screen.WorkFlowyViewModel
+import com.beank.workFlowy.utils.changeDayInfo
 import com.beank.workFlowy.utils.toEndTimeLong
 import com.beank.workFlowy.utils.toStartTimeLong
+import com.beank.workFlowy.utils.toWeekEnd
+import com.beank.workFlowy.utils.toWeekStart
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -27,6 +32,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -40,6 +46,7 @@ data class AnalysisUiState(
     val recordList : List<Record> = emptyList()
 )
 
+@RequiresApi(Build.VERSION_CODES.O)
 @HiltViewModel
 class AnalysisViewModel @Inject constructor(
     private val analysisUsecases: AnalysisUsecases,
@@ -50,7 +57,6 @@ class AnalysisViewModel @Inject constructor(
     private val _toggleButtonFlow = MutableStateFlow(0)
     private val _animateStackChannel = Channel<Boolean>(Channel.BUFFERED)
     private var todayJob : Job? = null
-    private var create = false
     val selectDayFlow get() = _selectDayFlow.asStateFlow()
     val toggleButtonFlow get() = _toggleButtonFlow.asStateFlow()
     val animateStackChannel get() = _animateStackChannel.receiveAsFlow()
@@ -64,7 +70,7 @@ class AnalysisViewModel @Inject constructor(
 
 
     init {
-        getTodayRecord()
+        getPeriodRecord()
     }
 
     fun updateAnimateStack(value : Boolean){
@@ -73,6 +79,7 @@ class AnalysisViewModel @Inject constructor(
 
     fun updateToggleButton(){
         _toggleButtonFlow.value = (toggleButtonFlow.value+1)%4
+        sendAnimationEvent(false)
     }
 
     fun changeSelectDay(day : LocalDate){
@@ -87,12 +94,11 @@ class AnalysisViewModel @Inject constructor(
         }
     }
 
-    //애니메이션 처리 어떻게 할지 고민?
-    private fun getTodayRecord() {
+    private fun getPeriodRecord() {
         launchCatching {
-            selectDayFlow.collectLatest {
+            toggleButtonFlow.combine(selectDayFlow){toggle,date -> PeriodDate(date, toggle)}.collectLatest { period ->
                 todayJob?.cancel()
-                todayJob = analysisUsecases.getTodayRecord(it)
+                todayJob = analysisUsecases.getPeriodRecord(period.startDate(),period.endDate())
                     .flowOn(Dispatchers.IO).cancellable().onEach { state ->
                         state.onEmpty {
                             uiState = uiState.copy(recordList = emptyList())
@@ -103,7 +109,17 @@ class AnalysisViewModel @Inject constructor(
                         }
                         state.onSuccess { recordList ->
                             actBoxProgressFlow = false
-                            uiState = uiState.copy(recordList = recordList)
+                            val totalRecord = ArrayList<Record>()
+                            recordList.map { record ->
+                                val findRecordIndex = totalRecord.indexOfFirst { it.tag == record.tag }
+                                if ( findRecordIndex == -1){
+                                    totalRecord.add(record)
+                                }else{
+                                    totalRecord[findRecordIndex] = totalRecord[findRecordIndex].copy(progressTime = totalRecord[findRecordIndex].progressTime + record.progressTime)
+                                }
+                            }
+                            totalRecord.sortByDescending {it.progressTime}
+                            uiState = uiState.copy(recordList = totalRecord)
                         }
                         state.onException { message, e ->
                             SnackbarManager.showMessage(R.string.firebase_server_error)
@@ -113,5 +129,34 @@ class AnalysisViewModel @Inject constructor(
             }
         }
     }
+}
 
+data class PeriodDate(
+    val date: LocalDate,
+    val toggle : Int
+){
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun startDate() : LocalDate = when(toggle){
+        DAY -> date
+        WEEK -> date.toWeekStart()
+        MONTH -> LocalDate.of(date.year,date.monthValue,1)
+        YEAR -> LocalDate.of(date.year,1,1)
+        else -> date
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun endDate() : LocalDate = when(toggle){
+        DAY -> date
+        WEEK -> date.toWeekEnd()
+        MONTH -> LocalDate.of(date.year,date.monthValue, changeDayInfo(date))
+        YEAR -> LocalDate.of(date.year,12,31)
+        else -> date
+    }
+
+    companion object {
+        const val DAY = 0
+        const val WEEK = 1
+        const val MONTH = 2
+        const val YEAR = 3
+    }
 }
