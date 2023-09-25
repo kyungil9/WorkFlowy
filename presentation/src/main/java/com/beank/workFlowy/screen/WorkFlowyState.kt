@@ -1,15 +1,15 @@
 package com.beank.workFlowy.screen
 
 import android.content.res.Resources
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.tween
-import androidx.compose.material.ScaffoldState
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Stable
 import androidx.navigation.NavBackStackEntry
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.beank.domain.model.Schedule
 import com.beank.workFlowy.component.snackbar.SnackbarManager
@@ -17,12 +17,12 @@ import com.beank.workFlowy.component.snackbar.SnackbarMessage.Companion.toMessag
 import com.beank.workFlowy.utils.toInt
 import com.beank.workFlowy.utils.toScheduleJson
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 
 @Stable
+@RequiresApi(Build.VERSION_CODES.O)
 class WorkFlowyState(
     val snackbarHostState: SnackbarHostState,
     val navController: NavHostController,

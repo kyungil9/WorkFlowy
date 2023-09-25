@@ -1,6 +1,8 @@
 package com.beank.workFlowy.screen.schedule
 
 import android.content.res.Resources
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -29,11 +31,6 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -41,20 +38,19 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.beank.presentation.R
 import com.beank.workFlowy.component.DaysPicker
 import com.beank.workFlowy.component.HorizontalSpacer
 import com.beank.workFlowy.component.VerticalSpacer
 import com.beank.workFlowy.component.WeekAppBar
 import com.beank.workFlowy.component.WeekLayout
-import com.beank.workFlowy.component.snackbar.SnackbarManager
 import com.beank.workFlowy.ui.theme.black
 import com.beank.workFlowy.ui.theme.gray
 import com.beank.workFlowy.ui.theme.white
 
 
 @OptIn(ExperimentalMaterial3Api::class)
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ScheduleScreen(
     scheduleViewModel: ScheduleViewModel = hiltViewModel(),

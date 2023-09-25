@@ -1,5 +1,7 @@
 package com.beank.workFlowy.navigation
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,7 +21,7 @@ import com.beank.workFlowy.screen.sign_up.SignUpScreen
 import com.beank.workFlowy.screen.tag.TagScreen
 import com.beank.workFlowy.ui.theme.black
 
-
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun NavigationGraph(
     appState : WorkFlowyState

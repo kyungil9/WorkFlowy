@@ -26,6 +26,7 @@ import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.permissions.shouldShowRationale
 import kotlinx.coroutines.CoroutineScope
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun WorkFlowyApp() {
     WorkFlowyTheme {
@@ -41,6 +42,7 @@ fun WorkFlowyApp() {
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun rememberAppState(
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },

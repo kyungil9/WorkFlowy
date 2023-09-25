@@ -1,5 +1,7 @@
 package com.beank.workFlowy.component
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -26,6 +28,7 @@ import com.beank.workFlowy.utils.makeDayList
 import com.beank.workFlowy.utils.transDayToShortKorean
 import java.time.LocalDate
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun WeekLazyList(
     selectDay: LocalDate,
@@ -44,6 +47,7 @@ fun WeekLazyList(
 
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun dayItem(day : LocalDate, selectDay : LocalDate, onItemClick : (LocalDate) -> Unit, modifier: Modifier){
     val modi = if (day.isEqual(selectDay)) modifier.border(1.dp, lightGreen,shape= RoundedCornerShape(15.dp)) else modifier

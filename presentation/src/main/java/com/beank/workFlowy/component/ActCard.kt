@@ -1,5 +1,7 @@
 package com.beank.workFlowy.component
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.Image
@@ -41,6 +43,7 @@ import com.beank.workFlowy.utils.intToImage
 import com.beank.workFlowy.utils.zeroFormat
 import java.time.Duration
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ActCard(
     selectedTag: Tag,

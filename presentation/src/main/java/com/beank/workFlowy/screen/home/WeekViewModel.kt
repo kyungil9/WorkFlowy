@@ -1,5 +1,7 @@
 package com.beank.workFlowy.screen.home
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -54,6 +56,7 @@ data class WeekUiState(
     val recordList : List<Record> = emptyList()
 )
 
+@RequiresApi(Build.VERSION_CODES.O)
 @HiltViewModel
 class WeekViewModel @Inject constructor(
     private val weekUsecases: WeekUsecases,

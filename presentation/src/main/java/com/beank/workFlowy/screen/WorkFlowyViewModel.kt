@@ -9,7 +9,6 @@ import com.google.firebase.FirebaseException
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import kotlin.math.log
 
 open class WorkFlowyViewModel(private val logRepository : LogRepository) : ViewModel() {
     fun launchCatching(snackbar : Boolean = true, block: suspend CoroutineScope.() -> Unit) =

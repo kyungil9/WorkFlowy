@@ -1,12 +1,12 @@
 package com.beank.workFlowy.screen.schedule
 
 import android.content.res.TypedArray
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.chargemap.compose.numberpicker.FullHours
@@ -24,9 +24,6 @@ import com.beank.workFlowy.utils.toLocalDate
 import com.beank.workFlowy.utils.transDayToShortKorean
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalTime
@@ -37,6 +34,7 @@ data class ScheduleUiState(
     val scheduleImageList : List<Int> = emptyList()
 )
 
+@RequiresApi(Build.VERSION_CODES.O)
 @HiltViewModel
 class ScheduleViewModel @Inject constructor(
     private val savedStateHandle : SavedStateHandle,

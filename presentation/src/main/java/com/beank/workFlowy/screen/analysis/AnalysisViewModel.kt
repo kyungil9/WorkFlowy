@@ -7,7 +7,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.beank.domain.model.Record
 import com.beank.domain.model.onEmpty
 import com.beank.domain.model.onException
@@ -19,15 +18,12 @@ import com.beank.presentation.R
 import com.beank.workFlowy.component.snackbar.SnackbarManager
 import com.beank.workFlowy.screen.WorkFlowyViewModel
 import com.beank.workFlowy.utils.changeDayInfo
-import com.beank.workFlowy.utils.toEndTimeLong
-import com.beank.workFlowy.utils.toStartTimeLong
 import com.beank.workFlowy.utils.toWeekEnd
 import com.beank.workFlowy.utils.toWeekStart
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.cancellable
@@ -65,16 +61,9 @@ class AnalysisViewModel @Inject constructor(
         private set
     var uiState by mutableStateOf(AnalysisUiState())
         private set
-    var animateStack by mutableStateOf(false)
-        private set
-
 
     init {
         getPeriodRecord()
-    }
-
-    fun updateAnimateStack(value : Boolean){
-        animateStack = value
     }
 
     fun updateToggleButton(){
