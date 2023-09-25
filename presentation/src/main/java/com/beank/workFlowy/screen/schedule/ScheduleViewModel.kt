@@ -14,7 +14,7 @@ import com.chargemap.compose.numberpicker.Hours
 import com.beank.domain.model.Schedule
 import com.beank.domain.repository.LogRepository
 import com.beank.domain.usecase.ScheduleUsecases
-import com.beank.workFlowy.R
+import com.beank.presentation.R
 import com.beank.workFlowy.screen.WorkFlowyViewModel
 import com.beank.workFlowy.utils.changeDayInfo
 import com.beank.workFlowy.utils.fromScheduleJson

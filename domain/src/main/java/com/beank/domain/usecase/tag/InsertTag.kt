@@ -5,7 +5,7 @@ import com.beank.domain.repository.TagRepository
 import javax.inject.Inject
 import javax.inject.Singleton
 
-class InsertTag (
+class InsertTag @Inject constructor(
     private val tagRepository: TagRepository
 ){
     operator fun invoke(tag: Tag) = tagRepository.insertTag(tag)

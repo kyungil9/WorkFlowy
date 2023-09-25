@@ -34,7 +34,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.beank.domain.model.Tag
-import com.beank.workFlowy.R
+import com.beank.presentation.R
 import com.beank.workFlowy.ui.theme.lightRed
 import com.beank.workFlowy.ui.theme.white
 import com.beank.workFlowy.utils.intToImage

@@ -13,7 +13,7 @@ import com.beank.domain.model.onLoading
 import com.beank.domain.model.onSuccess
 import com.beank.domain.repository.LogRepository
 import com.beank.domain.usecase.AnalysisUsecases
-import com.beank.workFlowy.R
+import com.beank.presentation.R
 import com.beank.workFlowy.component.snackbar.SnackbarManager
 import com.beank.workFlowy.screen.WorkFlowyViewModel
 import com.beank.workFlowy.utils.toEndTimeLong

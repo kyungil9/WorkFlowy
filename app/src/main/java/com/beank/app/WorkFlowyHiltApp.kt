@@ -1,4 +1,4 @@
-package com.beank.workFlowy.screen
+package com.beank.app
 
 import android.app.Application
 import dagger.hilt.android.HiltAndroidApp

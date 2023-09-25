@@ -15,7 +15,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
-import com.beank.workFlowy.R.string as AppText
+import com.beank.presentation.R.string as AppText
 
 
 @HiltViewModel

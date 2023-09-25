@@ -5,7 +5,7 @@ import com.beank.domain.model.Tag
 import com.beank.domain.usecase.record.InsertRecord
 import javax.inject.Inject
 
-class InitDataSetting (
+class InitDataSetting @Inject constructor(
     private val insertRecord: InsertRecord,
     private val insertTag: InsertTag
 ) {

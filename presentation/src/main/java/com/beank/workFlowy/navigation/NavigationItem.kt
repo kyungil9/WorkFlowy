@@ -1,7 +1,7 @@
 package com.beank.workFlowy.navigation
 
 import androidx.annotation.DrawableRes
-import com.beank.workFlowy.R
+import com.beank.presentation.R
 
 sealed class NavigationItem(
     val title:String,

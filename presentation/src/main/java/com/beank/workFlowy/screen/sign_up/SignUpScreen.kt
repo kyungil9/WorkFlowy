@@ -10,7 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.beank.workFlowy.R
+import com.beank.presentation.R
 import com.beank.workFlowy.component.BasicButton
 import com.beank.workFlowy.component.EmailField
 import com.beank.workFlowy.component.PasswordField

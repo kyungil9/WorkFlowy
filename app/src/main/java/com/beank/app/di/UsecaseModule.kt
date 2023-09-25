@@ -1,9 +1,10 @@
-package com.beank.workFlowy.di
+package com.beank.app.di
 
 import com.beank.domain.repository.AccountRepository
 import com.beank.domain.repository.RecordRepository
 import com.beank.domain.repository.ScheduleRepository
 import com.beank.domain.repository.TagRepository
+import com.beank.domain.usecase.AnalysisUsecases
 import com.beank.domain.usecase.LoginUsecases
 import com.beank.domain.usecase.ScheduleUsecases
 import com.beank.domain.usecase.SignUpUsecases
@@ -12,6 +13,7 @@ import com.beank.domain.usecase.WeekUsecases
 import com.beank.domain.usecase.account.CreateAccount
 import com.beank.domain.usecase.account.LoginAccount
 import com.beank.domain.usecase.record.GetNowRecord
+import com.beank.domain.usecase.record.GetTodayRecord
 import com.beank.domain.usecase.record.InsertRecord
 import com.beank.domain.usecase.record.StartNewRecord
 import com.beank.domain.usecase.schedule.DeleteSchedule
@@ -80,6 +82,12 @@ object UsecaseModule {
     fun provideTagUseCases(tagRepository: TagRepository) = TagUsecases(
         checkTagTitle = CheckTagTitle(tagRepository),
         insertTag = InsertTag(tagRepository)
+    )
+
+    @Provides
+    @Singleton
+    fun provideAnalysisUseCases(recordRepository: RecordRepository) = AnalysisUsecases(
+        getTodayRecord = GetTodayRecord(recordRepository)
     )
 
 }

@@ -6,7 +6,7 @@ import java.time.LocalTime
 import javax.inject.Inject
 import javax.inject.Singleton
 
-class UpdateRecord(
+class UpdateRecord @Inject constructor(
     private val recordRepository: RecordRepository
 ){
     operator fun invoke(id: String, endTime: LocalDateTime, progressTime : Long, pause : Boolean) = recordRepository.updateRecord(id,endTime,progressTime,pause)

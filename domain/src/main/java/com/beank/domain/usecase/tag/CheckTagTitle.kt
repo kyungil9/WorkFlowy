@@ -4,7 +4,7 @@ import com.beank.domain.repository.TagRepository
 import javax.inject.Inject
 import javax.inject.Singleton
 
-class CheckTagTitle (
+class CheckTagTitle @Inject constructor(
     private val tagRepository: TagRepository
 ){
     suspend operator fun invoke(title : String) = tagRepository.checkTagTitle(title)

@@ -1,6 +1,8 @@
 package com.beank.workFlowy.screen.home
 
 import android.app.DatePickerDialog
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -28,7 +30,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.beank.domain.model.Schedule
-import com.beank.workFlowy.R
+import com.beank.presentation.R
 import com.beank.workFlowy.component.ActCard
 import com.beank.workFlowy.component.ScheduleList
 import com.beank.workFlowy.component.TagSelectedDialog
@@ -46,6 +48,7 @@ import java.time.ZoneId
 import java.time.temporal.ChronoUnit
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun HomeScreen(
     weekViewModel: WeekViewModel = hiltViewModel(),

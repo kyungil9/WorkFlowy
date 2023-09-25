@@ -1,4 +1,4 @@
-package com.beank.data.di
+package com.beank.app.di
 
 import com.beank.data.repositoryimpl.AccountRepositoryImpl
 import com.beank.data.repositoryimpl.LogRepositoryImpl

@@ -1,4 +1,4 @@
-package com.beank.data.di
+package com.beank.app.di
 
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.crashlytics.ktx.crashlytics

@@ -26,7 +26,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.beank.workFlowy.R
+import com.beank.presentation.R
 import com.beank.workFlowy.component.BasicButton
 import com.beank.workFlowy.component.EmailField
 import com.beank.workFlowy.component.IconButton
@@ -44,7 +44,7 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
-import com.beank.workFlowy.R.string as AppText
+import com.beank.presentation.R.string as AppText
 
 @Composable
 fun LoginScreen(

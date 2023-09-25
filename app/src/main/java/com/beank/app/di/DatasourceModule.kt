@@ -1,4 +1,4 @@
-package com.beank.data.di
+package com.beank.app.di
 
 import com.beank.data.datasource.StorageDataSource
 import com.beank.data.datasource.impl.StorageDataSourceImpl

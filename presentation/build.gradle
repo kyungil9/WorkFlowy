@@ -1,32 +1,18 @@
 plugins {
-    alias(libs.plugins.android.application)
+    alias(libs.plugins.android.library)
     alias(libs.plugins.android.navigation.safeargs)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.hilt)
-    alias(libs.plugins.google)
     alias(libs.plugins.crashlytics)
     id 'kotlin-kapt'
 }
 
 android {
+    namespace 'com.beank.presentation'
     compileSdk 34
 
     buildFeatures {
         compose true
-    }
-
-    defaultConfig {
-        applicationId "com.beank.workFlowy"
-        minSdk 28
-        targetSdk 34
-        versionCode 1
-        versionName "0.4"
-        multiDexEnabled true
-
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        vectorDrawables {
-            useSupportLibrary true
-        }
     }
 
     buildTypes {
@@ -42,20 +28,14 @@ android {
     kotlinOptions {
         jvmTarget = '18'
     }
-    namespace 'com.beank.workFlowy'
+
     composeOptions {
         kotlinCompilerExtensionVersion '1.5.0'
-    }
-    packagingOptions {
-        resources {
-            excludes += '/META-INF/{AL2.0,LGPL2.1}'
-        }
     }
 }
 
 dependencies {
     implementation(project(":domain"))
-    implementation(project(":data"))
 
     implementation(libs.core.ktx)
     implementation(libs.appcompat)
@@ -88,7 +68,7 @@ dependencies {
     kapt(libs.room.compiler)
     androidTestImplementation(libs.room.testing)
 
-    // gson
+    //gson
     implementation(libs.gson)
 
     //firebase

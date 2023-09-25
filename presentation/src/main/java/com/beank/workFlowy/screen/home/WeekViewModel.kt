@@ -45,7 +45,7 @@ import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
 import javax.inject.Inject
-import com.beank.workFlowy.R.string as AppText
+import com.beank.presentation.R.string as AppText
 
 @Stable
 data class WeekUiState(

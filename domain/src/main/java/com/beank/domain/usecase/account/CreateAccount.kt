@@ -4,7 +4,7 @@ import com.beank.domain.repository.AccountRepository
 import javax.inject.Inject
 import javax.inject.Singleton
 
-class CreateAccount (
+class CreateAccount @Inject constructor(
     private val accountRepository: AccountRepository
 ){
     operator fun invoke(email : String, password : String, onSuccess : () -> Unit, onFailMessage : () -> Unit) =

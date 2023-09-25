@@ -8,7 +8,7 @@ import java.time.LocalTime
 import javax.inject.Inject
 import javax.inject.Singleton
 
-class StartNewRecord(
+class StartNewRecord @Inject constructor(
     private val recordRepository: RecordRepository
 ){
     operator fun invoke(id: String, endTime: LocalDateTime, progressTime: Long, pause: Boolean, record: Record) {

@@ -8,7 +8,7 @@ import com.beank.domain.repository.LogRepository
 import com.beank.domain.usecase.SignUpUsecases
 import com.beank.domain.usecase.account.CreateAccount
 import com.beank.domain.usecase.tag.InitDataSetting
-import com.beank.workFlowy.R
+import com.beank.presentation.R
 import com.beank.workFlowy.component.snackbar.SnackbarManager
 import com.beank.workFlowy.screen.WorkFlowyViewModel
 import com.beank.workFlowy.utils.isValidEmail
@@ -21,7 +21,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SignUpViewModel @Inject constructor(
-    private val signUpUsecases: SignUpUsecases,
+    //private val signUpUsecases: SignUpUsecases,
     logRepository: LogRepository
 ) : WorkFlowyViewModel(logRepository){
 
@@ -61,14 +61,14 @@ class SignUpViewModel @Inject constructor(
         }
 
         launchCatching {
-            signUpUsecases.createAccount(
-                email = inputEmail,
-                password = inputPassword,
-                onSuccess = {
-                    signUpUsecases.initDataSetting()
-                    onBack()},
-                onFailMessage = {SnackbarManager.showMessage(R.string.login_server_error)}
-            )
+//            signUpUsecases.createAccount(
+//                email = inputEmail,
+//                password = inputPassword,
+//                onSuccess = {
+//                    signUpUsecases.initDataSetting()
+//                    onBack()},
+//                onFailMessage = {SnackbarManager.showMessage(R.string.login_server_error)}
+//            )
         }
     }
 

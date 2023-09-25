@@ -15,7 +15,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import com.beank.workFlowy.R
+import com.beank.presentation.R
 import com.beank.workFlowy.navigation.NavigationItem
 
 @Composable

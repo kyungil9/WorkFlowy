@@ -16,6 +16,7 @@ import com.beank.domain.model.onLoading
 import com.beank.domain.model.onSuccess
 import com.beank.domain.repository.RecordRepository
 import com.google.firebase.firestore.Filter
+import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.toObject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -36,7 +37,8 @@ class RecordRepositoryImpl @Inject constructor(
             .dataStateObjects<WeekRecord,Record>()
 
     override fun getTodayRecord(date: LocalDate): Flow<FireStoreState<List<Record>>> =
-        storage.store.document(storage.getUid()!!).collection(RECORD).whereEqualTo("date",date.toInt()).dataStateObjects<WeekRecord,Record>()
+        storage.store.document(storage.getUid()!!).collection(RECORD).whereEqualTo("date",date.toInt())
+            .orderBy("progressTime", Query.Direction.DESCENDING).dataStateObjects<WeekRecord,Record>()
 
     override fun getPauseRecord(pause: Boolean): Flow<FireStoreState<NowRecord>> = channelFlow {
         send(FireStoreState.Loading)

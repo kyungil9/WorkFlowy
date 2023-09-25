@@ -5,7 +5,7 @@ import com.beank.domain.repository.TagRepository
 import javax.inject.Inject
 import javax.inject.Singleton
 
-class GetNowRecord(
+class GetNowRecord @Inject constructor(
     private val recordRepository: RecordRepository
 ){
     operator fun invoke(pause: Boolean) = recordRepository.getPauseRecord(pause)

@@ -21,8 +21,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import com.beank.workFlowy.R.string as AppText
-import com.beank.workFlowy.R.drawable as AppIcon
+import com.beank.presentation.R.string as AppText
+import com.beank.presentation.R.drawable as AppIcon
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

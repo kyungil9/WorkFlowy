@@ -35,7 +35,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.beank.workFlowy.R
+import com.beank.presentation.R
 import com.beank.workFlowy.component.IconButton
 import com.beank.workFlowy.component.StackBar
 import com.beank.workFlowy.component.WeekLayout

@@ -1,4 +1,4 @@
-package com.beank.workFlowy
+package com.beank.app
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -9,9 +9,8 @@ import android.content.Intent
 import android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP
 import android.os.Build
 import android.util.Log
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.core.app.NotificationCompat
-import com.beank.workFlowy.screen.WorkFlowyActivity
+import com.beank.workFlowy.R
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import kotlin.random.Random
@@ -28,7 +27,7 @@ class WorkFlowyMessagingService : FirebaseMessagingService() {
 
     private fun sendNotification(message: RemoteMessage.Notification) {
 
-        val intent = Intent(this, WorkFlowyActivity::class.java).apply {
+        val intent = Intent(this, com.beank.app.WorkFlowyActivity::class.java).apply {
             addFlags(FLAG_ACTIVITY_CLEAR_TOP)
         }
 

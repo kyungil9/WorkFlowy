@@ -1,5 +1,7 @@
 package com.beank.data
 
+import com.beank.data.entity.WeekRecord
+import com.beank.data.mapper.modelCasting
 import org.junit.Test
 
 import org.junit.Assert.*
@@ -12,6 +14,6 @@ import org.junit.Assert.*
 class ExampleUnitTest {
     @Test
     fun addition_isCorrect() {
-        assertEquals(4, 2 + 2)
+        println(modelCasting(WeekRecord()))
     }
 }

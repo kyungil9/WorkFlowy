@@ -2,7 +2,7 @@ package com.beank.workFlowy.component.snackbar
 
 import android.content.res.Resources
 import androidx.annotation.StringRes
-import com.beank.workFlowy.R.string as AppText
+import com.beank.presentation.R.string as AppText
 
 sealed class SnackbarMessage {
     class StringSnackbar(val message: String) : SnackbarMessage()

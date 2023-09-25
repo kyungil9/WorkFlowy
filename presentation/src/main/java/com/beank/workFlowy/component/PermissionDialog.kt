@@ -12,7 +12,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
-import com.beank.workFlowy.R.string as AppText
+import com.beank.presentation.R.string as AppText
 
 @Composable
 fun PermissionDialog(onRequestPermission: () -> Unit) {

@@ -11,7 +11,7 @@ import com.beank.domain.repository.LogRepository
 import com.beank.domain.usecase.TagUsecases
 import com.beank.domain.usecase.tag.CheckTagTitle
 import com.beank.domain.usecase.tag.InsertTag
-import com.beank.workFlowy.R
+import com.beank.presentation.R
 import com.beank.workFlowy.screen.WorkFlowyViewModel
 import com.beank.workFlowy.utils.imageToInt
 import dagger.hilt.android.lifecycle.HiltViewModel
