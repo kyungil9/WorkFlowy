@@ -39,7 +39,7 @@ fun today():String {
     return "< ${today.year}/${today.monthValue}/${today.dayOfMonth} ${transDayToKorean(today.dayOfWeek.value)} >"
 }
 
-fun LocalDate.toFormatString() = "${this.year%100}/${zeroFormat.format(this.monthValue)}/${zeroFormat.format(this.dayOfMonth)} ${transDayToKorean(this.dayOfWeek.value)}"
+fun LocalDate.toFormatString() = "${this.year%100}/${zeroFormat.format(this.monthValue)}/${zeroFormat.format(this.dayOfMonth)} ${transDayToShortKorean(this.dayOfWeek.value)}"
 
 fun LocalDate.toWeekString() : String {
     val startDate = this.minusDays((this.dayOfWeek.value-1).toLong())
