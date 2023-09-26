@@ -14,5 +14,7 @@ interface ScheduleRepository {
 
     fun updateSchedule(schedule: Schedule)
 
+    fun updateCheckSchedule(id : String, check : Boolean)
+
     fun deleteSchedule(schedule: Schedule)
 }

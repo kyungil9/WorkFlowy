@@ -1,5 +1,6 @@
 package com.beank.workFlowy.component
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.EaseOut
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.animateFloat
@@ -106,7 +107,8 @@ fun StackBar(
             state = rememberLazyListState(),
             modifier = modifier
                 .padding(horizontal = 20.dp)
-                .height(100.dp)//height를 item 수만큼 해서 변동 3개기준 100
+                .height((10+30*record.size).dp)
+                .animateContentSize(tween(1000))//height를 item 수만큼 해서 변동 3개기준 100
         ) {
             itemsIndexed(record){index,record ->
                 if (record.progressTime != 0L)

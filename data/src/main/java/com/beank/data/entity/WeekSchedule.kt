@@ -12,7 +12,9 @@ data class WeekSchedule(
     var date : Int = 20220201,
     var startTime : String = "04:00",
     var endTime : String = "04:00",
+    var time : Boolean = false,
     var icon : Int = 0,
     var title : String = "",
-    var comment : String = ""
+    var comment : String = "",
+    var check : Boolean = false
 )

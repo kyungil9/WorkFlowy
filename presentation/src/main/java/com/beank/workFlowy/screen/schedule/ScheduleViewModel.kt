@@ -68,11 +68,11 @@ class ScheduleViewModel @Inject constructor(
         private set
     var checkImage by mutableStateOf(false)
         private set
-    var checkDate by mutableStateOf(false)
+    var checkDate by mutableStateOf(false)//날짜 선택시에만
         private set
-    var checkTime by mutableStateOf(false)
+    var checkTime by mutableStateOf(false)//시간 선택 설정
         private set
-    var checkendTime by mutableStateOf(false)
+    var checkendTime by mutableStateOf(false)//종료시간 창 보여주는 토글
         private set
 
 
@@ -101,6 +101,7 @@ class ScheduleViewModel @Inject constructor(
             selectPickerDay = schedule.date.dayOfMonth
             selectPickerStartTime = FullHours(schedule.startTime.hour,schedule.startTime.minute)
             selectPickerEndTime = FullHours(schedule.endTime.hour,schedule.endTime.minute)
+            checkTime = schedule.time
             selectScheduleImage = intToImage(schedule.icon,typedSchedule)
         }else{
             val day = today.toLocalDate()
@@ -176,6 +177,7 @@ class ScheduleViewModel @Inject constructor(
                 date = LocalDate.of(selectPickerYear,selectPickerMonth,selectPickerDay),
                 startTime = LocalTime.of(selectPickerStartTime.hours,selectPickerStartTime.minutes,0),
                 endTime = LocalTime.of(selectPickerEndTime.hours,selectPickerEndTime.minutes,0),
+                time = checkTime,
                 icon = imageToInt(selectScheduleImage,typedSchedule),
                 title = inputScheduleText,
                 comment = inputCommentText
@@ -190,6 +192,7 @@ class ScheduleViewModel @Inject constructor(
                 date = LocalDate.of(selectPickerYear,selectPickerMonth,selectPickerDay),
                 startTime = LocalTime.of(selectPickerStartTime.hours,selectPickerStartTime.minutes,0),
                 endTime = LocalTime.of(selectPickerEndTime.hours,selectPickerEndTime.minutes,0),
+                time = checkTime,
                 icon = imageToInt(selectScheduleImage,typedSchedule),
                 title = inputScheduleText,
                 comment = inputCommentText

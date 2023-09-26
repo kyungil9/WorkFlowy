@@ -146,6 +146,13 @@ class WeekViewModel @Inject constructor(
         }
     }
 
+    fun updateCheckSchedule(){
+        launchCatching {
+            scheduleInfo.check = scheduleInfo.check.not()
+            weekUsecases.updateCheckSchedule(scheduleInfo.id!!,scheduleInfo.check)
+        }
+    }
+
     fun changeRecordInfo(tag: Tag){
         if (uiState.recordList.isNotEmpty()){
             launchCatching {

@@ -12,9 +12,11 @@ fun WeekSchedule.toScheduleModel() = Schedule(
     date = date.toLocalDate(),
     startTime = startTime.toLocalTime(),
     endTime = endTime.toLocalTime(),
+    time = time,
     icon = icon,
     title = title,
-    comment = comment
+    comment = comment,
+    check = check
 )
 
 fun WeekRecord.toRecordModel() = Record(
@@ -38,9 +40,11 @@ fun Schedule.toWeekSchedule() = WeekSchedule(
     date = date.toInt(),
     startTime = startTime.toFormatString(),
     endTime = endTime.toFormatString(),
+    time = time,
     icon = icon,
     title = title,
-    comment = comment
+    comment = comment,
+    check = check
 )
 
 fun Record.toWeekRecord() = WeekRecord(

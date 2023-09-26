@@ -17,6 +17,10 @@ import com.beank.domain.usecase.AnalysisUsecases
 import com.beank.presentation.R
 import com.beank.workFlowy.component.snackbar.SnackbarManager
 import com.beank.workFlowy.screen.WorkFlowyViewModel
+import com.beank.workFlowy.screen.analysis.Date.DAY
+import com.beank.workFlowy.screen.analysis.Date.MONTH
+import com.beank.workFlowy.screen.analysis.Date.WEEK
+import com.beank.workFlowy.screen.analysis.Date.YEAR
 import com.beank.workFlowy.utils.changeDayInfo
 import com.beank.workFlowy.utils.toWeekEnd
 import com.beank.workFlowy.utils.toWeekStart
@@ -83,6 +87,24 @@ class AnalysisViewModel @Inject constructor(
         }
     }
 
+    fun rightDragDate(){
+        when(toggleButtonFlow.value){
+            DAY -> _selectDayFlow.value = selectDayFlow.value.plusDays(1)
+            WEEK -> _selectDayFlow.value = selectDayFlow.value.plusWeeks(1)
+            MONTH -> _selectDayFlow.value = selectDayFlow.value.plusMonths(1)
+            YEAR -> _selectDayFlow.value = selectDayFlow.value.plusYears(1)
+        }
+    }
+
+    fun leftDragDate(){
+        when(toggleButtonFlow.value){
+            DAY -> _selectDayFlow.value = selectDayFlow.value.minusDays(1)
+            WEEK -> _selectDayFlow.value = selectDayFlow.value.minusWeeks(1)
+            MONTH -> _selectDayFlow.value = selectDayFlow.value.minusMonths(1)
+            YEAR -> _selectDayFlow.value = selectDayFlow.value.minusYears(1)
+        }
+    }
+
     private fun getPeriodRecord() {
         launchCatching {
             toggleButtonFlow.combine(selectDayFlow){toggle,date -> PeriodDate(date, toggle)}.collectLatest { period ->
@@ -141,11 +163,11 @@ data class PeriodDate(
         YEAR -> LocalDate.of(date.year,12,31)
         else -> date
     }
+}
 
-    companion object {
-        const val DAY = 0
-        const val WEEK = 1
-        const val MONTH = 2
-        const val YEAR = 3
-    }
+object Date{
+    const val DAY = 0
+    const val WEEK = 1
+    const val MONTH = 2
+    const val YEAR = 3
 }

@@ -35,7 +35,6 @@ fun WorkFlowyApp() {
         }
         Surface {
             val appState = rememberAppState()
-
             NavigationGraph(appState)
         }
 

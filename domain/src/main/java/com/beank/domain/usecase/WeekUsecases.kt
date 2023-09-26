@@ -4,6 +4,7 @@ import com.beank.domain.usecase.record.GetNowRecord
 import com.beank.domain.usecase.record.StartNewRecord
 import com.beank.domain.usecase.schedule.DeleteSchedule
 import com.beank.domain.usecase.schedule.GetTodaySchedule
+import com.beank.domain.usecase.schedule.UpdateCheckSchedule
 import com.beank.domain.usecase.tag.DeleteTag
 import com.beank.domain.usecase.tag.GetAllTag
 
@@ -13,5 +14,6 @@ data class WeekUsecases(
     val getNowRecord: GetNowRecord,
     val startNewRecord: StartNewRecord,
     val deleteTag: DeleteTag,
-    val deleteSchedule: DeleteSchedule
+    val deleteSchedule: DeleteSchedule,
+    val updateCheckSchedule: UpdateCheckSchedule
 )

@@ -2,7 +2,10 @@ package com.beank.workFlowy.component
 
 import android.content.Context
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.detectDragGestures
@@ -24,6 +27,7 @@ import androidx.compose.material.FractionalThreshold
 import androidx.compose.material.rememberSwipeableState
 import androidx.compose.material.swipeable
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
@@ -46,6 +50,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.Color
 import java.time.LocalDate
 import kotlin.math.abs
 
@@ -64,44 +69,46 @@ fun ScheduleList(
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .pointerInput(Unit){
-              detectDragGestures(
-                  onDrag = { change,dragAmount ->
-                      change.consume()
-                      val (x,y) = dragAmount
-                      if (abs(x)> abs(y)){
-                          when{
-                              x >0 -> {
-                                  dragOffsetX += x
-                                  direction = 0
-                              }
-                              x < 0 -> {
-                                  dragOffsetX += x
-                                  direction = 1
-                              }
-                          }
-                      }
-                  },
-                  onDragEnd = {
-                      when (direction) {
-                          0 -> {
-                              if (dragOffsetX > 400){
-                                  //left motion
-                                  onLeftDrag()
-                              }
-                              dragOffsetX = 0f
-                          }
-                          1 -> {
-                              if (dragOffsetX < -400){
-                                  //right
-                                  onRightDrag()
+            .pointerInput(Unit) {
+                detectDragGestures(
+                    onDrag = { change, dragAmount ->
+                        change.consume()
+                        val (x, y) = dragAmount
+                        if (abs(x) > abs(y)) {
+                            when {
+                                x > 0 -> {
+                                    dragOffsetX += x
+                                    direction = 0
+                                }
 
-                              }
-                              dragOffsetX = 0f
-                          }
-                      }
-                  }
-              )
+                                x < 0 -> {
+                                    dragOffsetX += x
+                                    direction = 1
+                                }
+                            }
+                        }
+                    },
+                    onDragEnd = {
+                        when (direction) {
+                            0 -> {
+                                if (dragOffsetX > 400) {
+                                    //left motion
+                                    onLeftDrag()
+                                }
+                                dragOffsetX = 0f
+                            }
+
+                            1 -> {
+                                if (dragOffsetX < -400) {
+                                    //right
+                                    onRightDrag()
+
+                                }
+                                dragOffsetX = 0f
+                            }
+                        }
+                    }
+                )
             },
         state = scrollState
     ) {
@@ -117,6 +124,7 @@ fun ScheduleItem(
     schedule : Schedule,
     onClickSchedule : (Schedule) -> Unit
 ){
+    val cardColor by animateColorAsState(targetValue = if (schedule.check) Color.Gray else Color.White, tween(500))
     Card(
         Modifier
             .fillMaxWidth()
@@ -124,6 +132,7 @@ fun ScheduleItem(
             .height(80.dp)
             .padding(10.dp),
         shape = RoundedCornerShape(10.dp),
+        colors = CardDefaults.cardColors(containerColor = cardColor),
         elevation = CardDefaults.cardElevation(defaultElevation = 5.dp)
     ) {
         Row(

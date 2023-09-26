@@ -27,6 +27,9 @@ class ScheduleRepositoryImpl @Inject constructor(
     override fun updateSchedule(schedule: Schedule) : Unit =
         storage.replace(SCHEDULE,schedule.id!!,schedule.toWeekSchedule())
 
+    override fun updateCheckSchedule(id : String, check: Boolean) : Unit =
+        storage.update(SCHEDULE,id, mapOf("check" to check))
+
     override fun deleteSchedule(schedule: Schedule) : Unit =
         storage.delete(SCHEDULE,schedule.id!!)
 

@@ -5,6 +5,7 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.viewModelScope
 import com.beank.domain.model.Tag
 import com.beank.domain.repository.LogRepository
 import com.beank.domain.usecase.TagUsecases
@@ -12,8 +13,10 @@ import com.beank.presentation.R
 import com.beank.workFlowy.screen.WorkFlowyViewModel
 import com.beank.workFlowy.utils.imageToInt
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @Stable
@@ -26,11 +29,7 @@ class TagViewModel @Inject constructor(
     private val tagUsecases: TagUsecases,
     logRepository: LogRepository
 ) : WorkFlowyViewModel(logRepository) {
-    private val _tagUiState = MutableStateFlow(TagUiState())
-    private val _selectTagText = MutableStateFlow("")
-    private val _selectTagImage = MutableStateFlow(R.drawable.baseline_menu_book_24)
     private lateinit var typedTag: TypedArray
-
 
     var selectTagText by mutableStateOf("")
         private set
@@ -47,16 +46,18 @@ class TagViewModel @Inject constructor(
             for (i in 0 until tagList.length()-2){
                 tagImages.add(tagList.getResourceId(i,-1))
             }
-            _tagUiState.update { state -> state.copy(tagImageList = tagImages) }
+            viewModelScope.launch(Dispatchers.Main) {
+                tagUiState = tagUiState.copy(tagImageList = tagImages)
+            }
         }
     }
 
     fun updateSelectTagText(text : String){
-        _selectTagText.value = text
+        selectTagText = text
     }
 
     fun updateSelectTagImage(image : Int){
-        _selectTagImage.value = image
+        selectTagImage = image
     }
 
     fun insertTagInfo() {

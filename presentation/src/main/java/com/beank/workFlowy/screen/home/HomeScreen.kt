@@ -107,7 +107,7 @@ fun HomeScreen(
                         }
                     }
                 },
-                onCheckSchedule = { /*TODO*/ },
+                onCheckSchedule = weekViewModel::updateCheckSchedule,
                 onDeleteSchedule = {
                     weekViewModel.deleteSelectSchedule()
                     weekViewModel.changeScheduleState(false)},
@@ -168,7 +168,10 @@ fun HomeScreen(
                     }},
                 onClickSchedule = {schedule ->
                     if (weekViewModel.scheduleInfo == schedule) {
-                        weekViewModel.changeScheduleState(false)
+                        if (weekViewModel.scheduleState)
+                            weekViewModel.changeScheduleState(false)
+                        else
+                            weekViewModel.changeScheduleState(true)
                     }else{
                         weekViewModel.setSelectScheduleInfo(schedule)
                         weekViewModel.changeScheduleState(true)

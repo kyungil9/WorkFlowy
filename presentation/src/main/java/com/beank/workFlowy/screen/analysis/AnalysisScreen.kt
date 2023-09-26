@@ -4,6 +4,8 @@ import android.app.DatePickerDialog
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -14,6 +16,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Card
@@ -74,11 +77,9 @@ fun AnalysisScreen(
                 updateDay = analysisViewModel::changeSelectDay,
                 updateToggle = analysisViewModel::updateToggleButton,
                 updateAnimate = analysisViewModel::sendAnimationEvent,
-                onRightDrag = {},
-                onLeftDrag = {}
+                onRightDrag = analysisViewModel::rightDragDate,
+                onLeftDrag = analysisViewModel::leftDragDate
             )
-
-
         }
     }
 }
@@ -112,10 +113,12 @@ fun RecordCard(
     )
     dateDialog.datePicker.minDate = LocalDate.of(2021,12,28).atTime(0,0).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
     dateDialog.datePicker.maxDate = LocalDate.of(2026,1,3).atTime(0,0).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+
     Card(
         modifier = Modifier
             .padding(10.dp)
             .fillMaxWidth()//높이 조절???
+            .height((100+30*uiState.recordList.size).dp)
             .pointerInput(Unit) {
                 detectDragGestures(
                     onDrag = { change, dragAmount ->
@@ -201,8 +204,7 @@ fun RecordCard(
                 ) {
                     CircularProgressIndicator()
                 }
-            }
-            AnimatedVisibility(visible = !actProgress) {
+            } else {
                 LaunchedEffect(key1 = selectDay, key2 = toggle){
                     updateAnimate(true)
                 }

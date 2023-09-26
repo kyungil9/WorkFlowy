@@ -15,13 +15,15 @@ import java.time.format.DateTimeFormatter
 @RequiresApi(Build.VERSION_CODES.O)
 fun Schedule.toScheduleJson() : String?{
     val temp = JsonSchedule(
-        this.id,
-        this.date.toInt(),
-        this.startTime.toFormatString(),
-        this.endTime.toFormatString(),
-        this.icon,
-        this.title,
-        this.comment
+        id,
+        date.toInt(),
+        startTime.toFormatString(),
+        endTime.toFormatString(),
+        time,
+        icon,
+        title,
+        comment,
+        check
     )
     return Gson().toJson(temp)
 }
@@ -34,9 +36,11 @@ fun String.fromScheduleJson(): Schedule{
         json.date.toLocalDate(),
         json.startTime.toLocalTime(),
         json.endTime.toLocalTime(),
+        json.time,
         json.icon,
         json.title,
-        json.comment
+        json.comment,
+        json.check
     )
 }
 
@@ -45,9 +49,11 @@ data class JsonSchedule(
     var date: Int = 0,
     var startTime: String = "06:00",
     var endTime: String = "06:00",
+    var time : Boolean = false,
     var icon: Int = 0,
     var title: String = "",
-    var comment: String = ""
+    var comment: String = "",
+    var check : Boolean = false
 )
 
 
