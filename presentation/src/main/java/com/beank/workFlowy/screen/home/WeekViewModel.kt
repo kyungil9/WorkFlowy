@@ -2,7 +2,6 @@ package com.beank.workFlowy.screen.home
 
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -16,17 +15,9 @@ import com.beank.domain.model.onLoading
 import com.beank.domain.model.onSuccess
 import com.beank.domain.repository.LogRepository
 import com.beank.domain.usecase.WeekUsecases
-import com.beank.domain.usecase.record.GetNowRecord
-import com.beank.domain.usecase.record.StartNewRecord
-import com.beank.domain.usecase.schedule.DeleteSchedule
-import com.beank.domain.usecase.schedule.GetTodaySchedule
-import com.beank.domain.usecase.tag.DeleteTag
-import com.beank.domain.usecase.tag.GetAllTag
 import com.beank.workFlowy.component.snackbar.SnackbarManager
 import com.beank.workFlowy.screen.WorkFlowyViewModel
 import com.beank.workFlowy.utils.toFormatString
-import com.beank.workFlowy.utils.transDayToKorean
-import com.beank.workFlowy.utils.zeroFormat
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
@@ -40,7 +31,6 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.time.Duration
@@ -48,13 +38,6 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import javax.inject.Inject
 import com.beank.presentation.R.string as AppText
-
-@Stable
-data class WeekUiState(
-    val tagList : List<Tag> = emptyList(),
-    val scheduleList : List<Schedule> = emptyList(),
-    val recordList : List<Record> = emptyList()
-)
 
 @RequiresApi(Build.VERSION_CODES.O)
 @HiltViewModel
@@ -71,20 +54,8 @@ class WeekViewModel @Inject constructor(
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(),"")
     var uiState by mutableStateOf(WeekUiState())
         private set
-    var selectedTag by mutableStateOf(Tag())
-        private set
-    var progressTime by mutableStateOf(Duration.ZERO)
-        private set
-    var actBoxProgress by mutableStateOf(true)
-        private set
-    var weekState by mutableStateOf(false)
-        private set
-    var scheduleState by mutableStateOf(false)
-        private set
-    var scheduleInfo = Schedule()
-        private set
+    private val scheduleInfo get() = uiState.selectSchedule
     var todayJob : Job? = null
-
 
     init {
         getAllTagInfo()
@@ -100,7 +71,7 @@ class WeekViewModel @Inject constructor(
                 if (delayMills >= 1000L) {
                     val record = uiState.recordList
                     if (record.isNotEmpty()) {
-                        progressTime = Duration.between(record[0].startTime, LocalDateTime.now())
+                        uiState = uiState.copy(progressTime = Duration.between(record[0].startTime, LocalDateTime.now()))
                     }
                     oldTimeMills = System.currentTimeMillis()
                 }
@@ -109,51 +80,54 @@ class WeekViewModel @Inject constructor(
     }
 
     fun setSelectScheduleInfo(schedule: Schedule){
-        scheduleInfo = schedule
+        uiState = uiState.copy(selectSchedule = schedule)
     }
-    fun changeWeekState(value : Boolean){
-        weekState = value
-    }
-
-    fun changeScheduleState(value: Boolean){
-        scheduleState = value
+    fun onWeekStateChange(value : Boolean){
+        uiState = uiState.copy(weekState = value)
     }
 
-    fun changeSelectDay(day : LocalDate){
+    fun onScheduleStateChange(value: Boolean){
+        uiState = uiState.copy(scheduleState = value)
+    }
+
+    fun onSelectDayChange(day : LocalDate){
         _selectDayFlow.value = day
+        onScheduleStateChange(false)
     }
 
     fun plusSelectDay() : LocalDate {
         _selectDayFlow.value = selectDayFlow.value.plusDays(1)
+        onScheduleStateChange(false)
         return selectDayFlow.value
     }
 
 
     fun minusSelectDay() : LocalDate {
         _selectDayFlow.value = selectDayFlow.value.minusDays(1)
+        onScheduleStateChange(false)
         return selectDayFlow.value
     }
 
-    fun deleteSelectSchedule(){
+    fun onScheduleDelete(){
         launchCatching {
             weekUsecases.deleteSchedule(scheduleInfo)
         }
     }
 
-    fun deleteSelectTag(tag: Tag){
+    fun onTagDelete(tag: Tag){
         launchCatching {
             weekUsecases.deleteTag(tag)
         }
     }
 
-    fun updateCheckSchedule(){
+    fun onCheckScheduleChange(){
         launchCatching {
             scheduleInfo.check = scheduleInfo.check.not()
             weekUsecases.updateCheckSchedule(scheduleInfo.id!!,scheduleInfo.check)
         }
     }
 
-    fun changeRecordInfo(tag: Tag){
+    fun onRecordChange(tag: Tag){
         if (uiState.recordList.isNotEmpty()){
             launchCatching {
                 val endTime = LocalDateTime.now()
@@ -184,13 +158,11 @@ class WeekViewModel @Inject constructor(
     private fun getSelectedRecordInfo() = weekUsecases.getNowRecord(true)
         .flowOn(Dispatchers.IO).onEach { state ->
             state.onLoading { //프로그래스바 실행
-                actBoxProgress = true
+                uiState = uiState.copy(actProgress = true)
 
             }
             state.onSuccess { nowRecord ->
-                actBoxProgress = false
-                uiState = uiState.copy(recordList = listOf(nowRecord.record))
-                selectedTag = nowRecord.tag
+                uiState = uiState.copy(recordList = listOf(nowRecord.record), selectTag = nowRecord.tag, actProgress = false)
             }
             state.onException { message, e ->
                 SnackbarManager.showMessage(AppText.firebase_server_error)

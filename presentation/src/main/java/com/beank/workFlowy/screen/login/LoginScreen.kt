@@ -66,6 +66,7 @@ fun LoginScreen(
             user = null
         }
     )
+    val uiState = loginViewModel.uiState
     val token = stringResource(R.string.default_web_client_id)
     val context = LocalContext.current
     Column(
@@ -77,8 +78,8 @@ fun LoginScreen(
         if (user == null){
             Image(painter = painterResource(id = R.drawable.workflowy_foreground), contentDescription = "어플화면",
                 modifier = Modifier.size(300.dp,300.dp))
-            EmailField(value = loginViewModel.inputEmail, onNewValue = loginViewModel::onEmailChange, Modifier.fieldModifier())
-            PasswordField(value = loginViewModel.inputPassword, onNewValue = loginViewModel::onPasswordChange, Modifier.fieldModifier())
+            EmailField(value = uiState.email, onNewValue = loginViewModel::onEmailChange, Modifier.fieldModifier())
+            PasswordField(value = uiState.password, onNewValue = loginViewModel::onPasswordChange, Modifier.fieldModifier())
 
             BasicButton(text = AppText.sign_in, modifier = Modifier.basicButton()) {
                 loginViewModel.onSignInClick(openPopUpScreen)

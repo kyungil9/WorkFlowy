@@ -1,5 +1,7 @@
 package com.beank.workFlowy.screen.sign_up
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -20,45 +22,45 @@ class SignUpViewModel @Inject constructor(
     logRepository: LogRepository
 ) : WorkFlowyViewModel(logRepository){
 
-    var inputEmail by mutableStateOf("")
+    var uiState by mutableStateOf(SignUpUiState())
         private set
-    var inputPassword by mutableStateOf("")
-        private set
-    var inputRepeatPassword by mutableStateOf("")
-        private set
+    private val email get() = uiState.email
+    private val password get() = uiState.password
+    private val repeatPassword get() =  uiState.repeatPassword
 
     fun onEmailChange(newValue : String){
-        inputEmail = newValue
+        uiState = uiState.copy(email = newValue)
     }
 
     fun onPasswordChange(newValue: String){
-        inputPassword = newValue
+        uiState = uiState.copy(password = newValue)
     }
 
-    fun onRepeatPassword(newValue: String){
-        inputRepeatPassword = newValue
+    fun onRepeatPasswordChange(newValue: String){
+        uiState = uiState.copy(repeatPassword = newValue)
     }
 
+    @RequiresApi(Build.VERSION_CODES.FROYO)
     fun onSignInClick(onBack: () -> Unit) {
-        if (!inputEmail.isValidEmail()) {
+        if (!email.isValidEmail()) {
             SnackbarManager.showMessage(R.string.email_error)
             return
         }
 
-        if (inputPassword.isValidPassword()) {
+        if (password.isValidPassword()) {
             SnackbarManager.showMessage(R.string.password_error)
             return
         }
 
-        if (!inputPassword.passwordMatches(inputRepeatPassword)) {
+        if (!password.passwordMatches(repeatPassword)) {
             SnackbarManager.showMessage(R.string.password_match_error)
             return
         }
 
         launchCatching {
             signUpUsecases.createAccount(
-                email = inputEmail,
-                password = inputPassword,
+                email = email,
+                password = password,
                 onSuccess = {
                     signUpUsecases.initDataSetting()
                     onBack()},

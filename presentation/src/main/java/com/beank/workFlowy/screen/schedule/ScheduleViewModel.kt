@@ -29,11 +29,6 @@ import java.time.LocalDate
 import java.time.LocalTime
 import javax.inject.Inject
 
-@Stable
-data class ScheduleUiState(
-    val scheduleImageList : List<Int> = emptyList()
-)
-
 @RequiresApi(Build.VERSION_CODES.O)
 @HiltViewModel
 class ScheduleViewModel @Inject constructor(
@@ -43,38 +38,8 @@ class ScheduleViewModel @Inject constructor(
 ) : WorkFlowyViewModel(logRepository){
 
     private lateinit var typedSchedule : TypedArray
-    private val date = LocalDate.now()
-    private val time = LocalTime.now()
-    var updateId = ""
+    var uiState by mutableStateOf(ScheduleUiState())
         private set
-    var scheduleUiState by mutableStateOf(ScheduleUiState())
-        private set
-    var inputScheduleText by mutableStateOf("")
-        private set
-    var selectScheduleImage by mutableStateOf(R.drawable.baseline_calendar_today_24)
-        private set
-    var selectPickerYear by mutableStateOf(date.year)
-        private set
-    var selectPickerMonth by mutableStateOf(date.monthValue)
-        private set
-    var selectPickerDay by mutableStateOf(date.dayOfMonth)
-    var selectPickerStartTime by mutableStateOf(FullHours(time.hour,time.minute))
-        private set
-    var selectPickerEndTime by mutableStateOf(FullHours(time.hour,time.minute))
-        private set
-    var endMonthDay by mutableStateOf(changeDayInfo(date))
-        private set
-    var inputCommentText by mutableStateOf("")
-        private set
-    var checkImage by mutableStateOf(false)
-        private set
-    var checkDate by mutableStateOf(false)//날짜 선택시에만
-        private set
-    var checkTime by mutableStateOf(false)//시간 선택 설정
-        private set
-    var checkendTime by mutableStateOf(false)//종료시간 창 보여주는 토글
-        private set
-
 
     fun initScheduleImages(scheduleList : TypedArray){
         typedSchedule = scheduleList
@@ -84,7 +49,7 @@ class ScheduleViewModel @Inject constructor(
                 scheduleImages.add(scheduleList.getResourceId(i,0))
             }
             viewModelScope.launch(Dispatchers.Main) {
-                scheduleUiState = scheduleUiState.copy(scheduleImageList = scheduleImages)
+                uiState = uiState.copy(scheduleImageList = scheduleImages)
             }
         }
 
@@ -93,109 +58,114 @@ class ScheduleViewModel @Inject constructor(
             val schedule = savedStateHandle.get<String>("schedule")?.let {json ->
                 json.fromScheduleJson()
             }!!
-            updateId = schedule.id!!
-            inputScheduleText = schedule.title
-            inputCommentText = schedule.comment
-            selectPickerYear = schedule.date.year
-            selectPickerMonth = schedule.date.monthValue
-            selectPickerDay = schedule.date.dayOfMonth
-            selectPickerStartTime = FullHours(schedule.startTime.hour,schedule.startTime.minute)
-            selectPickerEndTime = FullHours(schedule.endTime.hour,schedule.endTime.minute)
-            checkTime = schedule.time
-            selectScheduleImage = intToImage(schedule.icon,typedSchedule)
+            uiState = uiState.copy(
+                id = schedule.id!!,
+                title = schedule.title,
+                comment = schedule.comment,
+                year = schedule.date.year,
+                month = schedule.date.monthValue,
+                day = schedule.date.dayOfMonth,
+                startTime = FullHours(schedule.startTime.hour,schedule.startTime.minute),
+                endTime = FullHours(schedule.endTime.hour,schedule.endTime.minute),
+                timeToggle = schedule.time,
+                image = intToImage(schedule.icon,typedSchedule)
+            )
         }else{
             val day = today.toLocalDate()
-            selectPickerYear = day.year
-            selectPickerMonth = day.monthValue
-            selectPickerDay= day.dayOfMonth
+            uiState = uiState.copy(
+                year = day.year,
+                month = day.monthValue,
+                day = day.dayOfMonth
+            )
         }
     }
 
-    fun updateCheckImage(){
-        checkImage = checkImage.not()
+    fun onImageToggleChange(){
+        uiState = uiState.copy(imageToggle = uiState.imageToggle.not())
     }
-    fun updateCheckDate(){
-        checkDate = checkDate.not()
+    fun onDateToggleChange(){
+        uiState = uiState.copy(dateToggle = uiState.dateToggle.not())
     }
-
-    fun updateCheckDate(value : Boolean){
-        checkDate = value
+    fun onDateToggleChange(value : Boolean){
+        uiState = uiState.copy(dateToggle = value)
     }
-
-    fun updateCheckTime(){
-        checkTime = checkTime.not()
+    fun onTimeToggleChange(){
+        uiState = uiState.copy(timeToggle = uiState.timeToggle.not())
     }
-
-    fun updateCheckEndTime(value: Boolean){
-        checkendTime = value
+    fun onEndTimeToggleChange(value: Boolean){
+        uiState = uiState.copy(endTimeToggle = value)
     }
 
-    fun updateScheduleText(text : String){
-        inputScheduleText = text
+    fun onTitleChange(text : String){
+        uiState = uiState.copy(title = text)
     }
 
-    fun updateScheduleImage(image : Int){
-        selectScheduleImage = image
+    fun onImageChange(image : Int){
+        uiState = uiState.copy(image = image)
     }
 
-    fun updateSelectYear(year : Int){
-        selectPickerDay = 1//임시방편
-        selectPickerYear = year
-        endMonthDay = changeDayInfo(LocalDate.of(selectPickerYear,selectPickerMonth,1))
+    fun onYearChange(year : Int){
+        uiState = uiState.copy(
+            year = year,
+            day = 1,
+            endDayofMonth = changeDayInfo(LocalDate.of(uiState.year,uiState.month,1))
+        )
     }
 
-    fun updateSelectMonth(month : Int){
-        selectPickerDay = 1
-        selectPickerMonth = month
-        endMonthDay = changeDayInfo(LocalDate.of(selectPickerYear,selectPickerMonth,1))
+    fun onMonthChange(month : Int){
+        uiState = uiState.copy(
+            month = month,
+            day = 1,
+            endDayofMonth = changeDayInfo(LocalDate.of(uiState.year,uiState.month,1))
+        )
     }
 
-    fun updateSelectDay(day : Int){
-        selectPickerDay = day
+    fun onDayChange(day : Int){
+        uiState = uiState.copy(day = day)
     }
 
-    fun updateSelectStartTime(time : Hours){
-        selectPickerStartTime = FullHours(time.hours,time.minutes)
+    fun onStartTimeChange(time : Hours){
+        uiState = uiState.copy(startTime = FullHours(time.hours,time.minutes))
     }
 
-    fun updateSelectEndTime(time : Hours){
-        selectPickerEndTime = FullHours(time.hours,time.minutes)
+    fun onEndTimeChange(time : Hours){
+        uiState = uiState.copy(endTime = FullHours(time.hours,time.minutes))
     }
 
     fun selectDayOfWeek(year: Int,month: Int,day: Int) : String{
         return transDayToShortKorean(LocalDate.of(year,month,day).dayOfWeek.value)
     }
 
-    fun updateCommentText(text: String){
-        inputCommentText = text
+    fun onCommentChange(text: String){
+        uiState = uiState.copy(comment = text)
     }
 
-    fun insertScheduleInfo(){
+    fun onScheduleInsert(){
         launchCatching {
             scheduleUsecases.insertSchedule(Schedule(
                 id = null,
-                date = LocalDate.of(selectPickerYear,selectPickerMonth,selectPickerDay),
-                startTime = LocalTime.of(selectPickerStartTime.hours,selectPickerStartTime.minutes,0),
-                endTime = LocalTime.of(selectPickerEndTime.hours,selectPickerEndTime.minutes,0),
-                time = checkTime,
-                icon = imageToInt(selectScheduleImage,typedSchedule),
-                title = inputScheduleText,
-                comment = inputCommentText
+                date = LocalDate.of(uiState.year,uiState.month,uiState.day),
+                startTime = LocalTime.of(uiState.startTime.hours,uiState.startTime.minutes,0),
+                endTime = LocalTime.of(uiState.endTime.hours,uiState.endTime.minutes,0),
+                time = uiState.timeToggle,
+                icon = imageToInt(uiState.image,typedSchedule),
+                title = uiState.title,
+                comment = uiState.comment
             ))
         }
     }
 
-    fun updateScheduleInfo(){
+    fun onScheduleUpdate(){
         launchCatching {
             scheduleUsecases.updateSchedule(Schedule(
-                id = updateId,
-                date = LocalDate.of(selectPickerYear,selectPickerMonth,selectPickerDay),
-                startTime = LocalTime.of(selectPickerStartTime.hours,selectPickerStartTime.minutes,0),
-                endTime = LocalTime.of(selectPickerEndTime.hours,selectPickerEndTime.minutes,0),
-                time = checkTime,
-                icon = imageToInt(selectScheduleImage,typedSchedule),
-                title = inputScheduleText,
-                comment = inputCommentText
+                id = uiState.id,
+                date = LocalDate.of(uiState.year,uiState.month,uiState.day),
+                startTime = LocalTime.of(uiState.startTime.hours,uiState.startTime.minutes,0),
+                endTime = LocalTime.of(uiState.endTime.hours,uiState.endTime.minutes,0),
+                time = uiState.timeToggle,
+                icon = imageToInt(uiState.image,typedSchedule),
+                title = uiState.title,
+                comment = uiState.comment
             ))
         }
     }

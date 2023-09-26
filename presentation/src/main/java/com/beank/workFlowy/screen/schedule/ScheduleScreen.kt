@@ -58,30 +58,27 @@ fun ScheduleScreen(
     resource : Resources,
     onBackHome : () -> Unit
 ){
-
     scheduleViewModel.initScheduleImages(resource.obtainTypedArray(R.array.scheduleList))
-    val uiState = scheduleViewModel.scheduleUiState
-    val selectYear = scheduleViewModel.selectPickerYear
-    val selectMonth = scheduleViewModel.selectPickerMonth
-    val selectDay = scheduleViewModel.selectPickerDay
-    val selectStartTime = scheduleViewModel.selectPickerStartTime
-    val selectEndTime = scheduleViewModel.selectPickerEndTime
-    var checkTime = scheduleViewModel.checkTime
-    var checkendTime = scheduleViewModel.checkendTime
+    val uiState = scheduleViewModel.uiState
+    val selectYear = uiState.year
+    val selectMonth = uiState.month
+    val selectDay = uiState.day
+    val selectStartTime = uiState.startTime
+    val selectEndTime = uiState.endTime
 
     WeekLayout(
         snackbarHostState = snackbarHostState,
         topBar = {
             WeekAppBar(
                 headerIcon = R.drawable.baseline_close_24,
-                onHeaderIconClick = { onBackHome() },
+                onHeaderIconClick = onBackHome,
                 selectDay = "일정",
                 tailIcon = R.drawable.baseline_check_24,
                 onTailIconClick = {
-                    if (scheduleViewModel.updateId.isNotEmpty())
-                        scheduleViewModel.updateScheduleInfo()
+                    if (uiState.id.isNotEmpty())
+                        scheduleViewModel.onScheduleUpdate()
                     else
-                        scheduleViewModel.insertScheduleInfo()
+                        scheduleViewModel.onScheduleInsert()
                     onBackHome()
                 }
             )
@@ -102,21 +99,21 @@ fun ScheduleScreen(
                     .padding(end = 10.dp)
             ) {
                 TextField(
-                    value = scheduleViewModel.inputScheduleText,
-                    onValueChange = {scheduleViewModel.updateScheduleText(it)},
+                    value = uiState.title,
+                    onValueChange = scheduleViewModel::onTitleChange,
                     label = { Text(text = "일정")}
                 )
                 Image(
-                    painter = painterResource(id = scheduleViewModel.selectScheduleImage),
+                    painter = painterResource(id = uiState.image),
                     contentDescription = "스캐줄사진",
                     modifier = Modifier
                         .size(50.dp)
                         .clickable {
-                            scheduleViewModel.updateCheckImage()
+                            scheduleViewModel.onImageToggleChange()
                         }
                 )
             }
-            AnimatedVisibility(visible = scheduleViewModel.checkImage) {
+            AnimatedVisibility(visible = uiState.imageToggle) {
                 LazyVerticalGrid(
                     columns = GridCells.Adaptive(40.dp),
                     verticalArrangement = Arrangement.spacedBy(space = 5.dp),
@@ -130,7 +127,7 @@ fun ScheduleScreen(
                             modifier = Modifier
                                 .height(40.dp)
                                 .clickable {
-                                    scheduleViewModel.updateScheduleImage(image)
+                                    scheduleViewModel.onImageChange(image)
                                 }
                         )
                     }
@@ -155,21 +152,21 @@ fun ScheduleScreen(
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = Modifier.clickable {
-                            scheduleViewModel.updateCheckDate()
-                            scheduleViewModel.updateCheckEndTime(false)
+                            scheduleViewModel.onDateToggleChange()
+                            scheduleViewModel.onEndTimeToggleChange(false)
                         }
                     ) {
                         Text(
                             text = "$selectYear.$selectMonth.$selectDay(${scheduleViewModel.selectDayOfWeek(selectYear,selectMonth,selectDay)})"
                         )
-                        if (checkTime){
+                        if (uiState.timeToggle){
                             Text(
                                 text ="${selectStartTime.hours}:${selectStartTime.hours}"
                             )
                         }
                     }
                     HorizontalSpacer(width = 20.dp)
-                    AnimatedVisibility(visible = checkTime) {
+                    AnimatedVisibility(visible = uiState.timeToggle) {
                         Row {
                             Divider(
                                 color = black,
@@ -182,8 +179,8 @@ fun ScheduleScreen(
                                 verticalArrangement = Arrangement.Center,
                                 horizontalAlignment = Alignment.CenterHorizontally,
                                 modifier = Modifier.clickable {
-                                    scheduleViewModel.updateCheckEndTime(checkendTime.not())
-                                    scheduleViewModel.updateCheckDate(false)
+                                    scheduleViewModel.onEndTimeToggleChange(uiState.endTimeToggle.not())
+                                    scheduleViewModel.onDateToggleChange(false)
                                 }
                             ) {
                                 Text(
@@ -199,9 +196,9 @@ fun ScheduleScreen(
 
                 AssistChip(
                     onClick = {
-                        scheduleViewModel.updateCheckTime()
-                        if (checkendTime && !checkTime)
-                            scheduleViewModel.updateCheckDate(true)
+                        scheduleViewModel.onTimeToggleChange()
+                        if (uiState.endTimeToggle && !uiState.timeToggle)
+                            scheduleViewModel.onDateToggleChange(true)
                     },
                     label = {
                         Text(text = "시간선택")
@@ -209,32 +206,32 @@ fun ScheduleScreen(
                 )
 
             }
-            AnimatedVisibility(visible = scheduleViewModel.checkDate || checkendTime) {
-                if (checkendTime){
+            AnimatedVisibility(visible = uiState.dateToggle || uiState.endTimeToggle) {
+                if (uiState.endTimeToggle){
                     DaysPicker(
-                        timeVisibility = checkTime,
+                        timeVisibility = uiState.timeToggle,
                         yearPick = selectYear,
                         monthPick = selectMonth,
                         dayPick = selectDay,
                         timePick = selectEndTime,
-                        endDay = scheduleViewModel.endMonthDay,
-                        onDayChange = {day -> scheduleViewModel.updateSelectDay(day)},
-                        onMonthChange = {month -> scheduleViewModel.updateSelectMonth(month) },
-                        onYearChange = {year -> scheduleViewModel.updateSelectYear(year)},
-                        onTimeChange = {time -> scheduleViewModel.updateSelectEndTime(time)}
+                        endDay = uiState.endDayofMonth,
+                        onDayChange = scheduleViewModel::onDayChange,
+                        onMonthChange = scheduleViewModel::onMonthChange,
+                        onYearChange = scheduleViewModel::onYearChange,
+                        onTimeChange = scheduleViewModel::onEndTimeChange
                     )
                 }else{
                     DaysPicker(
-                        timeVisibility = checkTime,
+                        timeVisibility = uiState.timeToggle,
                         yearPick = selectYear,
                         monthPick = selectMonth,
                         dayPick = selectDay,
                         timePick = selectStartTime,
-                        endDay = scheduleViewModel.endMonthDay,
-                        onDayChange = {day -> scheduleViewModel.updateSelectDay(day)},
-                        onMonthChange = {month -> scheduleViewModel.updateSelectMonth(month) },
-                        onYearChange = {year -> scheduleViewModel.updateSelectYear(year)},
-                        onTimeChange = {time -> scheduleViewModel.updateSelectStartTime(time)}
+                        endDay = uiState.endDayofMonth,
+                        onDayChange = scheduleViewModel::onDayChange,
+                        onMonthChange = scheduleViewModel::onMonthChange,
+                        onYearChange = scheduleViewModel::onYearChange,
+                        onTimeChange = scheduleViewModel::onStartTimeChange
                     )
                 }
             }
@@ -251,8 +248,8 @@ fun ScheduleScreen(
                     .padding(start = 15.dp, top = 10.dp, end = 15.dp)
                     .background(white, RoundedCornerShape(5.dp)),
                 shape = RoundedCornerShape(5.dp),
-                value = scheduleViewModel.inputCommentText,
-                onValueChange = { scheduleViewModel.updateCommentText(it) },
+                value = uiState.comment,
+                onValueChange = scheduleViewModel::onCommentChange,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                 maxLines = 3
             )

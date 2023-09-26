@@ -24,17 +24,17 @@ class LoginViewModel @Inject constructor(
     logRepository: LogRepository
 ) : WorkFlowyViewModel(logRepository){
 
-    var inputEmail by mutableStateOf("")
+    var uiState by mutableStateOf(LoginUiState())
         private set
-    var inputPassword by mutableStateOf("")
-        private set
+    private val email get() = uiState.email
+    private val password get() = uiState.password
 
     fun onEmailChange(newValue : String){
-        inputEmail = newValue
+        uiState = uiState.copy(email = newValue)
     }
 
     fun onPasswordChange(newValue: String){
-        inputPassword = newValue
+        uiState = uiState.copy(password = newValue)
     }
 
     fun initSetting(){
@@ -44,25 +44,25 @@ class LoginViewModel @Inject constructor(
     }
 
     fun onSignInClick(openAndPopUp: (String, String) -> Unit) {
-        if (!inputEmail.isValidEmail()) {
+        if (!email.isValidEmail()) {
             SnackbarManager.showMessage(AppText.email_error)
             return
         }
 
-        if (inputPassword.isBlank()) {
+        if (password.isBlank()) {
             SnackbarManager.showMessage(AppText.empty_password_error)
             return
         }
 
-        if (!inputPassword.isValidPassword()) {
+        if (!password.isValidPassword()) {
             SnackbarManager.showMessage(AppText.password_error)
             return
         }
 
         launchCatching {
             loginUsecases.loginAccount(
-                email = inputEmail,
-                password = inputPassword,
+                email = email,
+                password = password,
                 onSuccess = { openAndPopUp(NavigationItem.HOME.route, NavigationItem.LOGIN.route) },
                 onFailMessage = {SnackbarManager.showMessage(AppText.login_server_error)}
             )

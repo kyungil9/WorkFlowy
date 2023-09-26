@@ -42,6 +42,7 @@ fun TagScreen(
     onBackHome : () -> Unit
 ){
     tagViewModel.initTagImages(resource.obtainTypedArray(R.array.tagList))
+    val uiState = tagViewModel.uiState
     val scope = rememberCoroutineScope()
 
     WeekLayout(snackbarHostState = snackbarHostState) {
@@ -52,7 +53,7 @@ fun TagScreen(
         ) {
             VerticalSpacer(height = 30.dp)
             Image(
-                painter = painterResource(id = tagViewModel.selectTagImage),
+                painter = painterResource(id = uiState.selectImage),
                 modifier = Modifier.size(180.dp),
                 contentDescription = null
             )
@@ -63,7 +64,7 @@ fun TagScreen(
             ) {
                 HorizontalSpacer(width = 10.dp)
                 TextField(
-                    value = tagViewModel.selectTagText,
+                    value = uiState.title,
                     onValueChange = {tagViewModel.updateSelectTagText(it)},
                     modifier = Modifier.weight(0.5f)
                 )
@@ -71,7 +72,7 @@ fun TagScreen(
                 Button(
                     onClick = {
                         scope.launch(Dispatchers.IO) {
-                            if (tagViewModel.selectTagText.isEmpty())
+                            if (uiState.title.isEmpty())
                                 snackbarHostState.showSnackbar("이름을 입력해주세요.")
                             else if (!tagViewModel.checkTagText())
                                 snackbarHostState.showSnackbar("중복된 이름이 있습니다.")
@@ -93,7 +94,7 @@ fun TagScreen(
                 horizontalArrangement = Arrangement.spacedBy(space = 5.dp),
                 contentPadding = PaddingValues(all = 5.dp)
             ){
-                items(tagViewModel.tagUiState.tagImageList){image ->
+                items(uiState.tagImageList){image ->
                     Image(
                         painter = painterResource(id = image),
                         contentDescription = "태그사진",

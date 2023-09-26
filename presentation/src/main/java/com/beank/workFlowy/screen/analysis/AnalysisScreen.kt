@@ -3,9 +3,6 @@ package com.beank.workFlowy.screen.analysis
 import android.app.DatePickerDialog
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -16,7 +13,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Card
@@ -60,7 +56,7 @@ fun AnalysisScreen(
 ){
     val uiState = analysisViewModel.uiState
     val selectDay by analysisViewModel.selectDayFlow.collectAsStateWithLifecycle()
-    val toggleFlow by analysisViewModel.toggleButtonFlow.collectAsStateWithLifecycle()
+    val toggleFlow by analysisViewModel.PeriodModeFlow.collectAsStateWithLifecycle()
     val animate by analysisViewModel.animateStackChannel.collectAsStateWithLifecycle(initialValue = false)
 
     WeekLayout(snackbarHostState = snackbarHostState) {
@@ -70,15 +66,15 @@ fun AnalysisScreen(
         ) {
             RecordCard(
                 uiState = uiState,
-                actProgress = analysisViewModel.actBoxProgressFlow,
+                actProgress = uiState.actProgress,
                 selectDay = selectDay,
                 toggle = toggleFlow,
                 animate = animate,
-                updateDay = analysisViewModel::changeSelectDay,
-                updateToggle = analysisViewModel::updateToggleButton,
-                updateAnimate = analysisViewModel::sendAnimationEvent,
-                onRightDrag = analysisViewModel::rightDragDate,
-                onLeftDrag = analysisViewModel::leftDragDate
+                updateDay = analysisViewModel::onSelectDayChange,
+                updateToggle = analysisViewModel::onPeriodModeChange,
+                updateAnimate = analysisViewModel::onAnimationEventSend,
+                onRightDrag = analysisViewModel::onRightDrag,
+                onLeftDrag = analysisViewModel::onLeftDrag
             )
         }
     }

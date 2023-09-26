@@ -1,5 +1,7 @@
 package com.beank.workFlowy.screen.sign_up
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -16,11 +18,13 @@ import com.beank.workFlowy.component.RepeatPasswordField
 import com.beank.workFlowy.component.basicButton
 import com.beank.workFlowy.component.fieldModifier
 
+@RequiresApi(Build.VERSION_CODES.FROYO)
 @Composable
 fun SignUpScreen(
     signUpViewModel: SignUpViewModel = hiltViewModel(),
     onBack : () -> Unit
 ){
+    val uiState = signUpViewModel.uiState
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -29,9 +33,9 @@ fun SignUpScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        EmailField(value = signUpViewModel.inputEmail, onNewValue = signUpViewModel::onEmailChange, Modifier.fieldModifier())
-        PasswordField(value = signUpViewModel.inputPassword, onNewValue = signUpViewModel::onPasswordChange, Modifier.fieldModifier())
-        RepeatPasswordField(value = signUpViewModel.inputRepeatPassword, onNewValue = signUpViewModel::onRepeatPassword, Modifier.fieldModifier())
+        EmailField(value = uiState.email, onNewValue = signUpViewModel::onEmailChange, Modifier.fieldModifier())
+        PasswordField(value = uiState.password, onNewValue = signUpViewModel::onPasswordChange, Modifier.fieldModifier())
+        RepeatPasswordField(value = uiState.repeatPassword, onNewValue = signUpViewModel::onRepeatPasswordChange, Modifier.fieldModifier())
 
         BasicButton(text = R.string.create_account, modifier = Modifier.basicButton()) {
             signUpViewModel.onSignInClick(onBack)

@@ -14,30 +14,21 @@ import com.beank.workFlowy.screen.WorkFlowyViewModel
 import com.beank.workFlowy.utils.imageToInt
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-
-@Stable
-data class TagUiState(
-    val tagImageList : List<Int> = emptyList()
-)
 
 @HiltViewModel
 class TagViewModel @Inject constructor(
     private val tagUsecases: TagUsecases,
     logRepository: LogRepository
 ) : WorkFlowyViewModel(logRepository) {
+
     private lateinit var typedTag: TypedArray
-
-    var selectTagText by mutableStateOf("")
-        private set
-    var selectTagImage by mutableStateOf(R.drawable.baseline_menu_book_24)
-        private set
-    var tagUiState by mutableStateOf(TagUiState())
+    var uiState by mutableStateOf(TagUiState())
         private set
 
+    private val title get() = uiState.title
+    private val selectImage get() = uiState.selectImage
 
     fun initTagImages(tagList : TypedArray){
         typedTag = tagList
@@ -47,29 +38,29 @@ class TagViewModel @Inject constructor(
                 tagImages.add(tagList.getResourceId(i,-1))
             }
             viewModelScope.launch(Dispatchers.Main) {
-                tagUiState = tagUiState.copy(tagImageList = tagImages)
+                uiState = uiState.copy(tagImageList = tagImages)
             }
         }
     }
 
-    fun updateSelectTagText(text : String){
-        selectTagText = text
+    fun updateSelectTagText(title : String){
+        uiState = uiState.copy(title = title)
     }
 
     fun updateSelectTagImage(image : Int){
-        selectTagImage = image
+        uiState = uiState.copy(selectImage = image)
     }
 
     fun insertTagInfo() {
         launchCatching {
-            tagUsecases.insertTag(Tag(null, imageToInt(selectTagImage,typedTag), selectTagText))
+            tagUsecases.insertTag(Tag(null, imageToInt(selectImage,typedTag), title))
         }
     }
 
     fun checkTagText() : Boolean {
         var result = false
         launchCatching {
-            result = tagUsecases.checkTagTitle(selectTagText)
+            result = tagUsecases.checkTagTitle(title)
         }
         return result
     }

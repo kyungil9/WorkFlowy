@@ -2,7 +2,6 @@ package com.beank.workFlowy.screen.analysis
 
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -41,11 +40,6 @@ import kotlinx.coroutines.launch
 import java.time.LocalDate
 import javax.inject.Inject
 
-@Stable
-data class AnalysisUiState(
-    val recordList : List<Record> = emptyList()
-)
-
 @RequiresApi(Build.VERSION_CODES.O)
 @HiltViewModel
 class AnalysisViewModel @Inject constructor(
@@ -54,15 +48,13 @@ class AnalysisViewModel @Inject constructor(
 ) : WorkFlowyViewModel(logRepository){
 
     private val _selectDayFlow = MutableStateFlow<LocalDate>(LocalDate.now())
-    private val _toggleButtonFlow = MutableStateFlow(0)
+    private val _periodModeFlow = MutableStateFlow(0)
     private val _animateStackChannel = Channel<Boolean>(Channel.BUFFERED)
     private var todayJob : Job? = null
     val selectDayFlow get() = _selectDayFlow.asStateFlow()
-    val toggleButtonFlow get() = _toggleButtonFlow.asStateFlow()
+    val PeriodModeFlow get() = _periodModeFlow.asStateFlow()
     val animateStackChannel get() = _animateStackChannel.receiveAsFlow()
 
-    var actBoxProgressFlow by mutableStateOf(true)
-        private set
     var uiState by mutableStateOf(AnalysisUiState())
         private set
 
@@ -70,25 +62,25 @@ class AnalysisViewModel @Inject constructor(
         getPeriodRecord()
     }
 
-    fun updateToggleButton(){
-        _toggleButtonFlow.value = (toggleButtonFlow.value+1)%4
-        sendAnimationEvent(false)
+    fun onPeriodModeChange(){
+        _periodModeFlow.value = (PeriodModeFlow.value+1)%4
+        onAnimationEventSend(false)
     }
 
-    fun changeSelectDay(day : LocalDate){
+    fun onSelectDayChange(day : LocalDate){
         _selectDayFlow.value = day
-        sendAnimationEvent(false)
+        onAnimationEventSend(false)
 
     }
 
-    fun sendAnimationEvent(value: Boolean){
+    fun onAnimationEventSend(value: Boolean){
         viewModelScope.launch {
             _animateStackChannel.send(value)
         }
     }
 
-    fun rightDragDate(){
-        when(toggleButtonFlow.value){
+    fun onRightDrag(){
+        when(PeriodModeFlow.value){
             DAY -> _selectDayFlow.value = selectDayFlow.value.plusDays(1)
             WEEK -> _selectDayFlow.value = selectDayFlow.value.plusWeeks(1)
             MONTH -> _selectDayFlow.value = selectDayFlow.value.plusMonths(1)
@@ -96,8 +88,8 @@ class AnalysisViewModel @Inject constructor(
         }
     }
 
-    fun leftDragDate(){
-        when(toggleButtonFlow.value){
+    fun onLeftDrag(){
+        when(PeriodModeFlow.value){
             DAY -> _selectDayFlow.value = selectDayFlow.value.minusDays(1)
             WEEK -> _selectDayFlow.value = selectDayFlow.value.minusWeeks(1)
             MONTH -> _selectDayFlow.value = selectDayFlow.value.minusMonths(1)
@@ -107,19 +99,17 @@ class AnalysisViewModel @Inject constructor(
 
     private fun getPeriodRecord() {
         launchCatching {
-            toggleButtonFlow.combine(selectDayFlow){toggle,date -> PeriodDate(date, toggle)}.collectLatest { period ->
+            PeriodModeFlow.combine(selectDayFlow){ toggle, date -> PeriodDate(date, toggle)}.collectLatest { period ->
                 todayJob?.cancel()
                 todayJob = analysisUsecases.getPeriodRecord(period.startDate(),period.endDate())
                     .flowOn(Dispatchers.IO).cancellable().onEach { state ->
                         state.onEmpty {
-                            uiState = uiState.copy(recordList = emptyList())
-                            actBoxProgressFlow = false
+                            uiState = uiState.copy(recordList = emptyList(),actProgress = false)
                         }
                         state.onLoading {
-                            actBoxProgressFlow = true
+                            uiState = uiState.copy(actProgress = true)
                         }
                         state.onSuccess { recordList ->
-                            actBoxProgressFlow = false
                             val totalRecord = ArrayList<Record>()
                             recordList.map { record ->
                                 val findRecordIndex = totalRecord.indexOfFirst { it.tag == record.tag }
@@ -130,7 +120,7 @@ class AnalysisViewModel @Inject constructor(
                                 }
                             }
                             totalRecord.sortByDescending {it.progressTime}
-                            uiState = uiState.copy(recordList = totalRecord)
+                            uiState = uiState.copy(recordList = totalRecord,actProgress = false)
                         }
                         state.onException { message, e ->
                             SnackbarManager.showMessage(R.string.firebase_server_error)
