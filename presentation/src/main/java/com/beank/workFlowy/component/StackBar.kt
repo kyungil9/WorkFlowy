@@ -1,5 +1,7 @@
 package com.beank.workFlowy.component
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.EaseOut
 import androidx.compose.animation.core.LinearOutSlowInEasing
@@ -45,7 +47,11 @@ import com.beank.domain.model.Record
 import com.beank.workFlowy.ui.theme.colors
 import com.beank.workFlowy.utils.animateTargetFloatAsState
 import com.beank.workFlowy.utils.toLong
+import java.time.Duration
+import java.time.LocalDateTime
+import java.time.LocalTime
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun StackBar(
     record: List<Record>,//크기순으로 받아오기
@@ -57,7 +63,7 @@ fun StackBar(
 
     val sumOfData = remember(record) {
         record.map {
-            it.progressTime
+            onProgressTimeCheck(it)
         }.sum()
     }
     val animationProgress by animateTargetFloatAsState(
@@ -93,7 +99,7 @@ fun StackBar(
             clipPath(path){
                 var dataStart = lineStart
                 record.forEachIndexed { index, record ->
-                    val dataEnd = dataStart + (((record.progressTime).toFloat() / sumOfData) * lineLength)
+                    val dataEnd = dataStart + (((onProgressTimeCheck(record)).toFloat() / sumOfData) * lineLength)
                     drawRect(
                         color = colors[index],
                         topLeft = Offset(dataStart, lineHeightOffset),
@@ -108,16 +114,16 @@ fun StackBar(
             modifier = modifier
                 .padding(horizontal = 20.dp)
                 .height((10+30*record.size).dp)
-                .animateContentSize(tween(1000))//height를 item 수만큼 해서 변동 3개기준 100
+                .animateContentSize(tween(1500))//height를 item 수만큼 해서 변동 3개기준 100
         ) {
             itemsIndexed(record){index,record ->
-                if (record.progressTime != 0L)
-                    StackItem(record = record, color = colors[index], total = sumOfData)
+                StackItem(record = record, color = colors[index], total = sumOfData)
             }
         }
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun StackItem(
     record: Record,
@@ -137,8 +143,14 @@ fun StackItem(
         HorizontalSpacer(width = 20.dp)
         Row(horizontalArrangement = Arrangement.SpaceBetween) {
             Text(text = record.tag)
-            Text(text = "(${(record.progressTime*100)/total})")
+            Text(text = "(${(onProgressTimeCheck(record)*100)/total})")
         }
     }
 }
+
+@RequiresApi(Build.VERSION_CODES.O)
+fun onProgressTimeCheck(record: Record) = if (record.pause)
+    Duration.between(LocalDateTime.of(record.date, LocalTime.of(0,0,0)),record.endTime).toMinutes()
+else
+    record.progressTime
 

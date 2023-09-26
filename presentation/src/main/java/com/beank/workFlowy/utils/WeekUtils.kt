@@ -49,7 +49,7 @@ fun LocalDate.toFormatString() = "${this.year%100}/${zeroFormat.format(this.mont
 fun LocalDate.toWeekString() : String {
     val startDate = this.toWeekStart()
     val endDate = this.toWeekEnd()
-    return "${startDate.year%100}/${zeroFormat.format(startDate.monthValue)}/${zeroFormat.format(startDate.dayOfMonth)}~${zeroFormat.format(endDate.dayOfMonth)}"
+    return "${startDate.year%100}/${zeroFormat.format(startDate.monthValue)}/${zeroFormat.format(startDate.dayOfMonth)}~${zeroFormat.format(endDate.monthValue)}/${zeroFormat.format(endDate.dayOfMonth)}"
 }
 
 @RequiresApi(Build.VERSION_CODES.O)

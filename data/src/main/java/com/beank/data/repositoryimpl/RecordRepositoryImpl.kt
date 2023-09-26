@@ -71,6 +71,15 @@ class RecordRepositoryImpl @Inject constructor(
         ))
     }
 
+    override fun updateRecord(id: String, endTime: LocalDateTime, progressTime: Long, pause: Boolean, date: LocalDate) {
+        storage.update(RECORD,id, mapOf(
+            "endTime" to endTime.toLong(),
+            "progressTime" to progressTime,
+            "pause" to pause,
+            "date" to date.toInt()
+        ))
+    }
+
     companion object {
         private const val RECORD = "Record"
     }

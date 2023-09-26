@@ -15,6 +15,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -37,6 +38,7 @@ import com.beank.workFlowy.component.WeekLazyList
 import com.beank.workFlowy.navigation.NavigationItem
 import com.beank.workFlowy.utils.transDayToKorean
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.ZoneId
@@ -72,6 +74,11 @@ fun HomeScreen(
     )
     dateDialog.datePicker.minDate = LocalDate.of(2021,12,28).atTime(0,0).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
     dateDialog.datePicker.maxDate = LocalDate.of(2026,1,3).atTime(0,0).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+
+    LaunchedEffect(key1 = Unit){
+        delay(1000)
+        weekViewModel.onRecordReduce()
+    }
 
     WeekLayout(
         snackbarHostState = snackbarHostState,

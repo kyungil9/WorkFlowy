@@ -3,6 +3,8 @@ package com.beank.workFlowy.screen.analysis
 import android.app.DatePickerDialog
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -13,6 +15,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Card
@@ -178,7 +182,12 @@ fun RecordCard(
                         3 -> selectDay.toYearString()
                         else -> ""
                     },
-                    modifier = Modifier.size(150.dp,40.dp)
+                    modifier = Modifier.width(when(toggle){
+                        0 -> 150.dp
+                        1 -> 180.dp
+                        2,3 -> 110.dp
+                        else -> 150.dp
+                    }).height(40.dp)
                 ) {
                     dateDialog.show()
                 }

@@ -36,6 +36,8 @@ import kotlinx.coroutines.withContext
 import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.LocalTime
+import java.time.temporal.ChronoUnit
 import javax.inject.Inject
 import com.beank.presentation.R.string as AppText
 
@@ -130,10 +132,15 @@ class WeekViewModel @Inject constructor(
     fun onRecordChange(tag: Tag){
         if (uiState.recordList.isNotEmpty()){
             launchCatching {
+                val record = uiState.recordList[0]
                 val endTime = LocalDateTime.now()
-                val progressTime = Duration.between(uiState.recordList[0].startTime,endTime).toMinutes()
+                val progressTime =
+                    if (ChronoUnit.DAYS.between(record.startTime.toLocalDate(),record.date) == 0L)
+                        Duration.between(record.startTime,endTime).toMinutes()
+                    else
+                        Duration.between(LocalDateTime.of(record.date, LocalTime.of(0,0,0)),endTime).toMinutes()
                 weekUsecases.startNewRecord(
-                    id = uiState.recordList[0].id!!,
+                    id = record.id!!,
                     endTime = endTime,
                     progressTime = progressTime,
                     pause = false,
@@ -141,7 +148,43 @@ class WeekViewModel @Inject constructor(
                 )
             }
         }
+    }
 
+    fun onRecordReduce(){
+        if (uiState.recordList.isNotEmpty()){
+            launchCatching {
+                if (uiState.recordList[0].date != LocalDate.now()){//하루가 넘게 기록되고있는경우 쪼개기
+                    val record = uiState.recordList[0]
+                    var startDay = record.date
+                    for (i in 0 until ChronoUnit.DAYS.between(record.date,LocalDate.now()).toInt()){
+                        val startTime = if (i == 0) record.startTime else LocalDateTime.of(startDay, LocalTime.of(0,0,0))
+                        val endTime = LocalDateTime.of(startDay, LocalTime.of(23, 59, 59))
+                        val progressTime = Duration.between(startTime, endTime).toMinutes()
+                        weekUsecases.insertRecord(
+                            Record(
+                                id = null,
+                                tag = record.tag,
+                                date = startDay,
+                                startTime = startTime,
+                                endTime = endTime,
+                                progressTime = progressTime,
+                                pause = false
+                            )
+                        )
+                        startDay = startDay.plusDays(1)
+                    }
+                }
+                val endTime = LocalDateTime.now()
+                val progressTime = Duration.between(uiState.recordList[0].startTime,endTime).toMinutes()
+                weekUsecases.updateRecord(
+                    id = uiState.recordList[0].id!!,
+                    endTime = endTime,
+                    progressTime = progressTime,
+                    pause = true,
+                    date = LocalDate.now()
+                )
+            }
+        }
     }
 
     private fun getAllTagInfo() = weekUsecases.getAllTag()

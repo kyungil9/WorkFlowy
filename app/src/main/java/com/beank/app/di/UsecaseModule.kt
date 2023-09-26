@@ -16,6 +16,7 @@ import com.beank.domain.usecase.record.GetNowRecord
 import com.beank.domain.usecase.record.GetPeriodRecord
 import com.beank.domain.usecase.record.InsertRecord
 import com.beank.domain.usecase.record.StartNewRecord
+import com.beank.domain.usecase.record.UpdateRecord
 import com.beank.domain.usecase.schedule.DeleteSchedule
 import com.beank.domain.usecase.schedule.GetTodaySchedule
 import com.beank.domain.usecase.schedule.InsertSchedule
@@ -45,7 +46,9 @@ object UsecaseModule {
         startNewRecord = StartNewRecord(recordRepository),
         deleteTag = DeleteTag(tagRepository),
         deleteSchedule = DeleteSchedule(scheduleRepository),
-        updateCheckSchedule = UpdateCheckSchedule(scheduleRepository)
+        updateCheckSchedule = UpdateCheckSchedule(scheduleRepository),
+        updateRecord = UpdateRecord(recordRepository),
+        insertRecord = InsertRecord(recordRepository)
     )
 
 

@@ -18,4 +18,6 @@ interface RecordRepository {
     fun insertRecord(record: Record)
 
     fun updateRecord(id : String, endTime: LocalDateTime, progressTime : Long, pause : Boolean)
+
+    fun updateRecord(id : String, endTime: LocalDateTime, progressTime : Long, pause : Boolean, date: LocalDate)
 }
