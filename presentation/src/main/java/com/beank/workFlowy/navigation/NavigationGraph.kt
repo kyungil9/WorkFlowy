@@ -17,6 +17,7 @@ import com.beank.workFlowy.screen.analysis.AnalysisScreen
 import com.beank.workFlowy.screen.home.HomeScreen
 import com.beank.workFlowy.screen.login.LoginScreen
 import com.beank.workFlowy.screen.schedule.ScheduleScreen
+import com.beank.workFlowy.screen.setting.SettingScreen
 import com.beank.workFlowy.screen.sign_up.SignUpScreen
 import com.beank.workFlowy.screen.tag.TagScreen
 import com.beank.workFlowy.ui.theme.black
@@ -32,16 +33,16 @@ fun NavigationGraph(
     ){
         composable(route = NavigationItem.LOGIN.route){
             LoginScreen(
-                openPopUpScreen = {route,popup ->  appState.navigatePopUp(route,popup)},
-                openScreen = {route -> appState.navigate(route)})
+                openPopUpScreen = appState::navigatePopUp,
+                openScreen = appState::navigate)
         }
 
         composable(
             route = NavigationItem.SIGNUP.route,
-            enterTransition = appState.slideUpIn(700),
-            exitTransition = appState.slideDownOut(700)
+            enterTransition = appState.slideUpIn(500),
+            exitTransition = appState.slideDownOut(500)
         ){
-            SignUpScreen(onBack = {appState.popUp()})
+            SignUpScreen(onBack = appState::popUp)
         }
 
         composable(route = NavigationItem.HOME.route){
@@ -58,23 +59,22 @@ fun NavigationGraph(
 
         composable(
             route = NavigationItem.ANALYSIS.route,
-            enterTransition = appState.slideUpIn(700),
-            exitTransition = appState.slideDownOut(700)
+            enterTransition = appState.slideUpIn(500),
+            exitTransition = appState.slideDownOut(500)
         ){
             AnalysisScreen(
                 snackbarHostState = appState.snackbarHostState,
-                onBack = {appState.popUp()})
+                onBack = appState::popUp)
         }
 
         composable(
             route = NavigationItem.TAG.route,
-            enterTransition = appState.slideUpIn(700,300),
-            exitTransition = appState.slideDownOut(700)
+            enterTransition = appState.slideUpIn(500,300),
+            exitTransition = appState.slideDownOut(500)
         ){
             TagScreen(
                 snackbarHostState = appState.snackbarHostState,
-                resource = appState.resource,
-                onBackHome = { appState.popUp() }
+                onBackHome = appState::popUp
             )
         }
 
@@ -90,20 +90,19 @@ fun NavigationGraph(
                     defaultValue = ""
                 }
             ),
-            enterTransition = appState.slideUpIn(700),
-            exitTransition = appState.slideDownOut(700)
+            enterTransition = appState.slideUpIn(500),
+            exitTransition = appState.slideDownOut(500)
         ){
             ScheduleScreen(
                 snackbarHostState = appState.snackbarHostState,
-                resource = appState.resource,
-                onBackHome = { appState.popUp() }
+                onBackHome = appState::popUp
             )
         }
 
         composable(
             route = NavigationItem.MISSON.route,
-            enterTransition = appState.slideUpIn(700),
-            exitTransition = appState.slideDownOut(700)
+            enterTransition = appState.slideUpIn(500),
+            exitTransition = appState.slideDownOut(500)
         ){
             Box(modifier = Modifier
                 .background(black)
@@ -112,5 +111,14 @@ fun NavigationGraph(
             }
         }
 
+        composable(
+            route = NavigationItem.SETTING.route,
+            enterTransition = appState.slideRightIn(500),
+            exitTransition = appState.slideLeftOut(500)
+        ){
+            SettingScreen(onBack = appState::popUp)
+        }
+
     }
 }
+

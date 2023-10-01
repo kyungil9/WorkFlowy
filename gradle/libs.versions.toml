@@ -26,6 +26,7 @@ firebase = "32.2.3"
 message = "23.2.1"
 directboot = "20.2.0"
 permission = "0.32.0"
+meterial3 = "1.2.0-alpha08"
 
 
 # plugin
@@ -45,7 +46,8 @@ material = { module = "com.google.android.material:material", version.ref = "mat
 constraintLayout = { module = "androidx.constraintlayout:constraintlayout-compose", version.ref = "constraintLayout" }
 
 compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
-compose-material3 = { group = "androidx.compose.material3", name = "material3" }
+compose-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "meterial3" }
+compose-material3-window = { group = "androidx.compose.material3", name = "material3-window-size-class", version.ref = "meterial3" }
 compose-foundation = { group = "androidx.compose.foundation", name = "foundation", version.ref = "compose"  }
 compose-ui = { group = "androidx.compose.ui", name = "ui", version.ref = "compose"  }
 compose-ui-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview", version.ref = "compose"  }
@@ -95,7 +97,7 @@ permission = { group = "com.google.accompanist", name = "accompanist-permissions
 
 [bundles]
 navigation = ["navigation-fragment","navigation-ui","navigation-compose"]
-compose = ["compose-material3", "compose-foundation", "compose-ui", "compose-ui-preview", "compose-viewBinding","compose_numberpicker"]
+compose = ["compose-material3", "compose-foundation", "compose-ui", "compose-ui-preview", "compose-viewBinding","compose_numberpicker","compose-material3-window"]
 lifecycle = ["lifecycle-compose", "lifecycle-viewmodel-ktx", "lifecycle-runtime-ktx", "lifecycle-runtime-compose", "lifecycle-service"]
 coroutines = ["coroutines"]
 hilt = ["dagger-hilt-android"]

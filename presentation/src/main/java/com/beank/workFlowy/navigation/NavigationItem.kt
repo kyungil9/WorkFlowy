@@ -55,4 +55,10 @@ sealed class NavigationItem(
         route = "Signup",
         icon = R.drawable.ic_create_account
     )
+
+    object SETTING: NavigationItem(
+        title = "설정화면",
+        route = "Setting",
+        icon = null
+    )
 }

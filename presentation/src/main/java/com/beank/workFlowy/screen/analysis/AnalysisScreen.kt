@@ -22,15 +22,22 @@ import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -43,14 +50,21 @@ import com.beank.presentation.R
 import com.beank.workFlowy.component.IconButton
 import com.beank.workFlowy.component.StackBar
 import com.beank.workFlowy.component.WeekLayout
+import com.beank.workFlowy.utils.toFormatShortString
 import com.beank.workFlowy.utils.toFormatString
+import com.beank.workFlowy.utils.toLocalDateTime
 import com.beank.workFlowy.utils.toMonthString
+import com.beank.workFlowy.utils.toStartTimeLong
 import com.beank.workFlowy.utils.toWeekString
 import com.beank.workFlowy.utils.toYearString
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.ZoneId
+import java.time.temporal.ChronoUnit
 import kotlin.math.abs
 
+@OptIn(ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun AnalysisScreen(
@@ -102,18 +116,11 @@ fun RecordCard(
     val list = listOf("일별","주별","월별","년별")
     var dragOffsetX by remember { mutableFloatStateOf(0f) }
     var direction by remember { mutableIntStateOf(-1) }
-
-    val dateDialog = DatePickerDialog(
-        LocalContext.current,
-        { _, year, month, day ->
-            updateDay(LocalDate.of(year,month+1,day))
-        },selectDay.year,
-        selectDay.monthValue-1,
-        selectDay.dayOfMonth
+    val datePickerState = rememberDatePickerState(
+        initialSelectedDateMillis = selectDay.toStartTimeLong(),
+        yearRange = (2022..2025)
     )
-    dateDialog.datePicker.minDate = LocalDate.of(2021,12,28).atTime(0,0).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
-    dateDialog.datePicker.maxDate = LocalDate.of(2026,1,3).atTime(0,0).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
-
+    var dateDialogState by rememberSaveable { mutableStateOf(false) }
     Card(
         modifier = Modifier
             .padding(10.dp)
@@ -189,7 +196,7 @@ fun RecordCard(
                         else -> 150.dp
                     }).height(40.dp)
                 ) {
-                    dateDialog.show()
+                    dateDialogState = true
                 }
 
                 AssistChip(
@@ -217,6 +224,41 @@ fun RecordCard(
                     record = uiState.recordList,
                     strokeWidth = 50f,
                     animate = animate
+                )
+            }
+        }
+
+        if (dateDialogState){
+            DatePickerDialog(
+                onDismissRequest = { dateDialogState = false },
+                confirmButton = {
+                    TextButton(onClick = {
+                        val date = datePickerState.selectedDateMillis?.toLocalDateTime()
+                        date?.let {
+                            updateDay(date.toLocalDate())
+                        }
+                        dateDialogState = false
+                    }) {
+                        Text(text = "확인")
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { dateDialogState = false }) {
+                        Text(text = "취소")
+                    }
+                }
+            ) {
+                DatePicker(
+                    state = datePickerState,
+                    title = {
+                        Text(text = "날짜 선택", modifier = Modifier.padding(top = 16.dp, start = 24.dp, end = 12.dp),style = MaterialTheme.typography.headlineMedium)
+                    },
+                    headline = {
+                        Text(
+                            text = datePickerState.selectedDateMillis?.toLocalDateTime()?.toLocalDate()?.toFormatShortString() ?: "",
+                            modifier = Modifier.padding(start = 24.dp, end = 12.dp, bottom = 12.dp)
+                        )
+                    }
                 )
             }
         }

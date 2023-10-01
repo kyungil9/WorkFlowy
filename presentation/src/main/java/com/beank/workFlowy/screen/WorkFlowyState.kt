@@ -89,4 +89,21 @@ class WorkFlowyState(
             animationSpec = tween(spec)
         )
     }
+
+    fun slideRightIn(spec : Int) : (@JvmSuppressWildcards
+    AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition?) = {
+        slideIntoContainer(
+            towards = AnimatedContentTransitionScope.SlideDirection.Right,
+            animationSpec = tween(spec)
+        )
+    }
+
+    fun slideLeftOut(spec : Int) : (@JvmSuppressWildcards
+    AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition?) = {
+        slideOutOfContainer(
+            towards = AnimatedContentTransitionScope.SlideDirection.Left,
+            animationSpec = tween(spec)
+        )
+    }
+
 }

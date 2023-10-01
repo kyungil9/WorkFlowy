@@ -1,13 +1,11 @@
 package com.beank.workFlowy.component
 
-import android.content.Context
-import androidx.compose.animation.AnimatedVisibility
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -22,18 +20,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.FractionalThreshold
-import androidx.compose.material.rememberSwipeableState
-import androidx.compose.material.swipeable
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -51,10 +41,10 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
-import java.time.LocalDate
+import com.beank.workFlowy.utils.toFormatString
 import kotlin.math.abs
 
-@OptIn(ExperimentalMaterialApi::class)
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ScheduleList(
     uiState: WeekUiState,
@@ -119,6 +109,7 @@ fun ScheduleList(
 
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ScheduleItem(
     schedule : Schedule,
@@ -129,7 +120,7 @@ fun ScheduleItem(
         Modifier
             .fillMaxWidth()
             .clickable { onClickSchedule(schedule) }
-            .height(80.dp)
+            .height(if (schedule.time) 100.dp else 80.dp)
             .padding(10.dp),
         shape = RoundedCornerShape(10.dp),
         colors = CardDefaults.cardColors(containerColor = cardColor),
@@ -155,9 +146,10 @@ fun ScheduleItem(
                 horizontalAlignment = Alignment.Start
             ) {
                 Text(text = schedule.title, fontSize = 20.sp)
-                Text(
-                    text = schedule.comment,
-                    fontSize = 16.sp)
+                Text(text = schedule.comment, fontSize = 16.sp, maxLines = 2)
+                if (schedule.time){
+                    Text(text = "${schedule.startTime.toFormatString()}~${schedule.endTime.toFormatString()}", fontSize = 18.sp)
+                }
             }
         }
     }

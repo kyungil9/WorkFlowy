@@ -39,6 +39,7 @@ import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.temporal.ChronoUnit
 import javax.inject.Inject
+import kotlin.concurrent.timer
 import com.beank.presentation.R.string as AppText
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -63,12 +64,12 @@ class WeekViewModel @Inject constructor(
         getAllTagInfo()
         getTodaySchedule()
         getSelectedRecordInfo()
+        timerJob()
     }
-
-    val timerJob = viewModelScope.launch(start = CoroutineStart.LAZY) {
-        withContext(Dispatchers.IO){
+    private fun timerJob() {
+        viewModelScope.launch(Dispatchers.Default) {
             oldTimeMills = System.currentTimeMillis()
-            while (true){
+            while (true) {
                 val delayMills = System.currentTimeMillis() - oldTimeMills
                 if (delayMills >= 1000L) {
                     val record = uiState.recordList
@@ -80,7 +81,6 @@ class WeekViewModel @Inject constructor(
             }
         }
     }
-
     fun setSelectScheduleInfo(schedule: Schedule){
         uiState = uiState.copy(selectSchedule = schedule)
     }
@@ -150,6 +150,22 @@ class WeekViewModel @Inject constructor(
         }
     }
 
+    fun onRecordChange(){
+        if (uiState.recordList.isNotEmpty()){
+            launchCatching {
+                val endTime = LocalDateTime.now()
+                val progressTime = Duration.between(uiState.recordList[0].startTime,endTime).toMinutes()
+                weekUsecases.updateRecord(
+                    id = uiState.recordList[0].id!!,
+                    endTime = endTime,
+                    progressTime = progressTime,
+                    pause = true,
+                    date = LocalDate.now()
+                )
+            }
+        }
+    }
+
     fun onRecordReduce(){
         if (uiState.recordList.isNotEmpty()){
             launchCatching {
@@ -202,7 +218,6 @@ class WeekViewModel @Inject constructor(
         .flowOn(Dispatchers.IO).onEach { state ->
             state.onLoading { //프로그래스바 실행
                 uiState = uiState.copy(actProgress = true)
-
             }
             state.onSuccess { nowRecord ->
                 uiState = uiState.copy(recordList = listOf(nowRecord.record), selectTag = nowRecord.tag, actProgress = false)
@@ -215,12 +230,12 @@ class WeekViewModel @Inject constructor(
 
     private fun getTodaySchedule() {
         launchCatching{
-            selectDayFlow.collectLatest{
+            selectDayFlow.collectLatest{date ->
                 todayJob?.cancel()
-                todayJob = weekUsecases.getTodaySchedule(it)
+                todayJob = weekUsecases.getTodaySchedule(date)
                     .flowOn(Dispatchers.IO).onEach { state ->
                         state.onSuccess {scheduleList ->
-                            uiState = uiState.copy(scheduleList = scheduleList)
+                            uiState = uiState.copy(scheduleList = scheduleList.sortedWith(compareBy({it.check},{ it.time.not() },{it.startTime})))
                         }
                         state.onException { message, e ->
                             SnackbarManager.showMessage(AppText.firebase_server_error)
