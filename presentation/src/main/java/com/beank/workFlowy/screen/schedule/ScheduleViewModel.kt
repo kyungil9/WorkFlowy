@@ -9,8 +9,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
-import com.chargemap.compose.numberpicker.FullHours
-import com.chargemap.compose.numberpicker.Hours
 import com.beank.domain.model.Schedule
 import com.beank.domain.repository.LogRepository
 import com.beank.domain.usecase.ScheduleUsecases
@@ -55,47 +53,30 @@ class ScheduleViewModel @Inject constructor(
 
         val today = savedStateHandle.get<Int>("today")!!
         if (today == 0){
-            val schedule = savedStateHandle.get<String>("schedule")?.let {json ->
-                json.fromScheduleJson()
-            }!!
+            val schedule = savedStateHandle.get<String>("schedule")?.fromScheduleJson()!!
             uiState = uiState.copy(
                 id = schedule.id!!,
                 title = schedule.title,
                 comment = schedule.comment,
-                year = schedule.date.year,
-                month = schedule.date.monthValue,
-                day = schedule.date.dayOfMonth,
-                startTime = FullHours(schedule.startTime.hour,schedule.startTime.minute),
-                endTime = FullHours(schedule.endTime.hour,schedule.endTime.minute),
+                date = schedule.date,
+                startTime = schedule.startTime,
+                endTime = schedule.endTime,
                 timeToggle = schedule.time,
                 image = intToImage(schedule.icon,typedSchedule)
             )
         }else{
             val day = today.toLocalDate()
-            uiState = uiState.copy(
-                year = day.year,
-                month = day.monthValue,
-                day = day.dayOfMonth
-            )
+            //time date 완전히 변경으로 쓸모없는 변수 삭제처리하기
+            onDateChange(day)
         }
     }
 
-    fun onImageToggleChange(){
-        uiState = uiState.copy(imageToggle = uiState.imageToggle.not())
-    }
-    fun onDateToggleChange(){
-        uiState = uiState.copy(dateToggle = uiState.dateToggle.not())
-    }
-    fun onDateToggleChange(value : Boolean){
-        uiState = uiState.copy(dateToggle = value)
+    fun onDateChange(date: LocalDate){
+        uiState = uiState.copy(date = date)
     }
     fun onTimeToggleChange(){
         uiState = uiState.copy(timeToggle = uiState.timeToggle.not())
     }
-    fun onEndTimeToggleChange(value: Boolean){
-        uiState = uiState.copy(endTimeToggle = value)
-    }
-
     fun onTitleChange(text : String){
         uiState = uiState.copy(title = text)
     }
@@ -104,36 +85,13 @@ class ScheduleViewModel @Inject constructor(
         uiState = uiState.copy(image = image)
     }
 
-    fun onYearChange(year : Int){
-        uiState = uiState.copy(
-            year = year,
-            day = 1,
-            endDayofMonth = changeDayInfo(LocalDate.of(uiState.year,uiState.month,1))
-        )
-    }
-
-    fun onMonthChange(month : Int){
-        uiState = uiState.copy(
-            month = month,
-            day = 1,
-            endDayofMonth = changeDayInfo(LocalDate.of(uiState.year,uiState.month,1))
-        )
-    }
-
-    fun onDayChange(day : Int){
-        uiState = uiState.copy(day = day)
-    }
-
-    fun onStartTimeChange(time : Hours){
-        uiState = uiState.copy(startTime = FullHours(time.hours,time.minutes))
-    }
-
-    fun onEndTimeChange(time : Hours){
-        uiState = uiState.copy(endTime = FullHours(time.hours,time.minutes))
-    }
-
-    fun selectDayOfWeek(year: Int,month: Int,day: Int) : String{
-        return transDayToShortKorean(LocalDate.of(year,month,day).dayOfWeek.value)
+    fun onTimeChange(startHour : Int, startMinute : Int, endHour : Int, endMinute : Int) : Boolean{
+        if (startHour > endHour || (startHour == endHour && startMinute > endMinute)){
+            return false
+        }else{
+            uiState = uiState.copy(startTime = LocalTime.of(startHour, startMinute), endTime = LocalTime.of(endHour, endMinute))
+            return true
+        }
     }
 
     fun onCommentChange(text: String){
@@ -144,9 +102,9 @@ class ScheduleViewModel @Inject constructor(
         launchCatching {
             scheduleUsecases.insertSchedule(Schedule(
                 id = null,
-                date = LocalDate.of(uiState.year,uiState.month,uiState.day),
-                startTime = LocalTime.of(uiState.startTime.hours,uiState.startTime.minutes,0),
-                endTime = LocalTime.of(uiState.endTime.hours,uiState.endTime.minutes,0),
+                date = uiState.date,
+                startTime = uiState.startTime,
+                endTime = uiState.endTime,
                 time = uiState.timeToggle,
                 icon = imageToInt(uiState.image,typedSchedule),
                 title = uiState.title,
@@ -159,9 +117,9 @@ class ScheduleViewModel @Inject constructor(
         launchCatching {
             scheduleUsecases.updateSchedule(Schedule(
                 id = uiState.id,
-                date = LocalDate.of(uiState.year,uiState.month,uiState.day),
-                startTime = LocalTime.of(uiState.startTime.hours,uiState.startTime.minutes,0),
-                endTime = LocalTime.of(uiState.endTime.hours,uiState.endTime.minutes,0),
+                date = uiState.date,
+                startTime = uiState.startTime,
+                endTime = uiState.endTime,
                 time = uiState.timeToggle,
                 icon = imageToInt(uiState.image,typedSchedule),
                 title = uiState.title,

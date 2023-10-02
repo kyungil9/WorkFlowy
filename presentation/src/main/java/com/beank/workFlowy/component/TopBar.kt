@@ -34,7 +34,6 @@ fun WeekAppBar(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-
         IconButton(
             onClick = onHeaderIconClick
         ) {

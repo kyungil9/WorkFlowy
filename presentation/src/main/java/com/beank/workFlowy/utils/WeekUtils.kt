@@ -46,6 +46,10 @@ fun today():String {
 fun LocalDate.toFormatString() = "${this.year%100}/${zeroFormat.format(this.monthValue)}/${zeroFormat.format(this.dayOfMonth)} ${transDayToShortKorean(this.dayOfWeek.value)}"
 
 @RequiresApi(Build.VERSION_CODES.O)
+fun LocalDate.toFormatShortString() = "${this.year%100}/${zeroFormat.format(this.monthValue)}/${zeroFormat.format(this.dayOfMonth)}"
+
+
+@RequiresApi(Build.VERSION_CODES.O)
 fun LocalDate.toWeekString() : String {
     val startDate = this.toWeekStart()
     val endDate = this.toWeekEnd()

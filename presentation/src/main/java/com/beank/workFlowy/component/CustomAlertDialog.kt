@@ -18,6 +18,8 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -75,23 +77,24 @@ fun TagSelectedDialog(
                             .fillMaxSize()
                             .padding(10.dp)
                             .clickable { onAddActTag() },
-                        shape = RoundedCornerShape(10.dp),
+                        shape = MaterialTheme.shapes.small,
                         elevation = CardDefaults.cardElevation(defaultElevation = 5.dp)
                     ) {
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .background(white, shape = RoundedCornerShape(10.dp))
+                                .background(MaterialTheme.colorScheme.secondaryContainer, MaterialTheme.shapes.small)
                                 .height(100.dp),
                             verticalArrangement = Arrangement.Center,
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            Image(
+                            Icon(
                                 painter = painterResource(id = NavigationItem.TAG.icon!!),
                                 contentDescription = null,
                                 modifier = Modifier
                                     .size(100.dp)
-                                    .padding(20.dp)
+                                    .padding(20.dp),
+                                tint = MaterialTheme.colorScheme.onSecondaryContainer
                             )
                         }
                     }
