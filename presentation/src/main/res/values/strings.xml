@@ -17,10 +17,15 @@
     <string name="firebase_server_error">현재 서버상태가 불안정합니다.</string>
     <string name="time_error">시간값이 정확하지 않습니다.</string>
     <string name="max_length">글자수가 너무 많습니다.</string>
+    <string name="logout">로그아웃</string>
+    <string name="notice">공지사항</string>
+    <string name="version">버전</string>
+    <string name="alarmSetting">알람설정</string>
+    <string name="themeSetting">테마설정</string>
+    <string name="customCenter">고객센터</string>
+    <string name="useOfTerm">이용약관</string>
+
     <!-- Dialogs -->
-    <string name="sign_out_title">로그아웃</string>
-    <string name="delete_account_title">계정삭제</string>
-    <string name="delete_account_description">계정삭제시 모든 데이터가 사라지고 복구할 수 없습니다.</string>
 
     <!-- FCM -->
     <string name="default_notification_channel_id" translatable="false">fcm_default_channel</string>

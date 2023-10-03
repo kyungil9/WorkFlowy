@@ -34,7 +34,9 @@ fun NavigationGraph(
         composable(route = NavigationItem.LOGIN.route){
             LoginScreen(
                 openPopUpScreen = appState::navigatePopUp,
-                openScreen = appState::navigate)
+                openScreen = appState::navigate,
+                snackbarHostState = appState.snackbarHostState
+            )
         }
 
         composable(
@@ -42,7 +44,10 @@ fun NavigationGraph(
             enterTransition = appState.slideUpIn(500),
             exitTransition = appState.slideDownOut(500)
         ){
-            SignUpScreen(onBack = appState::popUp)
+            SignUpScreen(
+                onBack = appState::popUp,
+                snackbarHostState = appState.snackbarHostState
+            )
         }
 
         composable(route = NavigationItem.HOME.route){
@@ -116,7 +121,10 @@ fun NavigationGraph(
             enterTransition = appState.slideRightIn(500),
             exitTransition = appState.slideLeftOut(500)
         ){
-            SettingScreen(onBack = appState::popUp)
+            SettingScreen(
+                onBack = appState::popUp,
+                snackbarHostState = appState.snackbarHostState
+            )
         }
 
     }

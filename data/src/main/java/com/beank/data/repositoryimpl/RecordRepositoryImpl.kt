@@ -1,5 +1,7 @@
 package com.beank.data.repositoryimpl
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import com.beank.data.datasource.StorageDataSource
 import com.beank.data.entity.WeekRecord
 import com.beank.data.entity.WeekTag
@@ -28,6 +30,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import javax.inject.Inject
 
+@RequiresApi(Build.VERSION_CODES.O)
 class RecordRepositoryImpl @Inject constructor(
     private val storage : StorageDataSource
 ): RecordRepository {
@@ -61,7 +64,6 @@ class RecordRepositoryImpl @Inject constructor(
 
     override fun insertRecord(record: Record) : Unit =
         storage.save(RECORD,record.toWeekRecord())
-
 
     override fun updateRecord(id: String, endTime: LocalDateTime, progressTime: Long, pause: Boolean) {
         storage.update(RECORD,id, mapOf(

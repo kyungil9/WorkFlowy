@@ -1,6 +1,5 @@
 package com.beank.workFlowy.screen.login
 
-
 import android.content.Intent
 import android.os.Build
 import androidx.activity.compose.ManagedActivityResultLauncher
@@ -9,10 +8,12 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
@@ -34,6 +35,7 @@ import com.beank.workFlowy.component.EmailField
 import com.beank.workFlowy.component.IconButton
 import com.beank.workFlowy.component.PasswordField
 import com.beank.workFlowy.component.VerticalSpacer
+import com.beank.workFlowy.component.WeekLayout
 import com.beank.workFlowy.component.basicButton
 import com.beank.workFlowy.component.fieldModifier
 import com.beank.workFlowy.navigation.NavigationItem
@@ -53,7 +55,8 @@ import com.beank.presentation.R.string as AppText
 fun LoginScreen(
     loginViewModel: LoginViewModel = hiltViewModel(),
     openPopUpScreen : (String,String) -> Unit,
-    openScreen : (String) -> Unit
+    openScreen : (String) -> Unit,
+    snackbarHostState: SnackbarHostState
 ){
     var user by rememberSaveable { mutableStateOf(Firebase.auth.currentUser) }
     val launcher = rememberFirebaseAuthLauncher(
@@ -70,40 +73,43 @@ fun LoginScreen(
     val uiState = loginViewModel.uiState
     val token = stringResource(R.string.default_web_client_id)
     val context = LocalContext.current
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .fillMaxHeight(),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        if (user == null){
-            Image(painter = painterResource(id = R.drawable.workflowy_foreground), contentDescription = "어플화면",
-                modifier = Modifier.size(300.dp,300.dp))
-            EmailField(value = uiState.email, onNewValue = loginViewModel::onEmailChange, Modifier.fieldModifier())
-            PasswordField(value = uiState.password, onNewValue = loginViewModel::onPasswordChange, Modifier.fieldModifier())
 
-            BasicButton(text = AppText.sign_in, modifier = Modifier.basicButton()) {
-                loginViewModel.onSignInClick(openPopUpScreen)
+    WeekLayout(snackbarHostState = snackbarHostState) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            if (user == null){
+                Image(painter = painterResource(id = R.drawable.workflowy_foreground), contentDescription = "어플화면",
+                    modifier = Modifier.size(300.dp,300.dp))
+                EmailField(value = uiState.email, onNewValue = loginViewModel::onEmailChange, Modifier.fieldModifier())
+                PasswordField(value = uiState.password, onNewValue = loginViewModel::onPasswordChange, Modifier.fieldModifier())
+
+                BasicButton(text = AppText.sign_in, modifier = Modifier.basicButton()) {
+                    loginViewModel.onSignInClick(openPopUpScreen)
+                }
+                VerticalSpacer(height = 30.dp)
+                IconButton(icon = NavigationItem.SIGNUP.icon!!, text = AppText.create_account) {
+                    openScreen(NavigationItem.SIGNUP.route)
+                }
+                VerticalSpacer(height = 10.dp)
+                IconButton(
+                    icon = com.google.android.gms.auth.api.R.drawable.googleg_standard_color_18,
+                    text = AppText.google_login
+                ){
+                    val gso =
+                        GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                            .requestIdToken(token)
+                            .requestEmail()
+                            .build()
+                    val googleSignInClient = GoogleSignIn.getClient(context,gso)
+                    launcher.launch(googleSignInClient.signInIntent)
+                }
+            }else{
+                openPopUpScreen(NavigationItem.HOME.route,NavigationItem.LOGIN.route)
             }
-            VerticalSpacer(height = 30.dp)
-            IconButton(icon = NavigationItem.SIGNUP.icon!!, text = AppText.create_account) {
-                openScreen(NavigationItem.SIGNUP.route)
-            }
-            VerticalSpacer(height = 10.dp)
-            IconButton(
-                icon = com.google.android.gms.auth.api.R.drawable.googleg_standard_color_18,
-                text = AppText.google_login
-            ){
-                val gso =
-                    GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                        .requestIdToken(token)
-                        .requestEmail()
-                        .build()
-                val googleSignInClient = GoogleSignIn.getClient(context,gso)
-                launcher.launch(googleSignInClient.signInIntent)
-            }
-        }else{
-            openPopUpScreen(NavigationItem.HOME.route,NavigationItem.LOGIN.route)
         }
     }
 }

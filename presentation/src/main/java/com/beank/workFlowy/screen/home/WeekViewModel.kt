@@ -6,7 +6,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.beank.domain.model.Record
 import com.beank.domain.model.Schedule
 import com.beank.domain.model.Tag
@@ -16,11 +15,9 @@ import com.beank.domain.model.onLoading
 import com.beank.domain.model.onSuccess
 import com.beank.domain.repository.LogRepository
 import com.beank.domain.usecase.WeekUsecases
-import com.beank.domain.usecase.account.SignOut
 import com.beank.workFlowy.component.snackbar.SnackbarManager
 import com.beank.workFlowy.screen.WorkFlowyViewModel
 import com.beank.workFlowy.utils.toFormatString
-import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
@@ -35,14 +32,12 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.temporal.ChronoUnit
 import javax.inject.Inject
-import kotlin.concurrent.timer
 import com.beank.presentation.R.string as AppText
 
 @RequiresApi(Build.VERSION_CODES.O)

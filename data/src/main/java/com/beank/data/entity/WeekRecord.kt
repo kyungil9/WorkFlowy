@@ -1,9 +1,6 @@
 package com.beank.data.entity
 
-import androidx.room.Entity
-import androidx.room.PrimaryKey
 import com.google.firebase.firestore.DocumentId
-import java.time.LocalDateTime
 
 data class WeekRecord(
     @DocumentId var id : String? ="",

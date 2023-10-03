@@ -1,10 +1,6 @@
 package com.beank.data.entity
 
-import androidx.room.Entity
-import androidx.room.PrimaryKey
 import com.google.firebase.firestore.DocumentId
-import java.time.LocalDate
-import java.time.LocalTime
 
 
 data class WeekSchedule(
