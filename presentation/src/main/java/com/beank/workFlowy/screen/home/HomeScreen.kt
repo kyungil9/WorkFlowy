@@ -79,15 +79,18 @@ fun HomeScreen(
     val weekListState = rememberLazyListState(initialFirstVisibleItemIndex = uiState.listCenter)
     var dateDialogState by rememberSaveable { mutableStateOf(false)}
 
+    LaunchedEffect(key1 = Unit){
+        weekViewModel.timerJob.start()
+    }
+
     WeekLayout(
         snackbarHostState = snackbarHostState,
         topBar = {
             WeekAppBar(
                 headerIcon = R.drawable.baseline_dehaze_24,
-                onHeaderIconClick = {openScreen(NavigationItem.SETTING.route)},
+                onHeaderIconClick = { openScreen(NavigationItem.SETTING.route) },
                 selectDay = selectDayString,
                 onContentClick = {
-                    //dateDialog.show()
                     dateDialogState = true
                 },
                 tailIcon = NavigationItem.ANALYSIS.icon,

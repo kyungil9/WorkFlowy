@@ -6,6 +6,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.beank.domain.model.Record
 import com.beank.domain.model.Schedule
 import com.beank.domain.model.Tag
@@ -15,9 +16,11 @@ import com.beank.domain.model.onLoading
 import com.beank.domain.model.onSuccess
 import com.beank.domain.repository.LogRepository
 import com.beank.domain.usecase.WeekUsecases
+import com.beank.domain.usecase.account.SignOut
 import com.beank.workFlowy.component.snackbar.SnackbarManager
 import com.beank.workFlowy.screen.WorkFlowyViewModel
 import com.beank.workFlowy.utils.toFormatString
+import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
@@ -60,26 +63,25 @@ class WeekViewModel @Inject constructor(
     private val scheduleInfo get() = uiState.selectSchedule
     var todayJob : Job? = null
 
+    val timerJob = viewModelScope.launch(Dispatchers.Default, start = CoroutineStart.LAZY) {
+        oldTimeMills = System.currentTimeMillis()
+        while (true) {
+            val delayMills = System.currentTimeMillis() - oldTimeMills
+            if (delayMills >= 1000L) {
+                val record = uiState.recordList
+                if (record.isNotEmpty()) {
+                    uiState = uiState.copy(progressTime = Duration.between(record[0].startTime, LocalDateTime.now()))
+                }
+                oldTimeMills = System.currentTimeMillis()
+            }
+        }
+    }
+
     init {
         getAllTagInfo()
         getTodaySchedule()
         getSelectedRecordInfo()
-        timerJob()
-    }
-    private fun timerJob() {
-        viewModelScope.launch(Dispatchers.Default) {
-            oldTimeMills = System.currentTimeMillis()
-            while (true) {
-                val delayMills = System.currentTimeMillis() - oldTimeMills
-                if (delayMills >= 1000L) {
-                    val record = uiState.recordList
-                    if (record.isNotEmpty()) {
-                        uiState = uiState.copy(progressTime = Duration.between(record[0].startTime, LocalDateTime.now()))
-                    }
-                    oldTimeMills = System.currentTimeMillis()
-                }
-            }
-        }
+
     }
     fun setSelectScheduleInfo(schedule: Schedule){
         uiState = uiState.copy(selectSchedule = schedule)
