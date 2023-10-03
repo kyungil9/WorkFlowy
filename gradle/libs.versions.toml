@@ -26,6 +26,8 @@ message = "23.2.1"
 directboot = "20.2.0"
 permission = "0.32.0"
 meterial3 = "1.2.0-alpha08"
+datastore = "1.0.0"
+protobuf = "4.0.0-rc-2"
 
 
 # plugin
@@ -35,6 +37,8 @@ androidNavigationSafeargs ="2.7.0-rc01"
 google = "4.3.15"
 crashlytics = "2.9.9"
 auth = "20.7.0"
+protobufPlugin = "0.9.4"
+
 
 [libraries]
 
@@ -93,6 +97,10 @@ google-auth = { group ="com.google.android.gms", name = "play-services-auth", ve
 
 permission = { group = "com.google.accompanist", name = "accompanist-permissions", version.ref = "permission"}
 
+datastore = { group = "androidx.datastore", name = "datastore", version.ref = "datastore" }
+protobuf = { group = "com.google.protobuf", name = "protobuf-javalite", version.ref = "protobuf" }
+
+
 [bundles]
 navigation = ["navigation-fragment","navigation-ui","navigation-compose"]
 compose = ["compose-material3", "compose-foundation", "compose-ui", "compose-ui-preview", "compose-viewBinding","compose-material3-window"]
@@ -112,3 +120,4 @@ hilt = { id = "com.google.dagger.hilt.android", version.ref = "dagger" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 google = { id = "com.google.gms.google-services", version.ref = "google"}
 crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "crashlytics"}
+protobuf = {id = "com.google.protobuf", version.ref = "protobufPlugin"}

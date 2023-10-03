@@ -3,17 +3,13 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.hilt)
     alias(libs.plugins.crashlytics)
+    alias(libs.plugins.protobuf)
     id 'kotlin-kapt'
 }
 
 android {
     namespace 'com.beank.data'
     compileSdk 34
-
-    defaultConfig {
-        minSdkVersion 28
-        targetSdkVersion 34
-    }
 
     buildTypes {
         release {
@@ -27,6 +23,7 @@ android {
     }
     kotlinOptions {
         jvmTarget = '18'
+        freeCompilerArgs = ["-Xjvm-default=all"]
     }
 }
 
@@ -39,11 +36,6 @@ dependencies {
     implementation(libs.bundles.hilt)
     kapt(libs.dagger.hilt.compiler)
 
-    //room
-    implementation(libs.room.ktx)
-    kapt(libs.room.compiler)
-    androidTestImplementation(libs.room.testing)
-
     //gson
     implementation(libs.gson)
 
@@ -54,7 +46,27 @@ dependencies {
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.message)
 
+    //datastore
+    implementation(libs.datastore)
+    implementation(libs.protobuf)
+
     //test
     implementation(libs.bundles.testing)
 
+}
+
+protobuf {
+    protoc {
+        artifact = "com.google.protobuf:protoc:4.0.0-rc-2"
+    }
+
+    generateProtoTasks {
+        all().each { task ->
+            task.builtins {
+                java {
+                    option 'lite'
+                }
+            }
+        }
+    }
 }

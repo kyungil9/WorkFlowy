@@ -63,17 +63,14 @@ dependencies {
     implementation(libs.bundles.compose)
     debugImplementation(libs.compose.ui.tooling)
 
-    //room
-    implementation(libs.room.ktx)
-    kapt(libs.room.compiler)
-    androidTestImplementation(libs.room.testing)
-
     //gson
     implementation(libs.gson)
 
     //firebase
     implementation(platform(libs.firebase.bom))
-    implementation(libs.bundles.firebase)
+    implementation(libs.firebase.auth)
+    implementation(libs.gms.play.services.location)
+    implementation(libs.google.auth)
 
     //permission
     implementation(libs.permission)
