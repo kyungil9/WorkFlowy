@@ -10,9 +10,11 @@ import android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP
 import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationCompat
+import com.beank.data.datasource.StorageDataSource
 import com.beank.workFlowy.R
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
+import javax.inject.Inject
 import kotlin.random.Random
 
 class WorkFlowyMessagingService : FirebaseMessagingService() {
@@ -46,19 +48,18 @@ class WorkFlowyMessagingService : FirebaseMessagingService() {
 
         val manager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(channelId, CHANNEL_NAME, IMPORTANCE_DEFAULT)
-            manager.createNotificationChannel(channel)
-        }
+        val channel = NotificationChannel(channelId, CHANNEL_NAME, IMPORTANCE_DEFAULT)
+        manager.createNotificationChannel(channel)
 
         manager.notify(random.nextInt(), notificationBuilder.build())
     }
 
     override fun onNewToken(token: String) {
-        Log.d("FCM","New token: $token")
+
     }
 
     companion object {
         const val CHANNEL_NAME = "FCM notification channel"
+        const val TOKEN = "Token"
     }
 }

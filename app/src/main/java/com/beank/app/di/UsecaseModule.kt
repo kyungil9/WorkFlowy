@@ -1,6 +1,7 @@
 package com.beank.app.di
 
 import com.beank.domain.repository.AccountRepository
+import com.beank.domain.repository.MessageRepository
 import com.beank.domain.repository.RecordRepository
 import com.beank.domain.repository.ScheduleRepository
 import com.beank.domain.repository.TagRepository
@@ -12,6 +13,7 @@ import com.beank.domain.usecase.TagUsecases
 import com.beank.domain.usecase.WeekUsecases
 import com.beank.domain.usecase.account.CreateAccount
 import com.beank.domain.usecase.account.LoginAccount
+import com.beank.domain.usecase.message.InsertToken
 import com.beank.domain.usecase.record.GetNowRecord
 import com.beank.domain.usecase.record.GetPeriodRecord
 import com.beank.domain.usecase.record.InsertRecord
@@ -54,12 +56,13 @@ object UsecaseModule {
 
     @Provides
     @Singleton
-    fun provideLoginUseCases(accountRepository: AccountRepository,tagRepository: TagRepository,recordRepository: RecordRepository) = LoginUsecases(
+    fun provideLoginUseCases(accountRepository: AccountRepository,tagRepository: TagRepository,recordRepository: RecordRepository,messageRepository: MessageRepository) = LoginUsecases(
         loginAccount = LoginAccount(accountRepository),
         initDataSetting = InitDataSetting(
             InsertRecord(recordRepository),
             InsertTag(tagRepository)
-        )
+        ),
+        insertToken = InsertToken(messageRepository)
     )
 
 
