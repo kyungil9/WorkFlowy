@@ -4,10 +4,12 @@ import com.beank.domain.repository.AccountRepository
 import com.beank.domain.repository.MessageRepository
 import com.beank.domain.repository.RecordRepository
 import com.beank.domain.repository.ScheduleRepository
+import com.beank.domain.repository.SettingRepository
 import com.beank.domain.repository.TagRepository
 import com.beank.domain.usecase.AnalysisUsecases
 import com.beank.domain.usecase.LoginUsecases
 import com.beank.domain.usecase.ScheduleUsecases
+import com.beank.domain.usecase.SettingUsecases
 import com.beank.domain.usecase.SignUpUsecases
 import com.beank.domain.usecase.TagUsecases
 import com.beank.domain.usecase.WeekUsecases
@@ -24,6 +26,14 @@ import com.beank.domain.usecase.schedule.GetTodaySchedule
 import com.beank.domain.usecase.schedule.InsertSchedule
 import com.beank.domain.usecase.schedule.UpdateCheckSchedule
 import com.beank.domain.usecase.schedule.UpdateSchedule
+import com.beank.domain.usecase.setting.GetDarkTheme
+import com.beank.domain.usecase.setting.GetDynamicTheme
+import com.beank.domain.usecase.setting.GetNoticeAlarm
+import com.beank.domain.usecase.setting.GetScheduleAlarm
+import com.beank.domain.usecase.setting.UpdateDarkTheme
+import com.beank.domain.usecase.setting.UpdateDynamicTheme
+import com.beank.domain.usecase.setting.UpdateNoticeAlarm
+import com.beank.domain.usecase.setting.UpdateScheduleAlarm
 import com.beank.domain.usecase.tag.CheckTagTitle
 import com.beank.domain.usecase.tag.DeleteTag
 import com.beank.domain.usecase.tag.GetAllTag
@@ -95,6 +105,19 @@ object UsecaseModule {
     @Singleton
     fun provideAnalysisUseCases(recordRepository: RecordRepository) = AnalysisUsecases(
         getPeriodRecord = GetPeriodRecord(recordRepository)
+    )
+
+    @Provides
+    @Singleton
+    fun provideSettingUseCases(settingRepository: SettingRepository) = SettingUsecases(
+        getDarkTheme = GetDarkTheme(settingRepository),
+        getDynamicTheme = GetDynamicTheme(settingRepository),
+        getNoticeAlarm = GetNoticeAlarm(settingRepository),
+        getScheduleAlarm = GetScheduleAlarm(settingRepository),
+        updateDarkTheme = UpdateDarkTheme(settingRepository),
+        updateDynamicTheme = UpdateDynamicTheme(settingRepository),
+        updateNoticeAlarm = UpdateNoticeAlarm(settingRepository),
+        updateScheduleAlarm = UpdateScheduleAlarm(settingRepository)
     )
 
 }
