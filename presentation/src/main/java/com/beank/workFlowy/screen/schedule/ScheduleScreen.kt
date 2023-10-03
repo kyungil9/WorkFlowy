@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -60,6 +61,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.beank.presentation.R
+import com.beank.workFlowy.component.TextTopBar
 import com.beank.workFlowy.component.TimeRangePickerDialog
 import com.beank.workFlowy.component.VerticalSpacer
 import com.beank.workFlowy.component.WeekAppBar
@@ -113,12 +115,10 @@ fun ScheduleScreen(
     WeekLayout(
         snackbarHostState = snackbarHostState,
         topBar = {
-            WeekAppBar(
-                headerIcon = R.drawable.baseline_close_24,
-                onHeaderIconClick = onBackHome,
-                selectDay = "일정",
-                tailIcon = R.drawable.baseline_check_24,
-                onTailIconClick = {
+            TextTopBar(
+                title = if (uiState.id.isEmpty()) "일정 등록" else "일정 수정",
+                onCancle = onBackHome,
+                onConfirm = {
                     if (uiState.id.isNotEmpty())
                         scheduleViewModel.onScheduleUpdate()
                     else
@@ -135,51 +135,42 @@ fun ScheduleScreen(
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.Start
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween,
+            OutlinedTextField(
+                label = { Text(text = "일정") },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(end = 10.dp)
-            ) {
-                TextField(
-                    value = uiState.title,
-                    onValueChange = scheduleViewModel::onTitleChange,
-                    label = { Text(text = "일정") }
-                )
-                Image(
-                    painter = painterResource(id = uiState.image),
-                    contentDescription = "스캐줄사진",
-                    modifier = Modifier
-                        .size(50.dp)
-                        .clickable {
-                            imageToggle = true
-                        }
-                )
-            }
-            AnimatedVisibility(visible = imageToggle) {
-                LazyVerticalGrid(
-                    columns = GridCells.Adaptive(40.dp),
-                    verticalArrangement = Arrangement.spacedBy(space = 5.dp),
-                    horizontalArrangement = Arrangement.spacedBy(space = 5.dp),
-                    contentPadding = PaddingValues(all = 5.dp)
-                ) {
-                    items(uiState.scheduleImageList) { image ->
-                        Image(
-                            painter = painterResource(id = image),
-                            contentDescription = "스캐줄사진리스트",
-                            modifier = Modifier
-                                .height(40.dp)
-                                .clickable {
-                                    scheduleViewModel.onImageChange(image)
-                                }
-                        )
-                    }
-                }
-            }
-            HorizontalDivider(
-                thickness = 1.dp,
-                color = gray
+                    .height(80.dp)
+                    .padding(vertical = 10.dp, horizontal = 15.dp)
+                    .background(white, RoundedCornerShape(5.dp)),
+                shape = MaterialTheme.shapes.small,
+                value = uiState.title,
+                onValueChange = {
+                    if (it.length <= 50)
+                        scheduleViewModel.onTitleChange(it)
+                    else
+                        SnackbarManager.showMessage(AppText.max_length)
+                    },
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Default),
+                singleLine = true,
+                maxLines = 1
+            )
+
+            OutlinedTextField(
+                label = { Text(text = "내용") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(200.dp)
+                    .padding(vertical = 10.dp, horizontal = 15.dp)
+                    .background(white, RoundedCornerShape(5.dp)),
+                shape = MaterialTheme.shapes.small,
+                value = uiState.comment,
+                onValueChange = {
+                    if (it.length <= 150)
+                        scheduleViewModel.onCommentChange(it)
+                    else
+                        SnackbarManager.showMessage(AppText.max_length)
+                },
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Default)
             )
 
             //날짜 시간 변경
@@ -188,7 +179,7 @@ fun ScheduleScreen(
                     .fillMaxWidth()
                     .height(if (uiState.timeToggle) 115.dp else 85.dp)
                     .padding(10.dp),
-                colors = CardDefaults.cardColors(MaterialTheme.colorScheme.tertiaryContainer),
+                colors = CardDefaults.cardColors(MaterialTheme.colorScheme.secondaryContainer),
                 shape = MaterialTheme.shapes.medium
             ) {
                 Row(
@@ -202,24 +193,46 @@ fun ScheduleScreen(
                         Column(
                             verticalArrangement = Arrangement.Center
                         ) {
-                            TextButton(onClick = { showDateState = true }) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier
+                                    .clickable { showDateState = true }
+                            ){
+                                Icon(
+                                    painter = painterResource(id = R.drawable.baseline_calendar_today_24),
+                                    contentDescription = "날짜 선택 아이콘",
+                                    tint = MaterialTheme.colorScheme.onSecondaryContainer,
+                                    modifier = Modifier.size(50.dp)
+                                )
                                 Text(
                                     text = uiState.date.toFormatString(),
                                     style = MaterialTheme.typography.headlineMedium,
-                                    color = MaterialTheme.colorScheme.onTertiaryContainer
+                                    color = MaterialTheme.colorScheme.onSecondaryContainer,
+                                    modifier = Modifier.padding(start = 15.dp)
                                 )
                             }
                             if(uiState.timeToggle) {
-                                TextButton(
-                                    onClick = { showTimeState = true },
-                                    modifier = Modifier.offset(x = 15.dp, y = (-10).dp)
-                                ) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    modifier = Modifier
+                                        .clickable { showTimeState = true }
+                                ){
+                                    Icon(
+                                        painter = painterResource(id = com.google.android.material.R.drawable.ic_clock_black_24dp),
+                                        contentDescription = "시간 선택 아이콘",
+                                        tint = MaterialTheme.colorScheme.onSecondaryContainer,
+                                        modifier = Modifier.size(40.dp)
+                                    )
                                     Text(
                                         text = "${selectStartTime.hour}:${selectStartTime.minute} ~ ${selectEndTime.hour}:${selectEndTime.minute}",
                                         style = MaterialTheme.typography.headlineSmall,
-                                        color = MaterialTheme.colorScheme.onTertiaryContainer
+                                        color = MaterialTheme.colorScheme.onSecondaryContainer,
+                                        modifier = Modifier.padding(start = 25.dp)
                                     )
                                 }
+
+
+
                             }
                         }
                     }
@@ -227,26 +240,74 @@ fun ScheduleScreen(
                         Icon(
                             imageVector = if (uiState.timeToggle) Icons.Outlined.KeyboardArrowUp else Icons.Outlined.KeyboardArrowDown,
                             contentDescription = "시간 선택",
-                            tint = MaterialTheme.colorScheme.onTertiaryContainer
+                            tint = MaterialTheme.colorScheme.onSecondaryContainer
                         )
+                    }
+                }
+            }
+            //아이콘 변경
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(if (imageToggle) 230.dp else 85.dp)
+                    .padding(10.dp),
+                colors = CardDefaults.cardColors(MaterialTheme.colorScheme.secondaryContainer),
+                shape = MaterialTheme.shapes.medium
+            ) {
+                Column(
+                    verticalArrangement = Arrangement.Center,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(vertical = 5.dp, horizontal = 15.dp)
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { imageToggle = imageToggle.not() }
+                    ) {
+                        Row {
+                            Icon(
+                                painter = painterResource(id = uiState.image),
+                                contentDescription = "스캐줄사진",
+                                modifier = Modifier
+                                    .size(50.dp),
+                                tint = MaterialTheme.colorScheme.onSecondaryContainer
+                            )
+                            Text(text = "아이콘 선택", style = MaterialTheme.typography.headlineSmall, color = MaterialTheme.colorScheme.onSecondaryContainer, modifier = Modifier.offset(x = 20.dp, y = 10.dp))
+                        }
+                        Icon(
+                            imageVector = if (imageToggle) Icons.Outlined.KeyboardArrowUp else Icons.Outlined.KeyboardArrowDown,
+                            contentDescription = "아이콘 선택",
+                            tint = MaterialTheme.colorScheme.onSecondaryContainer,
+                            modifier = Modifier.padding(top = 20.dp)
+                        )
+                    }
+                    if(imageToggle) {
+                        LazyVerticalGrid(
+                            columns = GridCells.Adaptive(40.dp),
+                            verticalArrangement = Arrangement.spacedBy(space = 5.dp),
+                            horizontalArrangement = Arrangement.spacedBy(space = 5.dp),
+                            contentPadding = PaddingValues(all = 5.dp)
+                        ) {
+                            items(uiState.scheduleImageList) { image ->
+                                Image(
+                                    painter = painterResource(id = image),
+                                    contentDescription = "스캐줄사진리스트",
+                                    modifier = Modifier
+                                        .height(40.dp)
+                                        .clickable {
+                                            scheduleViewModel.onImageChange(image)
+                                        }
+                                )
+                            }
+                        }
                     }
                 }
             }
 
 
-
-            OutlinedTextField(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(120.dp)
-                    .padding(start = 15.dp, top = 10.dp, end = 15.dp)
-                    .background(white, RoundedCornerShape(5.dp)),
-                shape = RoundedCornerShape(5.dp),
-                value = uiState.comment,
-                onValueChange = scheduleViewModel::onCommentChange,
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                maxLines = 5
-            )
         }
 
         //시간 다이얼로그
@@ -254,7 +315,7 @@ fun ScheduleScreen(
             TimeRangePickerDialog(
                 onCancel = { showTimeState = false },
                 onConfirm = {
-                    if(scheduleViewModel.onTimeChange(startTimePickerState.hour,startTimePickerState.hour,endTimePickerState.hour,endTimePickerState.minute)){
+                    if(scheduleViewModel.onTimeChange(startTimePickerState.hour,startTimePickerState.minute,endTimePickerState.hour,endTimePickerState.minute)){
                         showTimeState = false
                     }else{
                         SnackbarManager.showMessage(AppText.time_error)

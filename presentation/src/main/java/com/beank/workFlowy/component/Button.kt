@@ -66,7 +66,7 @@ fun IconButton(
         icon = icon,
         text = stringResource(id = text),
         modifier = Modifier.fillMaxWidth().padding(start = 20.dp, end = 20.dp),
-        onClick
+        onClick = onClick
     )
 }
 
@@ -75,13 +75,14 @@ fun IconButton(
     @DrawableRes icon : Int,
     text : String,
     modifier: Modifier,
+    color : Color = MaterialTheme.colorScheme.surface,
     onClick: () -> Unit,
 ) {
     Surface(
         modifier = modifier
             .clickable(onClick = onClick),
         border = BorderStroke(width = 1.dp, color = Color.LightGray),
-        color = MaterialTheme.colorScheme.surface,
+        color = color,
         shape = MaterialTheme.shapes.small,
         shadowElevation = 5.dp
     ){

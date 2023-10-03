@@ -66,7 +66,6 @@ class ScheduleViewModel @Inject constructor(
             )
         }else{
             val day = today.toLocalDate()
-            //time date 완전히 변경으로 쓸모없는 변수 삭제처리하기
             onDateChange(day)
         }
     }

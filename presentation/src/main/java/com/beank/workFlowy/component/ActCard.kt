@@ -62,7 +62,7 @@ fun ActCard(
             .height(200.dp)
             .padding(20.dp),
         shape = MaterialTheme.shapes.medium,
-        colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.secondary),
+        colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primary),
         elevation = ButtonDefaults.elevatedButtonElevation(5.dp),
     ) {
         if (progress){
@@ -86,7 +86,7 @@ fun ActCard(
                     contentDescription = null,
                     modifier = Modifier
                         .size(130.dp),
-                    tint = MaterialTheme.colorScheme.onSecondary
+                    tint = MaterialTheme.colorScheme.onPrimaryContainer
                 )
                 Column(
                     modifier = Modifier
@@ -94,10 +94,11 @@ fun ActCard(
                         .padding(top = 15.dp,end = 15.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text(text = selectedTag.title, style = MaterialTheme.typography.headlineMedium, modifier = Modifier.padding(vertical = 20.dp))
+                    Text(text = selectedTag.title, style = MaterialTheme.typography.headlineMedium, modifier = Modifier.padding(vertical = 20.dp), color = MaterialTheme.colorScheme.onPrimaryContainer)
                     Text(
                         text = "${zeroFormat.format(progressTime.toHours())}:${zeroFormat.format(progressTime.toMinutes()%60)}:${zeroFormat.format(progressTime.seconds%60)}",
-                        style = MaterialTheme.typography.headlineSmall)
+                        style = MaterialTheme.typography.headlineSmall,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer)
                 }
             }
         }

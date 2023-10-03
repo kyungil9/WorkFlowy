@@ -2,6 +2,7 @@ package com.beank.workFlowy.component
 
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -31,8 +32,8 @@ fun PermissionDialog(onRequestPermission: () -> Unit) {
                     },
                     modifier = Modifier.textButton(),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.Blue,
-                        contentColor = Color.White
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
                     )
                 ) { Text(text = stringResource(AppText.request_notification_permission)) }
             },
@@ -55,8 +56,8 @@ fun RationaleDialog() {
                     onClick = { showWarningDialog = false },
                     modifier = Modifier.textButton(),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.Blue,
-                        contentColor = Color.White
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
                     )
                 ) { Text(text = stringResource(AppText.ok)) }
             },

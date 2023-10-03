@@ -125,7 +125,7 @@ fun RecordCard(
         modifier = Modifier
             .padding(10.dp)
             .fillMaxWidth()//높이 조절???
-            .height((100+30*uiState.recordList.size).dp)
+            .height((130 + 30 * uiState.recordList.size).dp)
             .pointerInput(Unit) {
                 detectDragGestures(
                     onDrag = { change, dragAmount ->
@@ -167,8 +167,9 @@ fun RecordCard(
                     }
                 )
             },
-        shape = RoundedCornerShape(10.dp),
-        elevation = CardDefaults.cardElevation(5.dp)
+        shape = MaterialTheme.shapes.medium,
+        elevation = CardDefaults.cardElevation(5.dp),
+        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.primaryContainer)
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally
@@ -189,12 +190,17 @@ fun RecordCard(
                         3 -> selectDay.toYearString()
                         else -> ""
                     },
-                    modifier = Modifier.width(when(toggle){
-                        0 -> 150.dp
-                        1 -> 180.dp
-                        2,3 -> 110.dp
-                        else -> 150.dp
-                    }).height(40.dp)
+                    modifier = Modifier
+                        .width(
+                            when (toggle) {
+                                0 -> 150.dp
+                                1 -> 180.dp
+                                2, 3 -> 110.dp
+                                else -> 150.dp
+                            }
+                        )
+                        .height(50.dp),
+                    color = MaterialTheme.colorScheme.inversePrimary
                 ) {
                     dateDialogState = true
                 }
@@ -210,7 +216,8 @@ fun RecordCard(
             }
             if (actProgress){
                 Row(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier
+                        .fillMaxSize(),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center
                 ) {

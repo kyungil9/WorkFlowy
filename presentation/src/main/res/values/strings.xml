@@ -15,7 +15,8 @@
     <string name="create_account">계정 생성</string>
     <string name="login_server_error">로그인 서버에 문제가 발생하였습니다.</string>
     <string name="firebase_server_error">현재 서버상태가 불안정합니다.</string>
-
+    <string name="time_error">시간값이 정확하지 않습니다.</string>
+    <string name="max_length">글자수가 너무 많습니다.</string>
     <!-- Dialogs -->
     <string name="sign_out_title">로그아웃</string>
     <string name="delete_account_title">계정삭제</string>

@@ -22,6 +22,8 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -115,7 +117,7 @@ fun ScheduleItem(
     schedule : Schedule,
     onClickSchedule : (Schedule) -> Unit
 ){
-    val cardColor by animateColorAsState(targetValue = if (schedule.check) Color.Gray else Color.White, tween(500))
+    val cardColor by animateColorAsState(targetValue = if (schedule.check) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.primaryContainer, tween(500))
     Card(
         Modifier
             .fillMaxWidth()
@@ -131,12 +133,13 @@ fun ScheduleItem(
                 .fillMaxWidth()
                 .padding(horizontal = 5.dp)
         ) {
-            Image(
+            Icon(
                 painter = painterResource(id = intToImage(schedule.icon, LocalContext.current.resources.obtainTypedArray(R.array.scheduleList))),
                 contentDescription = null,
                 modifier = Modifier
                     .padding(5.dp)
-                    .size(50.dp)
+                    .size(50.dp),
+                tint = MaterialTheme.colorScheme.onPrimaryContainer
             )
             Column(
                 modifier = Modifier
@@ -145,10 +148,10 @@ fun ScheduleItem(
                     .padding(5.dp),
                 horizontalAlignment = Alignment.Start
             ) {
-                Text(text = schedule.title, fontSize = 20.sp)
-                Text(text = schedule.comment, fontSize = 16.sp, maxLines = 2)
+                Text(text = schedule.title, fontSize = 20.sp, color = MaterialTheme.colorScheme.onPrimaryContainer)
+                Text(text = schedule.comment, fontSize = 16.sp, maxLines = 2, color = MaterialTheme.colorScheme.onPrimaryContainer)
                 if (schedule.time){
-                    Text(text = "${schedule.startTime.toFormatString()}~${schedule.endTime.toFormatString()}", fontSize = 18.sp)
+                    Text(text = "${schedule.startTime.toFormatString()}~${schedule.endTime.toFormatString()}", fontSize = 18.sp, color = MaterialTheme.colorScheme.onPrimaryContainer)
                 }
             }
         }

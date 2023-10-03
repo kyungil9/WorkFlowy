@@ -43,6 +43,8 @@ class LoginViewModel @Inject constructor(
         }
     }
 
+    fun initToken() = loginUsecases.insertToken()
+
     fun onSignInClick(openAndPopUp: (String, String) -> Unit) {
         if (!email.isValidEmail()) {
             SnackbarManager.showMessage(AppText.email_error)
@@ -63,7 +65,9 @@ class LoginViewModel @Inject constructor(
             loginUsecases.loginAccount(
                 email = email,
                 password = password,
-                onSuccess = { openAndPopUp(NavigationItem.HOME.route, NavigationItem.LOGIN.route) },
+                onSuccess = {
+                    initToken()
+                    openAndPopUp(NavigationItem.HOME.route, NavigationItem.LOGIN.route) },
                 onFailMessage = {SnackbarManager.showMessage(AppText.login_server_error)}
             )
         }

@@ -98,10 +98,13 @@ fun WeekBottomBar(
                 }
             }
         },
-        containerColor = MaterialTheme.colorScheme.primaryContainer,
+        containerColor = MaterialTheme.colorScheme.inversePrimary,
         floatingActionButton = {
-            FloatingActionButton(onClick = onAdditionalSchedule) {
-                Icon(painter = painterResource(id = R.drawable.baseline_add_24), contentDescription = "스케줄 추가")
+            FloatingActionButton(
+                onClick = onAdditionalSchedule,
+                containerColor = MaterialTheme.colorScheme.tertiaryContainer
+            ) {
+                Icon(painter = painterResource(id = R.drawable.baseline_add_24), contentDescription = "스케줄 추가", tint = MaterialTheme.colorScheme.onTertiaryContainer)
             }
         }
     )

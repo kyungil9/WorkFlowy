@@ -60,6 +60,7 @@ fun LoginScreen(
         onAuthSuccess = { result ->
             if(result.additionalUserInfo!!.isNewUser)
                 loginViewModel.initSetting()
+            loginViewModel.initToken()
             user = result.user
         },
         onAuthError = {

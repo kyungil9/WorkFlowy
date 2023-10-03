@@ -26,6 +26,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -73,7 +74,7 @@ fun StackBar(
     )
 
     Column(
-        modifier = Modifier
+        modifier = Modifier.padding(top = 10.dp)
     ) {
         Canvas(
             modifier = modifier
@@ -131,7 +132,8 @@ fun StackItem(
     total : Long
 ){
     Row(
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.fillMaxWidth()
     ) {
         Canvas(modifier = Modifier.size(30.dp,30.dp)){
             drawCircle(
@@ -140,10 +142,13 @@ fun StackItem(
                 radius = size.minDimension / 4
             )
         }
-        HorizontalSpacer(width = 20.dp)
-        Row(horizontalArrangement = Arrangement.SpaceBetween) {
-            Text(text = record.tag)
-            Text(text = "(${(onProgressTimeCheck(record)*100)/total})")
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.fillMaxWidth().padding(start = 20.dp)
+        ) {
+            Text(text = record.tag, style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onPrimaryContainer)
+            Text(text = "(${(onProgressTimeCheck(record)*100)/total})", style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onPrimaryContainer)
         }
     }
 }
