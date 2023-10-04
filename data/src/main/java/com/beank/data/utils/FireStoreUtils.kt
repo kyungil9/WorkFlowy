@@ -1,6 +1,8 @@
 package com.beank.data.utils
 
 import android.annotation.SuppressLint
+import android.os.Build
+import androidx.annotation.RequiresApi
 import com.beank.data.mapper.modelCasting
 import com.beank.domain.model.FireStoreState
 import com.google.firebase.firestore.DocumentReference
@@ -16,6 +18,7 @@ import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 
+@RequiresApi(Build.VERSION_CODES.O)
 @SuppressLint("RestrictedApi")
 inline fun <reified T : Any, reified E : Any> DocumentReference.dataStateObject(
     metadataChanges: MetadataChanges = MetadataChanges.EXCLUDE
@@ -37,6 +40,7 @@ inline fun <reified T : Any, reified E : Any> DocumentReference.dataStateObject(
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @SuppressLint("RestrictedApi")
 inline fun <reified T : Any, reified E : Any> Query.dataStateObjects(
     metadataChanges: MetadataChanges = MetadataChanges.EXCLUDE
@@ -61,6 +65,7 @@ inline fun <reified T : Any, reified E : Any> Query.dataStateObjects(
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @SuppressLint("RestrictedApi")
 fun <E, T> QuerySnapshot.toObjects(
     fromType: Class<T>,

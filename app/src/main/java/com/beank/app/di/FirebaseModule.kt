@@ -6,6 +6,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.ktx.messaging
+import com.google.firebase.storage.ktx.storage
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -30,4 +31,8 @@ object FirebaseModule {
     @Singleton
     @Provides
     fun message() = Firebase.messaging
+
+    @Singleton
+    @Provides
+    fun storage() = Firebase.storage.reference
 }

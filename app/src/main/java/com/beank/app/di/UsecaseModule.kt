@@ -6,12 +6,14 @@ import com.beank.domain.repository.RecordRepository
 import com.beank.domain.repository.ScheduleRepository
 import com.beank.domain.repository.SettingRepository
 import com.beank.domain.repository.TagRepository
+import com.beank.domain.repository.UserRepository
 import com.beank.domain.usecase.AnalysisUsecases
 import com.beank.domain.usecase.LoginUsecases
 import com.beank.domain.usecase.ScheduleUsecases
 import com.beank.domain.usecase.SettingUsecases
 import com.beank.domain.usecase.SignUpUsecases
 import com.beank.domain.usecase.TagUsecases
+import com.beank.domain.usecase.UserUsecases
 import com.beank.domain.usecase.WeekUsecases
 import com.beank.domain.usecase.account.CreateAccount
 import com.beank.domain.usecase.account.LoginAccount
@@ -39,6 +41,11 @@ import com.beank.domain.usecase.tag.DeleteTag
 import com.beank.domain.usecase.tag.GetAllTag
 import com.beank.domain.usecase.tag.InitDataSetting
 import com.beank.domain.usecase.tag.InsertTag
+import com.beank.domain.usecase.user.GetUserInfo
+import com.beank.domain.usecase.user.InitUserInfo
+import com.beank.domain.usecase.user.UpdateUserGrade
+import com.beank.domain.usecase.user.UpdateUserNickName
+import com.beank.domain.usecase.user.UploadImageUrl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -66,11 +73,12 @@ object UsecaseModule {
 
     @Provides
     @Singleton
-    fun provideLoginUseCases(accountRepository: AccountRepository,tagRepository: TagRepository,recordRepository: RecordRepository,messageRepository: MessageRepository) = LoginUsecases(
+    fun provideLoginUseCases(accountRepository: AccountRepository,tagRepository: TagRepository,recordRepository: RecordRepository,messageRepository: MessageRepository,userRepository: UserRepository) = LoginUsecases(
         loginAccount = LoginAccount(accountRepository),
         initDataSetting = InitDataSetting(
             InsertRecord(recordRepository),
-            InsertTag(tagRepository)
+            InsertTag(tagRepository),
+            InitUserInfo(userRepository)
         ),
         insertToken = InsertToken(messageRepository)
     )
@@ -78,11 +86,12 @@ object UsecaseModule {
 
     @Provides
     @Singleton
-    fun provideSingUpUseCases(accountRepository: AccountRepository,tagRepository: TagRepository,recordRepository: RecordRepository) = SignUpUsecases(
+    fun provideSingUpUseCases(accountRepository: AccountRepository,tagRepository: TagRepository,recordRepository: RecordRepository, userRepository: UserRepository) = SignUpUsecases(
         createAccount = CreateAccount(accountRepository),
         initDataSetting = InitDataSetting(
             InsertRecord(recordRepository),
-            InsertTag(tagRepository)
+            InsertTag(tagRepository),
+            InitUserInfo(userRepository)
         )
     )
 
@@ -118,6 +127,15 @@ object UsecaseModule {
         updateDynamicTheme = UpdateDynamicTheme(settingRepository),
         updateNoticeAlarm = UpdateNoticeAlarm(settingRepository),
         updateScheduleAlarm = UpdateScheduleAlarm(settingRepository)
+    )
+
+    @Provides
+    @Singleton
+    fun providesUserUseCases(userRepository: UserRepository) = UserUsecases(
+        getUserInfo = GetUserInfo(userRepository),
+        updateUserNickName = UpdateUserNickName(userRepository),
+        updateUserGrade = UpdateUserGrade(userRepository),
+        uploadImageUrl = UploadImageUrl(userRepository)
     )
 
 }

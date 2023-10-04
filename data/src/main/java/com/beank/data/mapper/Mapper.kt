@@ -1,12 +1,19 @@
 package com.beank.data.mapper
 
+import android.net.Uri
+import android.os.Build
+import androidx.annotation.RequiresApi
+import com.beank.data.entity.WeekUserInfo
 import com.beank.data.entity.WeekRecord
 import com.beank.data.entity.WeekSchedule
 import com.beank.data.entity.WeekTag
 import com.beank.domain.model.Record
 import com.beank.domain.model.Schedule
 import com.beank.domain.model.Tag
+import com.beank.domain.model.UserInfo
+import java.net.URI
 
+@RequiresApi(Build.VERSION_CODES.O)
 fun WeekSchedule.toScheduleModel() = Schedule(
     id = id,
     date = date.toLocalDate(),
@@ -19,6 +26,7 @@ fun WeekSchedule.toScheduleModel() = Schedule(
     check = check
 )
 
+@RequiresApi(Build.VERSION_CODES.O)
 fun WeekRecord.toRecordModel() = Record(
     id = id,
     tag = tag,
@@ -35,6 +43,14 @@ fun WeekTag.toTagModel() = Tag(
     title = title
 )
 
+fun WeekUserInfo.toUserInfo() = UserInfo(
+    id = id,
+    nickname = nickname,
+    grade = grade,
+    urlImage = urlImage?.let { Uri.parse(urlImage) }
+)
+
+@RequiresApi(Build.VERSION_CODES.O)
 fun Schedule.toWeekSchedule() = WeekSchedule(
     id = id,
     date = date.toInt(),
@@ -47,6 +63,7 @@ fun Schedule.toWeekSchedule() = WeekSchedule(
     check = check
 )
 
+@RequiresApi(Build.VERSION_CODES.O)
 fun Record.toWeekRecord() = WeekRecord(
     id = id,
     tag = tag,
@@ -63,10 +80,19 @@ fun Tag.toWeekTag() = WeekTag(
     title = title
 )
 
+fun UserInfo.toWeekUserInfo() = WeekUserInfo(
+    id = id,
+    nickname = nickname,
+    grade = grade,
+    urlImage = urlImage.toString()
+)
+
+@RequiresApi(Build.VERSION_CODES.O)
 fun modelCasting(model : Any) : Any = when(model){
     is String -> "oo"
     is WeekRecord -> model.toRecordModel()
     is WeekSchedule -> model.toScheduleModel()
     is WeekTag -> model.toTagModel()
+    is WeekUserInfo -> model.toUserInfo()
     else -> model
 }

@@ -7,6 +7,7 @@ import com.beank.data.repositoryimpl.RecordRepositoryImpl
 import com.beank.data.repositoryimpl.ScheduleRepositoryImpl
 import com.beank.data.repositoryimpl.SettingRepositoryImpl
 import com.beank.data.repositoryimpl.TagRepositoryImpl
+import com.beank.data.repositoryimpl.UserRepositoryImpl
 import com.beank.domain.repository.AccountRepository
 import com.beank.domain.repository.LogRepository
 import com.beank.domain.repository.MessageRepository
@@ -14,6 +15,7 @@ import com.beank.domain.repository.RecordRepository
 import com.beank.domain.repository.ScheduleRepository
 import com.beank.domain.repository.SettingRepository
 import com.beank.domain.repository.TagRepository
+import com.beank.domain.repository.UserRepository
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -52,5 +54,9 @@ abstract class RepositoryModule {
     @Singleton
     @Binds
     abstract fun bindsSettingRepository(impl : SettingRepositoryImpl) : SettingRepository
+
+    @Singleton
+    @Binds
+    abstract fun bindsUserRepository(impl : UserRepositoryImpl) : UserRepository
 
 }
