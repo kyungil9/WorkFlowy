@@ -24,6 +24,12 @@
     <string name="themeSetting">테마설정</string>
     <string name="customCenter">고객센터</string>
     <string name="useOfTerm">이용약관</string>
+    <string name="darkTheme">다크 테마</string>
+    <string name="dynamicTheme">다이나믹 테마</string>
+    <string name="noticeAlarm">공지사항 알림</string>
+    <string name="scheduleAlarm">스케줄 알림</string>
+
+
 
     <!-- Dialogs -->
 

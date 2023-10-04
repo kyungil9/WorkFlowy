@@ -28,7 +28,8 @@ permission = "0.32.0"
 meterial3 = "1.2.0-alpha08"
 datastore = "1.0.0"
 protobuf = "4.0.0-rc-2"
-
+glide = "1.0.0-beta01"
+glide-com = "4.14.2"
 
 # plugin
 androidStudioGradlePlugin = "8.0.2"
@@ -91,6 +92,7 @@ firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics
 firebase-auth = { group = "com.google.firebase", name = "firebase-auth-ktx"}
 firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore-ktx"}
 firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics-ktx"}
+firebase-storage = { group = "com.google.firebase", name = "firebase-storage-ktx"}
 firebase-message = { group = "com.google.firebase", name = "firebase-messaging-ktx", version.ref = "message" }
 firebase-message-directboot = { group = "com.google.firebase", name = "firebase-messaging-directboot", version.ref = "directboot" }
 google-auth = { group ="com.google.android.gms", name = "play-services-auth", version.ref = "auth"}
@@ -100,6 +102,8 @@ permission = { group = "com.google.accompanist", name = "accompanist-permissions
 datastore = { group = "androidx.datastore", name = "datastore", version.ref = "datastore" }
 protobuf = { group = "com.google.protobuf", name = "protobuf-javalite", version.ref = "protobuf" }
 
+glide = { group = "com.github.bumptech.glide", name = "compose", version.ref = "glide"}
+glide-com = { group = "com.github.bumptech.glide", name = "compiler", version.ref = "glide-com"}
 
 [bundles]
 navigation = ["navigation-fragment","navigation-ui","navigation-compose"]
@@ -108,7 +112,7 @@ lifecycle = ["lifecycle-compose", "lifecycle-viewmodel-ktx", "lifecycle-runtime-
 coroutines = ["coroutines"]
 hilt = ["dagger-hilt-android"]
 testing = ["jUnit", "test-ext", "test-espresso"]
-firebase = ["firebase-analytics", "firebase-auth", "firebase-firestore", "firebase-crashlytics","firebase-message","firebase-message-directboot","google-auth"]
+firebase = ["firebase-analytics", "firebase-auth", "firebase-firestore", "firebase-crashlytics","firebase-message","firebase-message-directboot","google-auth","firebase-storage"]
 
 [plugins]
 

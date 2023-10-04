@@ -16,6 +16,7 @@
         android:roundIcon="@mipmap/workflowy_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.WorkFlowy"
+        android:enableOnBackInvokedCallback="true"
         tools:targetApi="33">
         <activity
             android:name="com.beank.app.WorkFlowyActivity"
