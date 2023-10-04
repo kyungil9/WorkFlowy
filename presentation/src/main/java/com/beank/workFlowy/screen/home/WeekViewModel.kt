@@ -1,6 +1,7 @@
 package com.beank.workFlowy.screen.home
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -206,8 +207,12 @@ class WeekViewModel @Inject constructor(
                 uiState = uiState.copy(tagList = tagList)
             }
             state.onException { message, e ->
-                SnackbarManager.showMessage(AppText.firebase_server_error)
-                logFirebaseFatalCrash(message,e)
+                e.message?.let {
+                    if (!it.contains("PERMISSION_DENIED")){
+                        SnackbarManager.showMessage(AppText.firebase_server_error)
+                        logFirebaseFatalCrash(message, e)
+                    }
+                }
             }
         }.launchIn(viewModelScope)
 
@@ -220,8 +225,12 @@ class WeekViewModel @Inject constructor(
                 uiState = uiState.copy(recordList = listOf(nowRecord.record), selectTag = nowRecord.tag, actProgress = false)
             }
             state.onException { message, e ->
-                SnackbarManager.showMessage(AppText.firebase_server_error)
-                logFirebaseFatalCrash(message,e)
+                e.message?.let {
+                    if (!it.contains("PERMISSION_DENIED")){
+                        SnackbarManager.showMessage(AppText.firebase_server_error)
+                        logFirebaseFatalCrash(message, e)
+                    }
+                }
             }
         }.launchIn(viewModelScope)
 
@@ -235,8 +244,12 @@ class WeekViewModel @Inject constructor(
                             uiState = uiState.copy(scheduleList = scheduleList.sortedWith(compareBy({it.check},{ it.time.not() },{it.startTime})))
                         }
                         state.onException { message, e ->
-                            SnackbarManager.showMessage(AppText.firebase_server_error)
-                            logFirebaseFatalCrash(message,e)
+                            e.message?.let {
+                                if (!it.contains("PERMISSION_DENIED")){
+                                    SnackbarManager.showMessage(AppText.firebase_server_error)
+                                    logFirebaseFatalCrash(message, e)
+                                }
+                            }
                         }
                         state.onEmpty {
                             uiState = uiState.copy(scheduleList = emptyList())

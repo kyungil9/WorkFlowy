@@ -66,6 +66,13 @@ class WorkFlowyState(
         }
     }
 
+    fun navigateAllclear(route: String){
+        navController.navigate(route){
+            launchSingleTop = true
+            popUpTo(navController.graph.id) { inclusive = true}
+        }
+    }
+
     fun slideUpIn(spec : Int) : (@JvmSuppressWildcards
     AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition?) = {
         slideIntoContainer(

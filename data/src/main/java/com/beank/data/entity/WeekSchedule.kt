@@ -4,7 +4,7 @@ import com.google.firebase.firestore.DocumentId
 
 
 data class WeekSchedule(
-    @DocumentId var id : String? ="",
+    @DocumentId var id : String? = null,
     var date : Int = 20220201,
     var startTime : String = "04:00",
     var endTime : String = "04:00",

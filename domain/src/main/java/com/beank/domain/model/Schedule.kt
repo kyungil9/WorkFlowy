@@ -1,8 +1,11 @@
 package com.beank.domain.model
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import java.time.LocalDate
 import java.time.LocalTime
 
+@RequiresApi(Build.VERSION_CODES.O)
 data class Schedule(
     var id: String? = null,
     var date: LocalDate = LocalDate.now(),
