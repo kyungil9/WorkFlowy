@@ -47,6 +47,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.beank.presentation.R
+import com.beank.workFlowy.component.BackTopBar
 import com.beank.workFlowy.component.IconButton
 import com.beank.workFlowy.component.StackBar
 import com.beank.workFlowy.component.WeekLayout
@@ -77,9 +78,14 @@ fun AnalysisScreen(
     val toggleFlow by analysisViewModel.PeriodModeFlow.collectAsStateWithLifecycle()
     val animate by analysisViewModel.animateStackChannel.collectAsStateWithLifecycle(initialValue = false)
 
-    WeekLayout(snackbarHostState = snackbarHostState) {
+    WeekLayout(
+        snackbarHostState = snackbarHostState,
+        topBar = {
+            BackTopBar(title = "활동 분석", onBack = onBack)
+        }
+    ) {
         Column(
-            modifier = Modifier.padding(10.dp),
+            modifier = Modifier.fillMaxSize().padding(top = it.calculateTopPadding(), start = 10.dp, end = 10.dp, bottom = 10.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             RecordCard(

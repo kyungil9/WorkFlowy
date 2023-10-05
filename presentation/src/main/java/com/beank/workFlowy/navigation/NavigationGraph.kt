@@ -122,7 +122,8 @@ fun NavigationGraph(
             exitTransition = appState.slideLeftOut(500)
         ){
             SettingScreen(
-                onBack = appState::navigateAllclear,
+                onBackClear = appState::navigateAllclear,
+                onBack = appState::popUp,
                 snackbarHostState = appState.snackbarHostState
             )
         }

@@ -87,7 +87,7 @@ fun HomeScreen(
         snackbarHostState = snackbarHostState,
         topBar = {
             WeekAppBar(
-                headerIcon = R.drawable.baseline_dehaze_24,
+                headerIcon = R.drawable.baseline_settings_24,
                 onHeaderIconClick = { openScreen(NavigationItem.SETTING.route) },
                 selectDay = selectDayString,
                 onContentClick = {

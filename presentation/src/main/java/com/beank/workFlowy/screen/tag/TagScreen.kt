@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -29,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.beank.presentation.R
+import com.beank.workFlowy.component.BackTopBar
 import com.beank.workFlowy.component.HorizontalSpacer
 import com.beank.workFlowy.component.VerticalSpacer
 import com.beank.workFlowy.component.WeekLayout
@@ -50,9 +52,14 @@ fun TagScreen(
         tagViewModel.initTagImages(resources.obtainTypedArray(R.array.tagList))
     }
 
-    WeekLayout(snackbarHostState = snackbarHostState) {
+    WeekLayout(
+        snackbarHostState = snackbarHostState,
+        topBar = {
+            BackTopBar(title = "태그 등록", onBack = onBackHome)
+        }
+    ) {
         Column(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.fillMaxSize().padding(top = it.calculateTopPadding()),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {

@@ -23,6 +23,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.beank.presentation.R
 
 
 @Composable
@@ -57,7 +58,7 @@ fun WeekAppBar(
             text = selectDay,
             modifier = Modifier
                 .clickable(onClick = onContentClick),
-            fontSize = 18.sp
+            style = MaterialTheme.typography.headlineSmall
         )
         tailIcon?.let{
             IconButton(onClick = onTailIconClick) {
@@ -85,7 +86,7 @@ fun TextTopBar(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .height(80.dp)
+            .height(60.dp)
             .padding(vertical = 10.dp, horizontal = 10.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
@@ -102,5 +103,47 @@ fun TextTopBar(
                 Text(text = "완료", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onPrimaryContainer)
             }
         }
+    }
+}
+
+@Composable
+fun BackTopBar(
+    title : String,
+    modifier: Modifier = Modifier,
+    onBack: () -> Unit = {}
+){
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(50.dp)
+            .padding(vertical = 10.dp, horizontal = 10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        IconButton(
+            onClick = onBack
+        ) {
+            Icon(
+                painter = painterResource(id = com.google.android.material.R.drawable.ic_arrow_back_black_24),
+                contentDescription = "뒤로가기",
+                tint = MaterialTheme.colorScheme.onPrimaryContainer
+            )
+        }
+        Text(
+            text = title,
+            style = MaterialTheme.typography.headlineSmall,
+            color = MaterialTheme.colorScheme.onPrimaryContainer
+        )
+        IconButton(
+            onClick = {},
+            enabled = false
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.baseline_check_24),
+                contentDescription = "",
+                tint = MaterialTheme.colorScheme.background
+            )
+        }
+
     }
 }
