@@ -12,5 +12,8 @@ data class WeekSchedule(
     var icon : Int = 0,
     var title : String = "",
     var comment : String = "",
-    var check : Boolean = false
+    var check : Boolean = false,
+    var alarm : Boolean = false,
+    var alarmTime : Long = 0,
+    var alarmState : String = "5분전"
 )

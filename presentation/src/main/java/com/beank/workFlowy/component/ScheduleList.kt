@@ -4,9 +4,12 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -16,10 +19,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.KeyboardArrowDown
+import androidx.compose.material.icons.outlined.KeyboardArrowUp
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -41,15 +48,17 @@ import com.beank.workFlowy.utils.intToImage
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.graphics.Color
+import androidx.compose.material3.IconButton
+import androidx.compose.ui.text.style.TextOverflow
 import com.beank.workFlowy.utils.toFormatString
 import kotlin.math.abs
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ScheduleList(
-    uiState: WeekUiState,
+    scheduleList : List<Schedule>,
     onRightDrag : () -> Unit,
     onLeftDrag : () -> Unit,
     onClickSchedule: (Schedule) -> Unit
@@ -104,7 +113,7 @@ fun ScheduleList(
             },
         state = scrollState
     ) {
-        items(uiState.scheduleList) { schedule ->
+        items(scheduleList) { schedule ->
             ScheduleItem(schedule, onClickSchedule = onClickSchedule)
         }
     }
@@ -117,42 +126,100 @@ fun ScheduleItem(
     schedule : Schedule,
     onClickSchedule : (Schedule) -> Unit
 ){
+    var commentToggle by remember { mutableStateOf(false)}
     val cardColor by animateColorAsState(targetValue = if (schedule.check) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.primaryContainer, tween(500))
     Card(
         Modifier
             .fillMaxWidth()
             .clickable { onClickSchedule(schedule) }
-            .height(if (schedule.time) 100.dp else 80.dp)
+            .height(if (schedule.time && commentToggle) 160.dp else (if (commentToggle) 130.dp else (if (schedule.time) 100.dp else 80.dp)))
             .padding(10.dp),
-        shape = RoundedCornerShape(10.dp),
-        colors = CardDefaults.cardColors(containerColor = cardColor),
-        elevation = CardDefaults.cardElevation(defaultElevation = 5.dp)
+        shape = MaterialTheme.shapes.small,
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary),
+        elevation = CardDefaults.cardElevation(defaultElevation = 5.dp),
     ) {
-        Row(
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 5.dp)
+                .fillMaxSize()
+                .padding(start = 5.dp, top = 0.dp, end = 0.dp, bottom = 0.dp)
+                .background(
+                    color = cardColor,
+                    shape = RoundedCornerShape(
+                        topStart = 0.dp,
+                        topEnd = 5.dp,
+                        bottomStart = 0.dp,
+                        bottomEnd = 5.dp
+                    )
+                )
+                .padding(horizontal = 5.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.Start
         ) {
-            Icon(
-                painter = painterResource(id = intToImage(schedule.icon, LocalContext.current.resources.obtainTypedArray(R.array.scheduleList))),
-                contentDescription = null,
+            Row(
                 modifier = Modifier
-                    .padding(5.dp)
-                    .size(50.dp),
-                tint = MaterialTheme.colorScheme.onPrimaryContainer
-            )
-            Column(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .offset(x = 10.dp)
-                    .padding(5.dp),
-                horizontalAlignment = Alignment.Start
+                    .fillMaxWidth()
+                    .padding(start = 20.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(text = schedule.title, fontSize = 20.sp, color = MaterialTheme.colorScheme.onPrimaryContainer)
-                Text(text = schedule.comment, fontSize = 16.sp, maxLines = 2, color = MaterialTheme.colorScheme.onPrimaryContainer)
-                if (schedule.time){
-                    Text(text = "${schedule.startTime.toFormatString()}~${schedule.endTime.toFormatString()}", fontSize = 18.sp, color = MaterialTheme.colorScheme.onPrimaryContainer)
+                Row() {
+                    Icon(
+                        painter = painterResource(id = intToImage(schedule.icon, LocalContext.current.resources.obtainTypedArray(R.array.scheduleList))),
+                        contentDescription = "스케줄 이미지",
+                        tint = MaterialTheme.colorScheme.onPrimaryContainer
+                    )
+                    Text(
+                        text = schedule.title,
+                        style = MaterialTheme.typography.headlineSmall,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer,
+                        modifier = Modifier.padding(start = 15.dp).width(200.dp),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
                 }
+                IconButton(onClick = { commentToggle = commentToggle.not()}, modifier = Modifier.padding(end = 5.dp)) {
+                    Icon(
+                        imageVector = if (commentToggle) Icons.Outlined.KeyboardArrowUp else Icons.Outlined.KeyboardArrowDown,
+                        contentDescription = "아이콘 선택",
+                        tint = MaterialTheme.colorScheme.onSecondaryContainer
+                    )
+                }
+            }
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 20.dp)
+            ) {
+                if (schedule.time){
+                    Text(text = "${schedule.startTime.toFormatString()}~${schedule.endTime.toFormatString()}", style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.outline)
+                }
+                if (schedule.alarm){
+                    Icon(
+                        painter = painterResource(id = R.drawable.baseline_notifications_none_24),
+                        contentDescription = "알람 이미지",
+                        modifier = Modifier
+                            .padding(start = if (schedule.time) 15.dp else 0.dp, bottom = 10.dp),
+                        tint = MaterialTheme.colorScheme.outline
+                    )
+                }
+            }
+            if (commentToggle){
+                Card(
+                    modifier = Modifier
+                        .height(50.dp)
+                        .fillMaxWidth()
+                        .padding(vertical = 5.dp, horizontal = 20.dp),
+                    shape = MaterialTheme.shapes.small,
+                    colors = CardDefaults.cardColors(cardColor),
+                    border = BorderStroke(1.dp, color = MaterialTheme.colorScheme.onSecondaryContainer)
+                ) {
+                    Text(
+                        text = schedule.comment, style = MaterialTheme.typography.bodyLarge,
+                        maxLines = 2, color = MaterialTheme.colorScheme.onPrimaryContainer,
+                        overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(start = 10.dp)
+                    )
+                }
+
             }
         }
     }

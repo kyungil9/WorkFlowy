@@ -1,5 +1,7 @@
 package com.beank.data.repositoryimpl
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import com.beank.data.datasource.StorageDataSource
 import com.beank.data.entity.WeekSchedule
 import com.beank.data.mapper.toInt
@@ -13,13 +15,14 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import java.time.LocalDate
 import javax.inject.Inject
-
+@RequiresApi(Build.VERSION_CODES.O)
 class ScheduleRepositoryImpl @Inject constructor(
     private val storage : StorageDataSource
 ) : ScheduleRepository {
     override fun getScheduleInfo(today: LocalDate): Flow<FireStoreState<List<Schedule>>> =
         storage.store.document(storage.getUid()!!).collection(SCHEDULE).whereEqualTo("date",today.toInt())
             .dataStateObjects<WeekSchedule,Schedule>()
+
 
     override fun insertSchedule(schedule: Schedule) : Unit =
         storage.save(SCHEDULE,schedule.toWeekSchedule())

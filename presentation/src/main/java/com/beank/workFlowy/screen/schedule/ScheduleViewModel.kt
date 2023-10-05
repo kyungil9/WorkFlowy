@@ -24,6 +24,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.LocalTime
 import javax.inject.Inject
 
@@ -62,7 +63,9 @@ class ScheduleViewModel @Inject constructor(
                 startTime = schedule.startTime,
                 endTime = schedule.endTime,
                 timeToggle = schedule.time,
-                image = intToImage(schedule.icon,typedSchedule)
+                image = intToImage(schedule.icon,typedSchedule),
+                alarmToggle = schedule.alarm,
+                alarmState = schedule.alarmState
             )
         }else{
             val day = today.toLocalDate()
@@ -85,16 +88,38 @@ class ScheduleViewModel @Inject constructor(
     }
 
     fun onTimeChange(startHour : Int, startMinute : Int, endHour : Int, endMinute : Int) : Boolean{
-        if (startHour > endHour || (startHour == endHour && startMinute > endMinute)){
-            return false
+        return if (startHour > endHour || (startHour == endHour && startMinute > endMinute)){
+            false
         }else{
             uiState = uiState.copy(startTime = LocalTime.of(startHour, startMinute), endTime = LocalTime.of(endHour, endMinute))
-            return true
+            true
         }
     }
 
     fun onCommentChange(text: String){
         uiState = uiState.copy(comment = text)
+    }
+
+    fun onAlarmToggleChange(){
+        uiState = uiState.copy(alarmToggle = uiState.alarmToggle.not())
+    }
+
+    fun onAlarmStateChange(state : String){
+        uiState = uiState.copy(alarmState = state)
+    }
+
+    fun onAlarmTimeCalculate() : LocalDateTime{
+        val alarmTime = LocalDateTime.of(uiState.date,uiState.startTime)
+        return when(uiState.alarmState){
+            "5분전" -> alarmTime.minusMinutes(5)
+            "30분전" -> alarmTime.minusMinutes(30)
+            "1시간전" -> alarmTime.minusHours(1)
+            "3시간전" -> alarmTime.minusHours(3)
+            "6시간전" -> alarmTime.minusHours(6)
+            "12시간전" -> alarmTime.minusHours(12)
+            "하루전" -> alarmTime.minusDays(1)
+            else -> alarmTime
+        }
     }
 
     fun onScheduleInsert(){
@@ -107,7 +132,10 @@ class ScheduleViewModel @Inject constructor(
                 time = uiState.timeToggle,
                 icon = imageToInt(uiState.image,typedSchedule),
                 title = uiState.title,
-                comment = uiState.comment
+                comment = uiState.comment,
+                alarm = uiState.alarmToggle,
+                alarmTime = onAlarmTimeCalculate(),
+                alarmState = uiState.alarmState
             ))
         }
     }
@@ -122,7 +150,10 @@ class ScheduleViewModel @Inject constructor(
                 time = uiState.timeToggle,
                 icon = imageToInt(uiState.image,typedSchedule),
                 title = uiState.title,
-                comment = uiState.comment
+                comment = uiState.comment,
+                alarm = uiState.alarmToggle,
+                alarmTime = onAlarmTimeCalculate(),
+                alarmState = uiState.alarmState
             ))
         }
     }

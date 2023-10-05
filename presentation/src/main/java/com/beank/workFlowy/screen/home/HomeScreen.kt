@@ -160,7 +160,7 @@ fun HomeScreen(
                 })
 
             ScheduleList(
-                uiState = uiState,
+                scheduleList = uiState.scheduleList,
                 onRightDrag = {
                     val date = weekViewModel.plusSelectDay()
                     scope.launch(Dispatchers.Main) {
@@ -185,7 +185,7 @@ fun HomeScreen(
         }
         TagSelectedDialog(
             visible = uiState.weekState,
-            uiState = uiState,
+            tagList = uiState.tagList,
             onDismissRequest = {weekViewModel.onWeekStateChange(false)},
             onClickAct = {tag ->
                 weekViewModel.onRecordChange(tag)

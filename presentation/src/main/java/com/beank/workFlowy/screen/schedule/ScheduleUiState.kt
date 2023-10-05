@@ -5,6 +5,7 @@ import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Stable
 import com.beank.presentation.R
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.LocalTime
 
 @Stable
@@ -19,4 +20,6 @@ data class ScheduleUiState(
     val endTime : LocalTime = LocalTime.now(),
     val comment : String = "",
     val timeToggle : Boolean = false,
+    val alarmToggle :Boolean = false,
+    val alarmState : String = "5분전"
 )

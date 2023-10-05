@@ -23,7 +23,10 @@ fun WeekSchedule.toScheduleModel() = Schedule(
     icon = icon,
     title = title,
     comment = comment,
-    check = check
+    check = check,
+    alarm = alarm,
+    alarmTime = alarmTime.toLocalDateTime(),
+    alarmState = alarmState
 )
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -60,7 +63,10 @@ fun Schedule.toWeekSchedule() = WeekSchedule(
     icon = icon,
     title = title,
     comment = comment,
-    check = check
+    check = check,
+    alarm = alarm,
+    alarmTime = alarmTime.toLong(),
+    alarmState = alarmState
 )
 
 @RequiresApi(Build.VERSION_CODES.O)

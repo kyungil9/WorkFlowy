@@ -28,7 +28,7 @@
     <string name="dynamicTheme">다이나믹 테마</string>
     <string name="noticeAlarm">공지사항 알림</string>
     <string name="scheduleAlarm">스케줄 알림</string>
-
+    <string name="scheduleEmpty">내용을 입력해주세요.</string>
 
 
     <!-- Dialogs -->

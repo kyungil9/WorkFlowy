@@ -49,7 +49,7 @@ fun CustomAlertDialog(
 @Composable
 fun TagSelectedDialog(
     visible : Boolean,
-    uiState: WeekUiState,
+    tagList: List<Tag>,
     onAddActTag : () -> Unit,
     onClickAct : (Tag) -> Unit,
     onClickDelect : (Tag) -> Unit,
@@ -68,7 +68,7 @@ fun TagSelectedDialog(
                 horizontalArrangement = Arrangement.spacedBy(space = 10.dp),
                 contentPadding = PaddingValues(all = 10.dp)
             ) {
-                items(uiState.tagList) { tag ->
+                items(tagList) { tag ->
                     ActTagCard(tag = tag, onClickAct = onClickAct, onClickDelect = onClickDelect)
                 }
                 item {

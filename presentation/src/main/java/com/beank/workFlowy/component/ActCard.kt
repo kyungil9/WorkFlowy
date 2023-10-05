@@ -55,8 +55,8 @@ fun ActCard(
         onClick = onClickAct,
         modifier = Modifier
             .fillMaxWidth()
-            .height(200.dp)
-            .padding(20.dp),
+            .height(130.dp)
+            .padding(15.dp),
         shape = MaterialTheme.shapes.medium,
         colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primary),
         elevation = ButtonDefaults.elevatedButtonElevation(5.dp),
@@ -81,16 +81,16 @@ fun ActCard(
                     painter = painterResource(id = intToImage(selectedTag.icon, LocalContext.current.resources.obtainTypedArray(R.array.tagList))),
                     contentDescription = null,
                     modifier = Modifier
-                        .size(130.dp),
+                        .size(70.dp),
                     tint = MaterialTheme.colorScheme.onPrimaryContainer
                 )
                 Column(
                     modifier = Modifier
                         .fillMaxHeight()
-                        .padding(top = 15.dp,end = 15.dp),
+                        .padding(top = 10.dp,end = 25.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text(text = selectedTag.title, style = MaterialTheme.typography.headlineMedium, modifier = Modifier.padding(vertical = 20.dp), color = MaterialTheme.colorScheme.onPrimaryContainer)
+                    Text(text = selectedTag.title, style = MaterialTheme.typography.headlineMedium, color = MaterialTheme.colorScheme.onPrimaryContainer)
                     Text(
                         text = "${zeroFormat.format(progressTime.toHours())}:${zeroFormat.format(progressTime.toMinutes()%60)}:${zeroFormat.format(progressTime.seconds%60)}",
                         style = MaterialTheme.typography.headlineSmall,

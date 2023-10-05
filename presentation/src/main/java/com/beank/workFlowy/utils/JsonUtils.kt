@@ -23,7 +23,9 @@ fun Schedule.toScheduleJson() : String?{
         icon,
         title,
         comment,
-        check
+        check,
+        alarm,
+        alarmState
     )
     return Gson().toJson(temp)
 }
@@ -40,7 +42,9 @@ fun String.fromScheduleJson(): Schedule{
         json.icon,
         json.title,
         json.comment,
-        json.check
+        json.check,
+        json.alarm,
+        alarmState = json.alarmState
     )
 }
 
@@ -53,7 +57,9 @@ data class JsonSchedule(
     var icon: Int = 0,
     var title: String = "",
     var comment: String = "",
-    var check : Boolean = false
+    var check : Boolean = false,
+    var alarm : Boolean = false,
+    var alarmState : String = "5분전"
 )
 
 
