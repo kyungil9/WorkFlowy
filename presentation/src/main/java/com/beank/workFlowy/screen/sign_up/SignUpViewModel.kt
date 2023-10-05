@@ -16,6 +16,7 @@ import com.beank.workFlowy.utils.passwordMatches
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
+@RequiresApi(Build.VERSION_CODES.O)
 @HiltViewModel
 class SignUpViewModel @Inject constructor(
     private val signUpUsecases: SignUpUsecases,
@@ -40,14 +41,13 @@ class SignUpViewModel @Inject constructor(
         uiState = uiState.copy(repeatPassword = newValue)
     }
 
-    @RequiresApi(Build.VERSION_CODES.FROYO)
     fun onSignInClick(onBack: () -> Unit) {
         if (!email.isValidEmail()) {
             SnackbarManager.showMessage(R.string.email_error)
             return
         }
 
-        if (password.isValidPassword()) {
+        if (!password.isValidPassword()) {
             SnackbarManager.showMessage(R.string.password_error)
             return
         }

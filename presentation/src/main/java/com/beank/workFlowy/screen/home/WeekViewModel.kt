@@ -56,6 +56,10 @@ class WeekViewModel @Inject constructor(
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(),"")
     var uiState by mutableStateOf(WeekUiState())
         private set
+
+    var progressTime by mutableStateOf(Duration.ZERO)
+        private set
+
     private val scheduleInfo get() = uiState.selectSchedule
     var todayJob : Job? = null
 
@@ -66,7 +70,7 @@ class WeekViewModel @Inject constructor(
             if (delayMills >= 1000L) {
                 val record = uiState.recordList
                 if (record.isNotEmpty()) {
-                    uiState = uiState.copy(progressTime = Duration.between(record[0].startTime, LocalDateTime.now()))
+                    progressTime = Duration.between(record[0].startTime, LocalDateTime.now())
                 }
                 oldTimeMills = System.currentTimeMillis()
             }

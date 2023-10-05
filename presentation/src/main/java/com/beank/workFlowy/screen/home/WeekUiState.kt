@@ -18,7 +18,6 @@ data class WeekUiState(
     val recordList : List<Record> = emptyList(),
     val selectTag : Tag = Tag(),
     val selectSchedule : Schedule = Schedule(),
-    val progressTime : Duration = Duration.ZERO,
     val actProgress : Boolean = true,
     val weekState : Boolean = false,
     val scheduleState : Boolean = false,

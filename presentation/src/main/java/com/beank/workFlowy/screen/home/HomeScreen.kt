@@ -89,7 +89,7 @@ fun HomeScreen(
             WeekAppBar(
                 headerIcon = R.drawable.baseline_settings_24,
                 onHeaderIconClick = { openScreen(NavigationItem.SETTING.route) },
-                selectDay = selectDayString,
+                selectDay = {selectDayString},
                 onContentClick = {
                     dateDialogState = true
                 },
@@ -153,7 +153,7 @@ fun HomeScreen(
             }
 
             ActCard(selectedTag = uiState.selectTag,
-                progressTime = uiState.progressTime,
+                progressTime = {weekViewModel.progressTime},
                 progress = uiState.actProgress,
                 onClickAct = {
                     weekViewModel.onWeekStateChange(true)

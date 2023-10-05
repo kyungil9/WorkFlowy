@@ -31,7 +31,7 @@ fun WeekAppBar(
     @DrawableRes headerIcon : Int,
     modifier: Modifier = Modifier,
     onHeaderIconClick: () -> Unit = {},
-    selectDay : String,
+    selectDay : () -> String,
     onContentClick: () -> Unit = {},
     @DrawableRes tailIcon : Int? = null,
     onTailIconClick: () -> Unit = {}
@@ -55,7 +55,7 @@ fun WeekAppBar(
             )
         }
         Text(
-            text = selectDay,
+            text = selectDay(),
             modifier = Modifier
                 .clickable(onClick = onContentClick),
             style = MaterialTheme.typography.headlineSmall

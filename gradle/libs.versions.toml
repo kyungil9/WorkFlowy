@@ -5,7 +5,7 @@ activity = "1.7.2"
 material = "1.9.0"
 coreKtx = "1.10.0"
 constraintLayout = "1.0.1"
-composeBom = "2022.12.00"
+composeBom = "2023.09.02"
 room = "2.5.2"
 lifecycle = "2.6.1"
 lifecycle-common = "2.5.1"
@@ -20,7 +20,7 @@ gson = "2.9.0"
 retrofit2 = "2.9.0"
 okhttp3 = "4.9.3"
 navigation = "2.7.0-rc01"
-compose = "1.5.0-beta01"
+compose = "1.6.0-alpha06"
 firebase = "32.2.3"
 message = "23.2.1"
 directboot = "20.2.0"
@@ -32,7 +32,7 @@ glide = "1.0.0-beta01"
 glide-com = "4.14.2"
 
 # plugin
-androidStudioGradlePlugin = "8.0.2"
+androidStudioGradlePlugin = "8.1.2"
 kotlin = "1.8.20"
 androidNavigationSafeargs ="2.7.0-rc01"
 google = "4.3.15"
@@ -52,11 +52,11 @@ constraintLayout = { module = "androidx.constraintlayout:constraintlayout-compos
 compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
 compose-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "meterial3" }
 compose-material3-window = { group = "androidx.compose.material3", name = "material3-window-size-class", version.ref = "meterial3" }
-compose-foundation = { group = "androidx.compose.foundation", name = "foundation", version.ref = "compose"  }
-compose-ui = { group = "androidx.compose.ui", name = "ui", version.ref = "compose"  }
-compose-ui-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview", version.ref = "compose"  }
-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling", version.ref = "compose"  }
-compose-viewBinding = { group = "androidx.compose.ui", name = "ui-viewbinding" , version.ref = "compose" }
+compose-foundation = { group = "androidx.compose.foundation", name = "foundation" }
+compose-ui = { group = "androidx.compose.ui", name = "ui" }
+compose-ui-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
+compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
+compose-viewBinding = { group = "androidx.compose.ui", name = "ui-viewbinding" }
 
 navigation-fragment = { group = "androidx.navigation", name = "navigation-fragment-ktx", version.ref = "navigation" }
 navigation-ui = { group = "androidx.navigation", name = "navigation-ui-ktx", version.ref = "navigation" }
@@ -102,14 +102,15 @@ permission = { group = "com.google.accompanist", name = "accompanist-permissions
 datastore = { group = "androidx.datastore", name = "datastore", version.ref = "datastore" }
 protobuf = { group = "com.google.protobuf", name = "protobuf-javalite", version.ref = "protobuf" }
 
-glide = { group = "com.github.bumptech.glide", name = "compose", version.ref = "glide"}
+glide = { group = "com.github.bumptech.glide", name = "compose", version = "1.0.0-beta01" }
 glide-com = { group = "com.github.bumptech.glide", name = "compiler", version.ref = "glide-com"}
 
 [bundles]
 navigation = ["navigation-fragment","navigation-ui","navigation-compose"]
-compose = ["compose-material3", "compose-foundation", "compose-ui", "compose-ui-preview", "compose-viewBinding","compose-material3-window"]
+compose = ["compose-foundation", "compose-ui", "compose-ui-preview", "compose-viewBinding"]
 lifecycle = ["lifecycle-compose", "lifecycle-viewmodel-ktx", "lifecycle-runtime-ktx", "lifecycle-runtime-compose", "lifecycle-service"]
 coroutines = ["coroutines"]
+material3 = ["compose-material3","compose-material3-window"]
 hilt = ["dagger-hilt-android"]
 testing = ["jUnit", "test-ext", "test-espresso"]
 firebase = ["firebase-analytics", "firebase-auth", "firebase-firestore", "firebase-crashlytics","firebase-message","firebase-message-directboot","google-auth","firebase-storage"]

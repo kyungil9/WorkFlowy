@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -47,7 +48,7 @@ import java.time.Duration
 @Composable
 fun ActCard(
     selectedTag: Tag,
-    progressTime : Duration,
+    progressTime : () -> Duration,
     progress : Boolean,
     onClickAct : () -> Unit
 ){
@@ -74,27 +75,29 @@ fun ActCard(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 10.dp),
+                    .padding(horizontal = 10.dp, vertical = 5.dp),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Icon(
                     painter = painterResource(id = intToImage(selectedTag.icon, LocalContext.current.resources.obtainTypedArray(R.array.tagList))),
                     contentDescription = null,
                     modifier = Modifier
-                        .size(70.dp),
+                        .size(70.dp).padding(start = 5.dp),
                     tint = MaterialTheme.colorScheme.onPrimaryContainer
                 )
                 Column(
                     modifier = Modifier
                         .fillMaxHeight()
-                        .padding(top = 10.dp,end = 25.dp),
+                        .width(120.dp)
+                        .padding(top = 5.dp,end = 25.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(text = selectedTag.title, style = MaterialTheme.typography.headlineMedium, color = MaterialTheme.colorScheme.onPrimaryContainer)
                     Text(
-                        text = "${zeroFormat.format(progressTime.toHours())}:${zeroFormat.format(progressTime.toMinutes()%60)}:${zeroFormat.format(progressTime.seconds%60)}",
+                        text = "${zeroFormat.format(progressTime().toHours())}:${zeroFormat.format(progressTime().toMinutes()%60)}:${zeroFormat.format(progressTime().seconds%60)}",
                         style = MaterialTheme.typography.headlineSmall,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer)
+                        color = MaterialTheme.colorScheme.onPrimaryContainer,
+                        modifier = Modifier.size(80.dp,30.dp).padding(start = 5.dp))
                 }
             }
         }
