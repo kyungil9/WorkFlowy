@@ -37,7 +37,6 @@ fun WorkFlowyApp() {
             val appState = rememberAppState()
             NavigationGraph(appState)
         }
-
     }
 }
 

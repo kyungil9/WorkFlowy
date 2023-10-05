@@ -2,6 +2,7 @@ package com.beank.workFlowy.screen.setting
 
 
 import android.net.Uri
+import android.os.Build
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
@@ -47,6 +48,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.beank.presentation.R
+import com.beank.workFlowy.component.BackTopBar
 import com.beank.workFlowy.component.SettingCard
 import com.beank.workFlowy.component.TextCard
 import com.beank.workFlowy.component.ToggleCard
@@ -65,7 +67,8 @@ import com.beank.presentation.R.string as AppText
 fun SettingScreen(
     settingViewModel: SettingViewModel = hiltViewModel(),
     snackbarHostState: SnackbarHostState,
-    onBack : (String) -> Unit
+    onBackClear : (String) -> Unit,
+    onBack : () -> Unit
 ){
     val uiState = settingViewModel.uiState
     val launcher = rememberImageLauncher(onImageSuccess = {
@@ -77,10 +80,13 @@ fun SettingScreen(
     var editNickname by remember { mutableStateOf(false)}
 
     WeekLayout(
-        snackbarHostState = snackbarHostState
+        snackbarHostState = snackbarHostState,
+        topBar = {
+            BackTopBar(title = "설정", onBack = onBack)
+        }
     ) {
         Column(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.fillMaxSize().padding(top = it.calculateTopPadding()),
             verticalArrangement = Arrangement.Top
         ) {
             Card(//유저 프로필 화면
@@ -107,7 +113,10 @@ fun SettingScreen(
                                     modifier = Modifier
                                         .width(120.dp)
                                         .height(60.dp)
-                                        .background(MaterialTheme.colorScheme.secondaryContainer, RoundedCornerShape(5.dp)),
+                                        .background(
+                                            MaterialTheme.colorScheme.secondaryContainer,
+                                            RoundedCornerShape(5.dp)
+                                        ),
                                     shape = MaterialTheme.shapes.small,
                                     value = uiState.tempNickname,
                                     onValueChange = {
@@ -196,8 +205,13 @@ fun SettingScreen(
                 ToggleCard(title = stringResource(id = AppText.darkTheme), checked = uiState.darkThemeToggle){
                     settingViewModel.onDarkThemeUpdate(it)
                 }
-                ToggleCard(title = stringResource(id = AppText.dynamicTheme), checked = uiState.dynamicThemeToggle){
-                    settingViewModel.onDynamicThemeUpdate(it)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    ToggleCard(
+                        title = stringResource(id = AppText.dynamicTheme),
+                        checked = uiState.dynamicThemeToggle
+                    ) {
+                        settingViewModel.onDynamicThemeUpdate(it)
+                    }
                 }
                 VerticalSpacer(height = 5.dp)
                 HorizontalDivider(modifier = Modifier.fillMaxWidth(), thickness = 1.dp)
@@ -215,7 +229,7 @@ fun SettingScreen(
                 SettingCard(title = stringResource(id = AppText.logout), color = MaterialTheme.colorScheme.error){
                     settingViewModel.signOut()
                     //화면 로그인 화면이동
-                    onBack(NavigationItem.LOGIN.route)
+                    onBackClear(NavigationItem.LOGIN.route)
                 }
             }
         }
