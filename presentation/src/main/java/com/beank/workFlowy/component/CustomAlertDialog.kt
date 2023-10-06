@@ -68,13 +68,12 @@ fun TagSelectedDialog(
                 horizontalArrangement = Arrangement.spacedBy(space = 10.dp),
                 contentPadding = PaddingValues(all = 10.dp)
             ) {
-                items(tagList) { tag ->
+                items(tagList, key = {it.title}) { tag ->
                     ActTagCard(tag = tag, onClickAct = onClickAct, onClickDelect = onClickDelect)
                 }
                 item {
                     Card(
                         modifier = Modifier
-                            .fillMaxSize()
                             .padding(10.dp)
                             .clickable { onAddActTag() },
                         shape = MaterialTheme.shapes.small,

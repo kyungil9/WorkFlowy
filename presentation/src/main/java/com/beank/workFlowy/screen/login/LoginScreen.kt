@@ -8,17 +8,14 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -37,7 +34,6 @@ import com.beank.workFlowy.component.PasswordField
 import com.beank.workFlowy.component.VerticalSpacer
 import com.beank.workFlowy.component.WeekLayout
 import com.beank.workFlowy.component.basicButton
-import com.beank.workFlowy.component.fieldModifier
 import com.beank.workFlowy.navigation.NavigationItem
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -48,6 +44,7 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import kotlin.reflect.KFunction1
 import com.beank.presentation.R.string as AppText
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -58,6 +55,7 @@ fun LoginScreen(
     openScreen : (String) -> Unit,
     snackbarHostState: SnackbarHostState
 ){
+
     var user by rememberSaveable { mutableStateOf(Firebase.auth.currentUser) }
     val launcher = rememberFirebaseAuthLauncher(
         onAuthSuccess = { result ->
@@ -70,23 +68,23 @@ fun LoginScreen(
             user = null
         }
     )
-    val uiState = loginViewModel.uiState
     val token = stringResource(R.string.default_web_client_id)
     val context = LocalContext.current
+
+    val email by loginViewModel.email.collectAsStateWithLifecycle(initialValue = "")
+    val password by loginViewModel.password.collectAsStateWithLifecycle(initialValue = "")
 
     WeekLayout(snackbarHostState = snackbarHostState) {
         Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight(),
+                .fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             if (user == null){
                 Image(painter = painterResource(id = R.drawable.workflowy_foreground), contentDescription = "어플화면",
                     modifier = Modifier.size(300.dp,300.dp))
-                EmailField(value = uiState.email, onNewValue = loginViewModel::onEmailChange, Modifier.fieldModifier())
-                PasswordField(value = uiState.password, onNewValue = loginViewModel::onPasswordChange, Modifier.fieldModifier())
-
+                EmailField(value = {email}, onNewValue = loginViewModel::onEmailChange)
+                PasswordField(value = {password}, onNewValue = loginViewModel::onPasswordChange)
                 BasicButton(text = AppText.sign_in, modifier = Modifier.basicButton()) {
                     loginViewModel.onSignInClick(openPopUpScreen)
                 }
@@ -112,6 +110,7 @@ fun LoginScreen(
             }
         }
     }
+
 }
 
 @Composable

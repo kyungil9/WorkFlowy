@@ -14,6 +14,10 @@ import com.beank.workFlowy.utils.isValidEmail
 import com.beank.workFlowy.utils.isValidPassword
 import com.beank.workFlowy.utils.passwordMatches
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -23,44 +27,45 @@ class SignUpViewModel @Inject constructor(
     logRepository: LogRepository
 ) : WorkFlowyViewModel(logRepository){
 
-    var uiState by mutableStateOf(SignUpUiState())
-        private set
-    private val email get() = uiState.email
-    private val password get() = uiState.password
-    private val repeatPassword get() =  uiState.repeatPassword
+    private val _uiState = MutableStateFlow(SignUpUiState())
+    private val uiState get() = _uiState.asStateFlow()
+
+    val email get() = uiState.map { it.email }
+    val password get() = uiState.map { it.password }
+    val repeatPassword get() =  uiState.map { it.repeatPassword }
 
     fun onEmailChange(newValue : String){
-        uiState = uiState.copy(email = newValue)
+        _uiState.update { it.copy(email = newValue) }
     }
 
     fun onPasswordChange(newValue: String){
-        uiState = uiState.copy(password = newValue)
+        _uiState.update { it.copy(password = newValue) }
     }
 
     fun onRepeatPasswordChange(newValue: String){
-        uiState = uiState.copy(repeatPassword = newValue)
+        _uiState.update { it.copy(repeatPassword = newValue) }
     }
 
     fun onSignInClick(onBack: () -> Unit) {
-        if (!email.isValidEmail()) {
+        if (!uiState.value.email.isValidEmail()) {
             SnackbarManager.showMessage(R.string.email_error)
             return
         }
 
-        if (!password.isValidPassword()) {
+        if (!uiState.value.password.isValidPassword()) {
             SnackbarManager.showMessage(R.string.password_error)
             return
         }
 
-        if (!password.passwordMatches(repeatPassword)) {
+        if (!uiState.value.password.passwordMatches(uiState.value.repeatPassword)) {
             SnackbarManager.showMessage(R.string.password_match_error)
             return
         }
 
         launchCatching {
             signUpUsecases.createAccount(
-                email = email,
-                password = password,
+                email = uiState.value.email,
+                password = uiState.value.password,
                 onSuccess = {
                     signUpUsecases.initDataSetting()
                     onBack()},

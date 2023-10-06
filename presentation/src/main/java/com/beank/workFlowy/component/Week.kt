@@ -21,6 +21,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.key
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,14 +40,15 @@ import java.time.LocalDate
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun WeekLazyList(
-    selectDay: LocalDate,
+    selectDay: () -> LocalDate,
     weekListState : LazyListState,
-    onClickItem : (LocalDate) -> Unit
+    onClickItem : (LocalDate) -> Unit,
+    weekDayList : List<LocalDate>
 ){
     LazyRow(
         state = weekListState
     ){
-        items(makeDayList()){ day ->
+        items(weekDayList, key = {it}){ day ->
             dayItem(day = day, selectDay = selectDay, onItemClick = onClickItem)
         }
     }
@@ -56,14 +58,18 @@ fun WeekLazyList(
 @OptIn(ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun dayItem(day : LocalDate, selectDay : LocalDate, onItemClick : (LocalDate) -> Unit){
+fun dayItem(day : LocalDate, selectDay : () -> LocalDate, onItemClick : (LocalDate) -> Unit){
     Card(
         onClick = { onItemClick(day)},
         shape = MaterialTheme.shapes.small,
         colors = CardDefaults.cardColors(MaterialTheme.colorScheme.background),
         modifier = Modifier
             .size(55.dp, 70.dp)
-            .border(1.dp, color = if (day.isEqual(selectDay)) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.background, shape = MaterialTheme.shapes.small)
+            .border(
+                1.dp,
+                color = if (day.isEqual(selectDay())) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.background,
+                shape = MaterialTheme.shapes.small
+            )
     ) {
         val color = if (day.isEqual(LocalDate.now())) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.background
         Column (

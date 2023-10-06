@@ -13,6 +13,10 @@ import com.beank.workFlowy.screen.WorkFlowyViewModel
 import com.beank.workFlowy.utils.isValidEmail
 import com.beank.workFlowy.utils.isValidPassword
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 import com.beank.presentation.R.string as AppText
 
@@ -24,17 +28,19 @@ class LoginViewModel @Inject constructor(
     logRepository: LogRepository
 ) : WorkFlowyViewModel(logRepository){
 
-    var uiState by mutableStateOf(LoginUiState())
-        private set
-    private val email get() = uiState.email
-    private val password get() = uiState.password
+    private val _uiState = MutableStateFlow(LoginUiState())
+    private val uiState get() = _uiState.asStateFlow()
+
+    val email get() = uiState.map { it.email }
+    val password get() = uiState.map { it.password }
+
 
     fun onEmailChange(newValue : String){
-        uiState = uiState.copy(email = newValue)
+        _uiState.update { it.copy(email = newValue) }
     }
 
     fun onPasswordChange(newValue: String){
-        uiState = uiState.copy(password = newValue)
+        _uiState.update { it.copy(password = newValue) }
     }
 
     fun initSetting(){
@@ -46,25 +52,25 @@ class LoginViewModel @Inject constructor(
     fun initToken() = loginUsecases.insertToken()
 
     fun onSignInClick(openAndPopUp: (String, String) -> Unit) {
-        if (!email.isValidEmail()) {
+        if (!uiState.value.email.isValidEmail()) {
             SnackbarManager.showMessage(AppText.email_error)
             return
         }
 
-        if (password.isBlank()) {
+        if (uiState.value.password.isBlank()) {
             SnackbarManager.showMessage(AppText.empty_password_error)
             return
         }
 
-        if (!password.isValidPassword()) {
+        if (!uiState.value.password.isValidPassword()) {
             SnackbarManager.showMessage(AppText.password_error)
             return
         }
 
         launchCatching {
             loginUsecases.loginAccount(
-                email = email,
-                password = password,
+                email = uiState.value.email,
+                password = uiState.value.password,
                 onSuccess = {
                     initToken()
                     openAndPopUp(NavigationItem.HOME.route, NavigationItem.LOGIN.route) },

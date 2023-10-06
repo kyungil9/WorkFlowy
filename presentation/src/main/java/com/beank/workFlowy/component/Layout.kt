@@ -1,6 +1,7 @@
 package com.beank.workFlowy.component
 
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -22,7 +23,7 @@ fun WeekLayout(
         bottomBar = {bottomBar()},
         snackbarHost = { SnackbarHost(hostState = snackbarHostState)},
         floatingActionButton = {floatingActionButton()},
-        modifier = modifier
+        modifier = modifier.fillMaxSize()
     ){
         content(it)
     }

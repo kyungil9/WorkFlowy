@@ -1,6 +1,7 @@
 package com.beank.workFlowy.screen.setting
 
 import android.net.Uri
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -17,9 +18,13 @@ import com.beank.workFlowy.component.snackbar.SnackbarManager
 import com.beank.workFlowy.screen.WorkFlowyViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 import com.beank.presentation.R.string as AppText
 
@@ -32,8 +37,19 @@ class SettingViewModel @Inject constructor(
     logRepository: LogRepository
 ) : WorkFlowyViewModel(logRepository) {
 
-    var uiState by mutableStateOf(SettingUiState())
-        private set
+    private val _uiState = MutableStateFlow(SettingUiState())
+    private val uiState get() = _uiState.asStateFlow()
+
+    val nickname get() = uiState.map { it.userInfo.nickname }
+    val tempNickname get() = uiState.map { it.tempNickname }
+    val grade get() = uiState.map { it.userInfo.grade }
+    val userProgress get() = uiState.map { it.userProgress }
+    val urlImage get() = uiState.map { it.userInfo.urlImage }
+    val darkTheme get() = uiState.map { it.darkThemeToggle }
+    val dynamicTheme get() = uiState.map { it.dynamicThemeToggle }
+    val noticeAlarm get() = uiState.map { it.noticeToggle }
+    val scheduleAlarm get() = uiState.map { it.scheduleToggle }
+
 
     init {
         getUserInfo()
@@ -45,51 +61,51 @@ class SettingViewModel @Inject constructor(
 
     fun onImageUpload(uri: Uri, onFail : () -> Unit){
         launchCatching {
-            uiState = uiState.copy(userProgress = true)
+            _uiState.update { it.copy(userProgress = true) }
             userUsecases.uploadImageUrl(uri, onFail)
         }
     }
 
     fun onNoticeAlarmUpdate(toggle : Boolean){
         launchCatching {
-            uiState = uiState.copy(noticeToggle = toggle)
+            _uiState.update { it.copy(noticeToggle = toggle) }
             settingUsecases.updateNoticeAlarm(toggle)
         }
     }
 
     fun onScheduleAlarmUpdate(toggle : Boolean){
         launchCatching {
-            uiState = uiState.copy(scheduleToggle = toggle)
+            _uiState.update { it.copy(scheduleToggle = toggle) }
             settingUsecases.updateScheduleAlarm(toggle)
         }
     }
 
     fun onDarkThemeUpdate(toggle : Boolean){
         launchCatching {
-            uiState = uiState.copy(darkThemeToggle = toggle)
+            _uiState.update { it.copy(darkThemeToggle = toggle) }
             settingUsecases.updateDarkTheme(toggle)
         }
     }
 
     fun onDynamicThemeUpdate(toggle : Boolean){
         launchCatching {
-            uiState = uiState.copy(dynamicThemeToggle = toggle)
+            _uiState.update { it.copy(dynamicThemeToggle = toggle) }
             settingUsecases.updateDynamicTheme(toggle)
         }
     }
 
     fun onNicknameUpdate() {
         launchCatching {
-            userUsecases.updateUserNickName(uiState.tempNickname)
+            userUsecases.updateUserNickName(_uiState.value.tempNickname)
         }
     }
 
     fun onTempNicknameUpdate(name : String){
-        uiState = uiState.copy(tempNickname = name)
+        _uiState.update { it.copy(tempNickname = name) }
     }
 
     fun onNicknameRefresh(){
-        uiState = uiState.copy(tempNickname = uiState.userInfo.nickname)
+        _uiState.update { it.copy(tempNickname = uiState.value.userInfo.nickname) }
     }
 
 
@@ -97,38 +113,38 @@ class SettingViewModel @Inject constructor(
 
 
     private fun getDarkThemeInfo() = settingUsecases.getDarkTheme()
-        .flowOn(Dispatchers.IO).onEach {
-            uiState = uiState.copy(darkThemeToggle = it)
+        .flowOn(Dispatchers.IO).onEach {toggle ->
+            _uiState.update { it.copy(darkThemeToggle = toggle) }
         }.launchIn(viewModelScope)
 
     private fun getDynamicThemeInfo() = settingUsecases.getDynamicTheme()
-        .flowOn(Dispatchers.IO).onEach {
-            uiState = uiState.copy(dynamicThemeToggle = it)
+        .flowOn(Dispatchers.IO).onEach {toggle ->
+            _uiState.update { it.copy(dynamicThemeToggle = toggle) }
         }.launchIn(viewModelScope)
 
     private fun getNoticeAlarmInfo() = settingUsecases.getNoticeAlarm()
-        .flowOn(Dispatchers.IO).onEach {
-            uiState = uiState.copy(noticeToggle = it)
+        .flowOn(Dispatchers.IO).onEach {toggle ->
+            _uiState.update { it.copy(noticeToggle = toggle) }
         }.launchIn(viewModelScope)
 
     private fun getScheduleAlarmInfo() = settingUsecases.getScheduleAlarm()
-        .flowOn(Dispatchers.IO).onEach {
-            uiState = uiState.copy(scheduleToggle = it)
+        .flowOn(Dispatchers.IO).onEach {toggle ->
+            _uiState.update { it.copy(scheduleToggle = toggle) }
         }.launchIn(viewModelScope)
 
     private fun getUserInfo() = userUsecases.getUserInfo()
         .flowOn(Dispatchers.IO).onEach { state ->
-            state.onSuccess {
-                uiState = uiState.copy(userInfo = it[0], userProgress = false, tempNickname = it[0].nickname)
+            state.onSuccess {user ->
+                _uiState.update { it.copy(userInfo = user[0], userProgress = false, tempNickname = user[0].nickname) }
             }
             state.onEmpty {
-                uiState = uiState.copy(userProgress = false)
+                _uiState.update { it.copy(userProgress = false) }
             }
             state.onLoading {
-                uiState = uiState.copy(userProgress = true)
+                _uiState.update { it.copy(userProgress = true) }
             }
             state.onException { message, e ->
-                uiState = uiState.copy(userProgress = false)
+                _uiState.update { it.copy(userProgress = false) }
                 e.message?.let {
                     if (!it.contains("PERMISSION_DENIED")){
                         SnackbarManager.showMessage(AppText.firebase_server_error)

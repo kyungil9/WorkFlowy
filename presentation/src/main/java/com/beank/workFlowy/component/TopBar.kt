@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -54,12 +56,12 @@ fun WeekAppBar(
                 contentDescription = "menu"
             )
         }
-        Text(
-            text = selectDay(),
-            modifier = Modifier
-                .clickable(onClick = onContentClick),
-            style = MaterialTheme.typography.headlineSmall
-        )
+        TextButton(onClick = onContentClick) {
+            Text(
+                text = selectDay(),
+                style = MaterialTheme.typography.headlineSmall
+            )
+        }
         tailIcon?.let{
             IconButton(onClick = onTailIconClick) {
                 Icon(
@@ -126,7 +128,8 @@ fun BackTopBar(
             Icon(
                 painter = painterResource(id = com.google.android.material.R.drawable.ic_arrow_back_black_24),
                 contentDescription = "뒤로가기",
-                tint = MaterialTheme.colorScheme.onPrimaryContainer
+                tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                modifier = Modifier.size(30.dp)
             )
         }
         Text(
@@ -141,7 +144,8 @@ fun BackTopBar(
             Icon(
                 painter = painterResource(id = R.drawable.baseline_check_24),
                 contentDescription = "",
-                tint = MaterialTheme.colorScheme.background
+                tint = MaterialTheme.colorScheme.background,
+                modifier = Modifier.size(30.dp)
             )
         }
 

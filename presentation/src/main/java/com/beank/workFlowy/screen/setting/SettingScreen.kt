@@ -3,6 +3,7 @@ package com.beank.workFlowy.screen.setting
 
 import android.net.Uri
 import android.os.Build
+import android.util.Log
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
@@ -34,6 +35,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -47,6 +49,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.beank.presentation.R
 import com.beank.workFlowy.component.BackTopBar
 import com.beank.workFlowy.component.SettingCard
@@ -70,7 +73,16 @@ fun SettingScreen(
     onBackClear : (String) -> Unit,
     onBack : () -> Unit
 ){
-    val uiState = settingViewModel.uiState
+    val nickname by settingViewModel.nickname.collectAsStateWithLifecycle(initialValue = "")
+    val tempNickname by settingViewModel.tempNickname.collectAsStateWithLifecycle(initialValue = "")
+    val grade by settingViewModel.grade.collectAsStateWithLifecycle(initialValue = "")
+    val userProgress by settingViewModel.userProgress.collectAsStateWithLifecycle(initialValue = true)
+    val urlImage by settingViewModel.urlImage.collectAsStateWithLifecycle(initialValue = null)
+    val darkTheme by settingViewModel.darkTheme.collectAsStateWithLifecycle(initialValue = false)
+    val dynamicTheme by settingViewModel.dynamicTheme.collectAsStateWithLifecycle(initialValue = false)
+    val noticeAlarm by settingViewModel.noticeAlarm.collectAsStateWithLifecycle(initialValue = true)
+    val scheduleAlarm by settingViewModel.scheduleAlarm.collectAsStateWithLifecycle(initialValue = true)
+
     val launcher = rememberImageLauncher(onImageSuccess = {
         settingViewModel.onImageUpload(it) {
             SnackbarManager.showMessage(AppText.firebase_server_error)
@@ -78,6 +90,12 @@ fun SettingScreen(
     })
     val scrollState = rememberScrollState()
     var editNickname by remember { mutableStateOf(false)}
+    val onSignOut = remember{
+        {
+            settingViewModel.signOut()
+            onBackClear(NavigationItem.LOGIN.route)
+        }
+    }
 
     WeekLayout(
         snackbarHostState = snackbarHostState,
@@ -86,7 +104,9 @@ fun SettingScreen(
         }
     ) {
         Column(
-            modifier = Modifier.fillMaxSize().padding(top = it.calculateTopPadding()),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = it.calculateTopPadding()),
             verticalArrangement = Arrangement.Top
         ) {
             Card(//유저 프로필 화면
@@ -118,7 +138,7 @@ fun SettingScreen(
                                             RoundedCornerShape(5.dp)
                                         ),
                                     shape = MaterialTheme.shapes.small,
-                                    value = uiState.tempNickname,
+                                    value = tempNickname,
                                     onValueChange = {
                                         if (it.length <= 10)
                                             settingViewModel.onTempNicknameUpdate(it)//해당 부분 문제
@@ -130,7 +150,7 @@ fun SettingScreen(
                                     maxLines = 1
                                 )
                             }else{
-                                Text(text = uiState.userInfo.nickname, style = MaterialTheme.typography.headlineMedium, color = MaterialTheme.colorScheme.onSecondaryContainer)
+                                Text(text = nickname, style = MaterialTheme.typography.headlineMedium, color = MaterialTheme.colorScheme.onSecondaryContainer)
                             }
                             IconButton(onClick = {
                                 if (editNickname)
@@ -149,7 +169,7 @@ fun SettingScreen(
 
                         VerticalSpacer(height = 10.dp)
                         Text(
-                            text = when (uiState.userInfo.grade) {
+                            text = when (grade) {
                                 0 -> "브론즈"
                                 1 -> "실버"
                                 2 -> "골드"
@@ -165,11 +185,11 @@ fun SettingScreen(
                         modifier = Modifier.padding(top = 15.dp, end = 35.dp),
                         verticalArrangement = Arrangement.Center
                     ){
-                        if (uiState.userProgress){
+                        if (userProgress){
                             CircularProgressIndicator()
                         }else {
                             GlideImage(
-                                model = uiState.userInfo.urlImage,
+                                model = urlImage,
                                 contentDescription = "프로필 사진",
                                 contentScale = ContentScale.Crop,
                                 loading = placeholder(R.drawable.baseline_downloading_24),
@@ -193,25 +213,18 @@ fun SettingScreen(
 
             Column(modifier = Modifier.verticalScroll(scrollState)) {
                 TextCard(title = stringResource(id = AppText.alarmSetting))
-                ToggleCard(title = stringResource(id = AppText.noticeAlarm), checked = uiState.noticeToggle){
-                    settingViewModel.onNoticeAlarmUpdate(it)
-                }
-                ToggleCard(title = stringResource(id = AppText.scheduleAlarm), checked = uiState.scheduleToggle){
-                    settingViewModel.onScheduleAlarmUpdate(it)
-                }
+                ToggleCard(title = stringResource(id = AppText.noticeAlarm), checked = {noticeAlarm}, onClick = settingViewModel::onNoticeAlarmUpdate)
+                ToggleCard(title = stringResource(id = AppText.scheduleAlarm), checked = {scheduleAlarm}, onClick = settingViewModel::onScheduleAlarmUpdate)
 
                 VerticalSpacer(height = 10.dp)
                 TextCard(title = stringResource(id = AppText.themeSetting))
-                ToggleCard(title = stringResource(id = AppText.darkTheme), checked = uiState.darkThemeToggle){
-                    settingViewModel.onDarkThemeUpdate(it)
-                }
+                ToggleCard(title = stringResource(id = AppText.darkTheme), checked = {darkTheme}, onClick = settingViewModel::onDarkThemeUpdate)
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                     ToggleCard(
                         title = stringResource(id = AppText.dynamicTheme),
-                        checked = uiState.dynamicThemeToggle
-                    ) {
-                        settingViewModel.onDynamicThemeUpdate(it)
-                    }
+                        checked = {dynamicTheme},
+                        onClick = settingViewModel::onDynamicThemeUpdate
+                    )
                 }
                 VerticalSpacer(height = 5.dp)
                 HorizontalDivider(modifier = Modifier.fillMaxWidth(), thickness = 1.dp)
@@ -226,11 +239,7 @@ fun SettingScreen(
                 HorizontalDivider(modifier = Modifier.fillMaxWidth(), thickness = 1.dp)
                 VerticalSpacer(height = 5.dp)
 
-                SettingCard(title = stringResource(id = AppText.logout), color = MaterialTheme.colorScheme.error){
-                    settingViewModel.signOut()
-                    //화면 로그인 화면이동
-                    onBackClear(NavigationItem.LOGIN.route)
-                }
+                SettingCard(title = stringResource(id = AppText.logout), color = MaterialTheme.colorScheme.error, onClick = onSignOut)
             }
         }
     }

@@ -34,6 +34,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -75,6 +77,7 @@ fun ActCard(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .fillMaxHeight()
                     .padding(horizontal = 10.dp, vertical = 5.dp),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
@@ -82,23 +85,29 @@ fun ActCard(
                     painter = painterResource(id = intToImage(selectedTag.icon, LocalContext.current.resources.obtainTypedArray(R.array.tagList))),
                     contentDescription = null,
                     modifier = Modifier
-                        .size(70.dp).padding(start = 5.dp),
+                        .size(70.dp)
+                        .padding(start = 5.dp),
                     tint = MaterialTheme.colorScheme.onPrimaryContainer
                 )
-                Column(
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .width(120.dp)
-                        .padding(top = 5.dp,end = 25.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(text = selectedTag.title, style = MaterialTheme.typography.headlineMedium, color = MaterialTheme.colorScheme.onPrimaryContainer)
-                    Text(
-                        text = "${zeroFormat.format(progressTime().toHours())}:${zeroFormat.format(progressTime().toMinutes()%60)}:${zeroFormat.format(progressTime().seconds%60)}",
-                        style = MaterialTheme.typography.headlineSmall,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer,
-                        modifier = Modifier.size(80.dp,30.dp).padding(start = 5.dp))
+                Row {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .width(120.dp)
+                            .padding(top = 5.dp, end = 25.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(text = selectedTag.title, style = MaterialTheme.typography.headlineMedium, color = MaterialTheme.colorScheme.onPrimaryContainer)
+                        Text(
+                            text = "${zeroFormat.format(progressTime().toHours())}:${zeroFormat.format(progressTime().toMinutes()%60)}:${zeroFormat.format(progressTime().seconds%60)}",
+                            style = MaterialTheme.typography.headlineSmall,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer,
+                            modifier = Modifier
+                                .size(80.dp, 30.dp)
+                                .padding(start = 5.dp))
+                    }
                 }
+
             }
         }
     }
@@ -111,11 +120,12 @@ fun ActTagCard(
     onClickDelect: (Tag) -> Unit
 ){
     var clicked by remember { mutableStateOf(false) }
-    val backgroundColors by animateColorAsState(targetValue = if (clicked) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.secondaryContainer)
+    val backgroundColors by animateColorAsState(targetValue = if (clicked) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.secondaryContainer,
+        label = "선택 날짜 색상"
+    )
 
     Card(
         modifier = Modifier
-            .fillMaxSize()
             .padding(10.dp)
             .pointerInput(Unit) {
                 detectTapGestures(
@@ -134,9 +144,11 @@ fun ActTagCard(
     ) {
         Column(
             modifier = Modifier
-                .background(backgroundColors, shape = MaterialTheme.shapes.small)
                 .fillMaxWidth()
-                .height(100.dp),
+                .height(100.dp)
+                .drawBehind {
+                    drawRoundRect(color = backgroundColors, size = size, cornerRadius = CornerRadius(8f) )
+                },
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {

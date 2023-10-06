@@ -8,9 +8,11 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.beank.presentation.R
 import com.beank.workFlowy.component.BasicButton
 import com.beank.workFlowy.component.EmailField
@@ -20,14 +22,16 @@ import com.beank.workFlowy.component.WeekLayout
 import com.beank.workFlowy.component.basicButton
 import com.beank.workFlowy.component.fieldModifier
 
-@RequiresApi(Build.VERSION_CODES.FROYO)
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun SignUpScreen(
     signUpViewModel: SignUpViewModel = hiltViewModel(),
     snackbarHostState: SnackbarHostState,
     onBack : () -> Unit
 ){
-    val uiState = signUpViewModel.uiState
+    val email by signUpViewModel.email.collectAsStateWithLifecycle(initialValue = "")
+    val password by signUpViewModel.password.collectAsStateWithLifecycle(initialValue = "")
+    val repeatPassword by signUpViewModel.repeatPassword.collectAsStateWithLifecycle(initialValue = "")
 
     WeekLayout(snackbarHostState = snackbarHostState) {
         Column(
@@ -38,9 +42,9 @@ fun SignUpScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            EmailField(value = uiState.email, onNewValue = signUpViewModel::onEmailChange, Modifier.fieldModifier())
-            PasswordField(value = uiState.password, onNewValue = signUpViewModel::onPasswordChange, Modifier.fieldModifier())
-            RepeatPasswordField(value = uiState.repeatPassword, onNewValue = signUpViewModel::onRepeatPasswordChange, Modifier.fieldModifier())
+            EmailField(value = {email}, onNewValue = signUpViewModel::onEmailChange)
+            PasswordField(value = {password}, onNewValue = signUpViewModel::onPasswordChange)
+            RepeatPasswordField(value = {repeatPassword}, onNewValue = signUpViewModel::onRepeatPasswordChange)
 
             BasicButton(text = R.string.create_account, modifier = Modifier.basicButton()) {
                 signUpViewModel.onSignInClick(onBack)

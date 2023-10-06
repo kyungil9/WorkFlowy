@@ -24,7 +24,6 @@ import androidx.compose.ui.text.input.VisualTransformation
 import com.beank.presentation.R.string as AppText
 import com.beank.presentation.R.drawable as AppIcon
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BasicField(
     @StringRes text: Int,
@@ -36,67 +35,62 @@ fun BasicField(
         singleLine = true,
         modifier = modifier,
         value = value,
-        onValueChange = { onNewValue(it) },
+        onValueChange = onNewValue,
         placeholder = { Text(stringResource(text)) }
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EmailField(value: String, onNewValue: (String) -> Unit, modifier: Modifier = Modifier) {
+fun EmailField(value: () ->String, onNewValue: (String) -> Unit) {
     OutlinedTextField(
         singleLine = true,
-        modifier = modifier,
-        value = value,
-        onValueChange = { onNewValue(it) },
+        modifier = Modifier.fieldModifier(),
+        value = value(),
+        onValueChange = onNewValue,
         placeholder = { Text(stringResource(AppText.email)) },
-        leadingIcon = { Icon(imageVector = Icons.Default.Email, contentDescription = "Email") }
+        leadingIcon = { Icon(imageVector = Icons.Default.Email, contentDescription = "Email") },
+        maxLines = 1
     )
 }
 
 @Composable
-fun PasswordField(value: String, onNewValue: (String) -> Unit, modifier: Modifier = Modifier) {
-    PasswordField(value, AppText.password, onNewValue, modifier)
+fun PasswordField(value: () -> String, onNewValue: (String) -> Unit) {
+    PasswordField(value, AppText.password, onNewValue)
 }
 
 @Composable
 fun RepeatPasswordField(
-    value: String,
-    onNewValue: (String) -> Unit,
-    modifier: Modifier = Modifier
+    value: () -> String,
+    onNewValue: (String) -> Unit
 ) {
-    PasswordField(value, AppText.repeat_password, onNewValue, modifier)
+    PasswordField(value, AppText.repeat_password, onNewValue)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun PasswordField(
-    value: String,
+    value: () -> String,
     @StringRes placeholder: Int,
     onNewValue: (String) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier.fieldModifier()
 ) {
     var isVisible by remember { mutableStateOf(false) }
 
-    val icon =
-        if (isVisible) painterResource(AppIcon.ic_visibility_on)
-        else painterResource(AppIcon.ic_visibility_off)
-
-    val visualTransformation =
-        if (isVisible) VisualTransformation.None else PasswordVisualTransformation()
-
     OutlinedTextField(
         modifier = modifier,
-        value = value,
-        onValueChange = { onNewValue(it) },
+        value = value(),
+        onValueChange = onNewValue,
         placeholder = { Text(text = stringResource(placeholder)) },
         leadingIcon = { Icon(imageVector = Icons.Default.Lock, contentDescription = "Lock") },
         trailingIcon = {
             IconButton(onClick = { isVisible = !isVisible }) {
-                Icon(painter = icon, contentDescription = "Visibility")
+                Icon(painter = if (isVisible) painterResource(AppIcon.ic_visibility_on)
+                else painterResource(AppIcon.ic_visibility_off), contentDescription = "Visibility")
             }
         },
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-        visualTransformation = visualTransformation
+        visualTransformation = if (isVisible) VisualTransformation.None else PasswordVisualTransformation(),
+        maxLines = 1
     )
 }
+
