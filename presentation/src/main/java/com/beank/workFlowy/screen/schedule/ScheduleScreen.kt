@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -44,7 +43,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
 import androidx.compose.material3.TimeInput
 import androidx.compose.material3.TimePicker
 import androidx.compose.material3.rememberDatePickerState
@@ -58,9 +56,10 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -70,7 +69,6 @@ import com.beank.workFlowy.component.TextTopBar
 import com.beank.workFlowy.component.TimeRangePickerDialog
 import com.beank.workFlowy.component.ToggleCard
 import com.beank.workFlowy.component.VerticalSpacer
-import com.beank.workFlowy.component.WeekAppBar
 import com.beank.workFlowy.component.WeekLayout
 import com.beank.workFlowy.component.snackbar.SnackbarManager
 import com.beank.workFlowy.ui.theme.gray
@@ -79,6 +77,7 @@ import com.beank.workFlowy.utils.toFormatShortString
 import com.beank.workFlowy.utils.toFormatString
 import com.beank.workFlowy.utils.toLocalDateTime
 import com.beank.workFlowy.utils.toStartTimeLong
+import com.beank.workFlowy.utils.zeroFormat
 import com.beank.presentation.R.string as AppText
 
 
@@ -93,17 +92,15 @@ fun ScheduleScreen(
     val alarmList = listOf("5분전","30분전","1시간전","3시간전","6시간전","12시간전","하루전")
     val resources = LocalContext.current.resources
     val uiState = scheduleViewModel.uiState
-    val selectStartTime = uiState.startTime
-    val selectEndTime = uiState.endTime
     val configuration = LocalConfiguration.current
     val startTimePickerState = rememberTimePickerState(
-        initialHour = selectStartTime.hour,
-        initialMinute = selectStartTime.minute,
+        initialHour = uiState.startTime.hour,
+        initialMinute = uiState.startTime.minute,
         is24Hour = true
     )
     val endTimePickerState = rememberTimePickerState(
-        initialHour = selectStartTime.hour,
-        initialMinute = selectStartTime.minute,
+        initialHour = uiState.startTime.hour,
+        initialMinute = uiState.startTime.minute,
         is24Hour = true
     )
     val datePickerState = rememberDatePickerState(
@@ -116,29 +113,51 @@ fun ScheduleScreen(
     var imageToggle by remember { mutableStateOf(false)}
     val scrollState = rememberScrollState()
 
+    val onConfirm = remember {
+        {
+            if (uiState.title.isNotEmpty()){
+                if (uiState.id.isNotEmpty())
+                    scheduleViewModel.onScheduleUpdate()
+                else
+                    scheduleViewModel.onScheduleInsert()
+                onBackHome()
+            }else{
+                SnackbarManager.showMessage(AppText.scheduleEmpty)
+            }
+        }
+    }
+
+    val onTitleChange = remember<(String) -> Unit> {
+        {
+        if (it.length <= 30)
+            scheduleViewModel.onTitleChange(it)
+        else
+            SnackbarManager.showMessage(AppText.max_length)
+        }
+    }
+
+    val onCommentChange = remember<(String) -> Unit>{
+        {
+            if (it.length <= 150)
+                scheduleViewModel.onCommentChange(it)
+            else
+                SnackbarManager.showMessage(AppText.max_length)
+        }
+    }
+
     LaunchedEffect(key1 = Unit) {
         scheduleViewModel.initScheduleImages(resources.obtainTypedArray(R.array.scheduleList))
     }
 
     WeekLayout(
         snackbarHostState = snackbarHostState,
-        topBar = {
+        topBar = remember{{
             TextTopBar(
                 title = if (uiState.id.isEmpty()) "일정 등록" else "일정 수정",
                 onCancle = onBackHome,
-                onConfirm = {
-                    if (uiState.title.isNotEmpty()){
-                        if (uiState.id.isNotEmpty())
-                            scheduleViewModel.onScheduleUpdate()
-                        else
-                            scheduleViewModel.onScheduleInsert()
-                        onBackHome()
-                    }else{
-                        SnackbarManager.showMessage(AppText.scheduleEmpty)
-                    }
-                }
+                onConfirm = onConfirm
             )
-        }
+        }}
     ) {
         Column(
             modifier = Modifier
@@ -156,12 +175,7 @@ fun ScheduleScreen(
                     .background(white, RoundedCornerShape(5.dp)),
                 shape = MaterialTheme.shapes.small,
                 value = uiState.title,
-                onValueChange = {
-                    if (it.length <= 30)
-                        scheduleViewModel.onTitleChange(it)
-                    else
-                        SnackbarManager.showMessage(AppText.max_length)
-                    },
+                onValueChange = onTitleChange,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Default),
                 singleLine = true,
                 maxLines = 1
@@ -176,25 +190,21 @@ fun ScheduleScreen(
                         .background(white, RoundedCornerShape(5.dp)),
                     shape = MaterialTheme.shapes.small,
                     value = uiState.comment,
-                    onValueChange = {
-                        if (it.length <= 150)
-                            scheduleViewModel.onCommentChange(it)
-                        else
-                            SnackbarManager.showMessage(AppText.max_length)
-                    },
+                    onValueChange = onCommentChange,
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Default)
                 )
 
-                ToggleCard(title = "알림 설정", checked = uiState.alarmToggle, height = 50.dp){
-                    scheduleViewModel.onAlarmToggleChange()
-                }
+                ToggleCard(title = "알림 설정", checked = {uiState.alarmToggle}, height = 50.dp, onClick = scheduleViewModel::onAlarmToggleChange)
+
                 AnimatedVisibility(visible = uiState.alarmToggle) {
                     LazyRow(modifier = Modifier.fillMaxWidth()){
-                        items(alarmList){item ->
+                        items(alarmList,key = {alarm -> alarm}){item ->
                             FilterChip(
                                 modifier = Modifier.padding(horizontal = 5.dp),
                                 selected = (item == uiState.alarmState),
-                                onClick = { scheduleViewModel.onAlarmStateChange(item) },
+                                onClick = remember{
+                                    { scheduleViewModel.onAlarmStateChange(item) }
+                                },
                                 label = {
                                     Text(text = item)
                                 }
@@ -229,11 +239,12 @@ fun ScheduleScreen(
                                         .clickable { showDateState = true }
                                 ){
                                     Icon(
-                                        painter = painterResource(id = R.drawable.baseline_calendar_today_24),
+                                        imageVector = ImageVector.vectorResource(id = R.drawable.baseline_calendar_today_24),
                                         contentDescription = "날짜 선택 아이콘",
                                         tint = MaterialTheme.colorScheme.onSecondaryContainer,
                                         modifier = Modifier.size(50.dp)
                                     )
+
                                     Text(
                                         text = uiState.date.toFormatString(),
                                         style = MaterialTheme.typography.headlineMedium,
@@ -248,13 +259,13 @@ fun ScheduleScreen(
                                             .clickable { showTimeState = true }
                                     ){
                                         Icon(
-                                            painter = painterResource(id = com.google.android.material.R.drawable.ic_clock_black_24dp),
+                                            imageVector = ImageVector.vectorResource(id = com.google.android.material.R.drawable.ic_clock_black_24dp),
                                             contentDescription = "시간 선택 아이콘",
                                             tint = MaterialTheme.colorScheme.onSecondaryContainer,
                                             modifier = Modifier.size(40.dp)
                                         )
                                         Text(
-                                            text = "${selectStartTime.hour}:${selectStartTime.minute} ~ ${selectEndTime.hour}:${selectEndTime.minute}",
+                                            text = "${zeroFormat.format(uiState.startTime.hour)}:${zeroFormat.format(uiState.startTime.minute)} ~ ${zeroFormat.format(uiState.endTime.hour)}:${zeroFormat.format(uiState.endTime.minute)}",
                                             style = MaterialTheme.typography.headlineSmall,
                                             color = MaterialTheme.colorScheme.onSecondaryContainer,
                                             modifier = Modifier.padding(start = 25.dp)
@@ -266,7 +277,8 @@ fun ScheduleScreen(
                                 }
                             }
                         }
-                        IconButton(onClick = { scheduleViewModel.onTimeToggleChange() }) {
+
+                        IconButton(onClick = scheduleViewModel::onTimeToggleChange,modifier = Modifier.size(50.dp)) {
                             Icon(
                                 imageVector = if (uiState.timeToggle) Icons.Outlined.KeyboardArrowUp else Icons.Outlined.KeyboardArrowDown,
                                 contentDescription = "시간 선택",
@@ -290,16 +302,19 @@ fun ScheduleScreen(
                             .fillMaxSize()
                             .padding(vertical = 5.dp, horizontal = 15.dp)
                     ) {
+
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.SpaceBetween,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .clickable { imageToggle = imageToggle.not() }
+                                .clickable(onClick = remember {
+                                    { imageToggle = imageToggle.not() }
+                                })
                         ) {
                             Row {
                                 Icon(
-                                    painter = painterResource(id = uiState.image),
+                                    imageVector = ImageVector.vectorResource(uiState.image),
                                     contentDescription = "스캐줄사진",
                                     modifier = Modifier
                                         .size(50.dp),
@@ -311,7 +326,7 @@ fun ScheduleScreen(
                                 imageVector = if (imageToggle) Icons.Outlined.KeyboardArrowUp else Icons.Outlined.KeyboardArrowDown,
                                 contentDescription = "아이콘 선택",
                                 tint = MaterialTheme.colorScheme.onSecondaryContainer,
-                                modifier = Modifier.padding(top = 20.dp)
+                                modifier = Modifier.size(35.dp).padding(end = 12.dp)
                             )
                         }
                         if(imageToggle) {
@@ -321,15 +336,15 @@ fun ScheduleScreen(
                                 horizontalArrangement = Arrangement.spacedBy(space = 5.dp),
                                 contentPadding = PaddingValues(all = 5.dp)
                             ) {
-                                items(uiState.scheduleImageList) { image ->
+                                items(uiState.scheduleImageList,key = {image -> image}) { image ->
                                     Image(
-                                        painter = painterResource(id = image),
+                                        imageVector = ImageVector.vectorResource(image),
                                         contentDescription = "스캐줄사진리스트",
                                         modifier = Modifier
                                             .height(40.dp)
-                                            .clickable {
-                                                scheduleViewModel.onImageChange(image)
-                                            }
+                                            .clickable(onClick = remember {
+                                                {scheduleViewModel.onImageChange(image)}
+                                            })
                                     )
                                 }
                             }

@@ -6,6 +6,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -19,16 +20,16 @@ fun WeekLayout(
     content : @Composable (PaddingValues) -> Unit
 ){
     androidx.compose.material3.Scaffold (
-        topBar = { topBar()},
-        bottomBar = {bottomBar()},
-        snackbarHost = { SnackbarHost(hostState = snackbarHostState)},
-        floatingActionButton = {floatingActionButton()},
+        topBar = topBar,
+        bottomBar = bottomBar,
+        snackbarHost = remember{{SnackbarHost(hostState = snackbarHostState)}},
+        floatingActionButton = floatingActionButton,
         modifier = modifier.fillMaxSize()
     ){
         content(it)
     }
 }
-@OptIn(ExperimentalMaterial3Api::class)
+
 @Composable
 fun DefaultLayout(
     modifier: Modifier = Modifier,

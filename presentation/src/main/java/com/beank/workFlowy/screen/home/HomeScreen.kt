@@ -23,12 +23,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -45,16 +46,12 @@ import com.beank.workFlowy.component.WeekLayout
 import com.beank.workFlowy.component.WeekLazyList
 import com.beank.workFlowy.navigation.NavigationItem
 import com.beank.workFlowy.utils.toFormatShortString
-import com.beank.workFlowy.utils.toFormatString
 import com.beank.workFlowy.utils.toLocalDateTime
 import com.beank.workFlowy.utils.toStartTimeLong
 import com.beank.workFlowy.utils.transDayToKorean
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.selects.select
 import java.time.LocalDate
-import java.time.ZoneId
 import java.time.temporal.ChronoUnit
 
 
@@ -78,6 +75,18 @@ fun HomeScreen(
     )
     val weekListState = rememberLazyListState(initialFirstVisibleItemIndex = uiState.listCenter)
     var dateDialogState by rememberSaveable { mutableStateOf(false)}
+    val onWeekListClick = remember<(LocalDate) -> Unit> {
+        {date ->
+            if (!date.isEqual(selectDay)) {
+                scope.launch(Dispatchers.Main) {
+                    weekListState.animateScrollToItem(ChronoUnit.DAYS.between(LocalDate.of(2021, 12, 28), date).toInt() - 3)
+                }
+                weekViewModel.onSelectDayChange(date)
+                weekViewModel.onScheduleStateChange(false)
+            }
+        }
+    }
+
 
     LaunchedEffect(key1 = Unit){
         weekViewModel.timerJob.start()
@@ -85,41 +94,41 @@ fun HomeScreen(
 
     WeekLayout(
         snackbarHostState = snackbarHostState,
-        topBar = {
+        topBar = remember{{
             WeekAppBar(
                 headerIcon = R.drawable.baseline_settings_24,
-                onHeaderIconClick = { openScreen(NavigationItem.SETTING.route) },
+                onHeaderIconClick = remember {{openScreen(NavigationItem.SETTING.route) }},
                 selectDay = {selectDayString},
                 onContentClick = {
                     dateDialogState = true
                 },
                 tailIcon = NavigationItem.ANALYSIS.icon,
-                onTailIconClick = {
+                onTailIconClick = remember {{
                     weekViewModel.onRecordReduce()
                     openScreen(NavigationItem.ANALYSIS.route)
-                }
+                }}
             )
-        },
-        bottomBar = {
+        }},
+        bottomBar = remember{{
             WeekBottomBar(
                 checked = uiState.scheduleState,
-                onMoveMisson = { openScreen(NavigationItem.MISSON.route)},
-                onMoveToday = {
+                onMoveMisson = remember {{ openScreen(NavigationItem.MISSON.route)}},
+                onMoveToday = remember {{
                     scope.launch(Dispatchers.Default) {
                         if (!selectDay.isEqual(LocalDate.now())){
                             weekViewModel.onSelectDayChange(LocalDate.now())
                             weekListState.animateScrollToItem(uiState.listCenter)
                         }
                     }
-                },
+                }},
                 onCheckSchedule = weekViewModel::onCheckScheduleChange,
-                onDeleteSchedule = {
+                onDeleteSchedule = remember {{
                     weekViewModel.onScheduleDelete()
-                    weekViewModel.onScheduleStateChange(false)},
-                onUpdateSchedule = { openEditSchedule(NavigationItem.SCHEDULE.route,uiState.selectSchedule) },
-                onAdditionalSchedule = { openSchedule(NavigationItem.SCHEDULE.route,selectDay) }
+                    weekViewModel.onScheduleStateChange(false)}},
+                onUpdateSchedule = remember {{ openEditSchedule(NavigationItem.SCHEDULE.route,uiState.selectSchedule) }},
+                onAdditionalSchedule = remember {{ openSchedule(NavigationItem.SCHEDULE.route,selectDay) }}
             )
-        }
+        }}
     ) {
         Column(
             modifier = Modifier
@@ -127,17 +136,10 @@ fun HomeScreen(
                 .padding(top = it.calculateTopPadding(), bottom = it.calculateBottomPadding())
         ) {
             WeekLazyList(
-                selectDay = selectDay,
+                selectDay = {selectDay},
                 weekListState = weekListState,
-                onClickItem = {date ->
-                    if (!date.isEqual(selectDay)) {
-                        scope.launch(Dispatchers.Main) {
-                            weekListState.animateScrollToItem(ChronoUnit.DAYS.between(LocalDate.of(2021, 12, 28), date).toInt() - 3)
-                        }
-                        weekViewModel.onSelectDayChange(date)
-                        weekViewModel.onScheduleStateChange(false)
-                    }
-                }
+                onClickItem = onWeekListClick,
+                weekDayList = {uiState.weekDayList}
             )//주달력 표시
             Row (modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween){
                 Text(text = "${selectDay.dayOfMonth}일 ${transDayToKorean(selectDay.dayOfWeek.value)}",
@@ -145,33 +147,33 @@ fun HomeScreen(
                     fontSize = 24.sp,
                     modifier = Modifier.padding(vertical = 12.dp,horizontal = 10.dp))
                 Icon(
-                    painter = painterResource(id = R.drawable.baseline_wb_sunny_24),
+                    imageVector = ImageVector.vectorResource(id = R.drawable.baseline_wb_sunny_24),
                     contentDescription = null,
                     modifier = Modifier
                         .size(50.dp)
                         .padding(top = 10.dp, end = 15.dp))
             }
 
-            ActCard(selectedTag = uiState.selectTag,
-                progressTime = {weekViewModel.progressTime},
-                progress = uiState.actProgress,
-                onClickAct = {
+            ActCard(selectedTag = {uiState.selectTag},
+                progressTime = {uiState.progressTime},
+                progress = {uiState.actProgress},
+                onClickAct = remember{{
                     weekViewModel.onWeekStateChange(true)
-                })
+                }})
 
             ScheduleList(
-                scheduleList = uiState.scheduleList,
-                onRightDrag = {
+                scheduleList = {uiState.scheduleList},
+                onRightDrag = remember{{
                     val date = weekViewModel.plusSelectDay()
                     scope.launch(Dispatchers.Main) {
                         weekListState.animateScrollToItem(ChronoUnit.DAYS.between(LocalDate.of(2021, 12, 28), date).toInt() - 3)
-                    }},
-                onLeftDrag = {
+                    }}},
+                onLeftDrag = remember{{
                     val date = weekViewModel.minusSelectDay()
                     scope.launch(Dispatchers.Main) {
                         weekListState.animateScrollToItem(ChronoUnit.DAYS.between(LocalDate.of(2021, 12, 28), date).toInt() - 3)
-                    }},
-                onClickSchedule = {schedule ->
+                    }}},
+                onClickSchedule = remember{{schedule ->
                     if (uiState.selectSchedule == schedule) {
                         if (uiState.scheduleState)
                             weekViewModel.onScheduleStateChange(false)
@@ -181,25 +183,25 @@ fun HomeScreen(
                         weekViewModel.setSelectScheduleInfo(schedule)
                         weekViewModel.onScheduleStateChange(true)
                     }
-                })
+                }})
         }
         TagSelectedDialog(
-            visible = uiState.weekState,
-            tagList = uiState.tagList,
+            visible = {uiState.weekState},
+            tagList = {uiState.tagList},
             onDismissRequest = {weekViewModel.onWeekStateChange(false)},
-            onClickAct = {tag ->
+            onClickAct = remember{{tag ->
                 weekViewModel.onRecordChange(tag)
                 weekViewModel.onWeekStateChange(false)
-            },
-            onAddActTag = {
+            }},
+            onAddActTag = remember{{
                 weekViewModel.onWeekStateChange(false)
-                openScreen(NavigationItem.TAG.route)},
-            onClickDelect = {weekViewModel.onTagDelete(it)}
+                openScreen(NavigationItem.TAG.route)}},
+            onClickDelect = weekViewModel::onTagDelete
         )
         if (dateDialogState){
             DatePickerDialog(
-                onDismissRequest = { dateDialogState = false },
-                confirmButton = {
+                onDismissRequest = remember{{ dateDialogState = false }},
+                confirmButton = remember{{
                     TextButton(onClick = {
                         val date = datePickerState.selectedDateMillis?.toLocalDateTime()
                         date?.let {
@@ -212,12 +214,12 @@ fun HomeScreen(
                     }) {
                         Text(text = "확인")
                     }
-                },
-                dismissButton = {
+                }},
+                dismissButton = remember{{
                     TextButton(onClick = { dateDialogState = false }) {
                         Text(text = "취소")
                     }
-                }
+                }}
             ) {
                 DatePicker(
                     state = datePickerState,

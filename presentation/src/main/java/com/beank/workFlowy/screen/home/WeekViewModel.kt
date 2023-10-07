@@ -1,11 +1,7 @@
 package com.beank.workFlowy.screen.home
 
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
 import com.beank.domain.model.Record
 import com.beank.domain.model.Schedule
@@ -54,14 +50,10 @@ class WeekViewModel @Inject constructor(
     val selectDayStringFlow = selectDayFlow
         .map { "< ${it.toFormatString()} >" }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(),"")
-    var uiState by mutableStateOf(WeekUiState())
-        private set
-
-    var progressTime by mutableStateOf(Duration.ZERO)
-        private set
+    val uiState = WeekUiState()
 
     private val scheduleInfo get() = uiState.selectSchedule
-    var todayJob : Job? = null
+    private var todayJob : Job? = null
 
     val timerJob = viewModelScope.launch(Dispatchers.Default, start = CoroutineStart.LAZY) {
         oldTimeMills = System.currentTimeMillis()
@@ -70,7 +62,7 @@ class WeekViewModel @Inject constructor(
             if (delayMills >= 1000L) {
                 val record = uiState.recordList
                 if (record.isNotEmpty()) {
-                    progressTime = Duration.between(record[0].startTime, LocalDateTime.now())
+                    uiState.progressTime = Duration.between(record[0].startTime, LocalDateTime.now())
                 }
                 oldTimeMills = System.currentTimeMillis()
             }
@@ -84,14 +76,14 @@ class WeekViewModel @Inject constructor(
 
     }
     fun setSelectScheduleInfo(schedule: Schedule){
-        uiState = uiState.copy(selectSchedule = schedule)
+        uiState.selectSchedule = schedule
     }
     fun onWeekStateChange(value : Boolean){
-        uiState = uiState.copy(weekState = value)
+        uiState.weekState = value
     }
 
     fun onScheduleStateChange(value: Boolean){
-        uiState = uiState.copy(scheduleState = value)
+        uiState.scheduleState = value
     }
 
     fun onSelectDayChange(day : LocalDate){
@@ -208,7 +200,7 @@ class WeekViewModel @Inject constructor(
     private fun getAllTagInfo() = weekUsecases.getAllTag()
         .flowOn(Dispatchers.IO).onEach { state ->
             state.onSuccess { tagList ->
-                uiState = uiState.copy(tagList = tagList)
+                uiState.tagList = tagList
             }
             state.onException { message, e ->
                 e.message?.let {
@@ -223,12 +215,15 @@ class WeekViewModel @Inject constructor(
     private fun getSelectedRecordInfo() = weekUsecases.getNowRecord(true)
         .flowOn(Dispatchers.IO).onEach { state ->
             state.onLoading { //프로그래스바 실행
-                uiState = uiState.copy(actProgress = true)
+                uiState.actProgress = true
             }
             state.onSuccess { nowRecord ->
-                uiState = uiState.copy(recordList = listOf(nowRecord.record), selectTag = nowRecord.tag, actProgress = false)
+                uiState.recordList = listOf(nowRecord.record)
+                uiState.selectTag = nowRecord.tag
+                uiState.actProgress = false
             }
             state.onException { message, e ->
+                uiState.actProgress = false
                 e.message?.let {
                     if (!it.contains("PERMISSION_DENIED")){
                         SnackbarManager.showMessage(AppText.firebase_server_error)
@@ -245,7 +240,7 @@ class WeekViewModel @Inject constructor(
                 todayJob = weekUsecases.getTodaySchedule(date)
                     .flowOn(Dispatchers.IO).onEach { state ->
                         state.onSuccess {scheduleList ->
-                            uiState = uiState.copy(scheduleList = scheduleList.sortedWith(compareBy({it.check},{ it.time.not() },{it.startTime})))
+                            uiState.scheduleList = scheduleList.sortedWith(compareBy({it.check},{ it.time.not() },{it.startTime}))
                         }
                         state.onException { message, e ->
                             e.message?.let {
@@ -256,7 +251,7 @@ class WeekViewModel @Inject constructor(
                             }
                         }
                         state.onEmpty {
-                            uiState = uiState.copy(scheduleList = emptyList())
+                            uiState.scheduleList = emptyList()
                         }
                     }.launchIn(viewModelScope)
             }

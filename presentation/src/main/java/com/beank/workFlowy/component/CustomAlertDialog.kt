@@ -1,7 +1,6 @@
 package com.beank.workFlowy.component
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -15,7 +14,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -28,9 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.beank.domain.model.Tag
-import com.beank.workFlowy.screen.home.WeekUiState
 import com.beank.workFlowy.navigation.NavigationItem
-import com.beank.workFlowy.ui.theme.white
 
 @Composable
 fun CustomAlertDialog(
@@ -48,27 +44,28 @@ fun CustomAlertDialog(
 
 @Composable
 fun TagSelectedDialog(
-    visible : Boolean,
-    tagList: List<Tag>,
+    visible : () -> Boolean,
+    tagList: () -> List<Tag>,
     onAddActTag : () -> Unit,
     onClickAct : (Tag) -> Unit,
     onClickDelect : (Tag) -> Unit,
     onDismissRequest: () -> Unit
 ){
     AnimatedVisibility(
-        visible = visible
+        visible = visible()
     ) {
         CustomAlertDialog(
             onDismissRequest = { onDismissRequest() },
             properties = DialogProperties(dismissOnClickOutside = true, dismissOnBackPress = true)
         ) {
             LazyVerticalGrid(
+                modifier = Modifier.fillMaxSize(),
                 columns = GridCells.Fixed(2),
                 verticalArrangement = Arrangement.spacedBy(space = 10.dp),
                 horizontalArrangement = Arrangement.spacedBy(space = 10.dp),
                 contentPadding = PaddingValues(all = 10.dp)
             ) {
-                items(tagList, key = {it.title}) { tag ->
+                items(tagList(), key = {it.title}) { tag ->
                     ActTagCard(tag = tag, onClickAct = onClickAct, onClickDelect = onClickDelect)
                 }
                 item {

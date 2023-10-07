@@ -1,6 +1,5 @@
 package com.beank.workFlowy.screen.tag
 
-import android.content.res.Resources
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -15,12 +14,12 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -37,7 +36,6 @@ import com.beank.workFlowy.component.WeekLayout
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TagScreen(
     tagViewModel: TagViewModel = hiltViewModel(),
@@ -45,8 +43,8 @@ fun TagScreen(
     onBackHome : () -> Unit
 ){
     val resources = LocalContext.current.resources
-    val uiState = tagViewModel.uiState
     val scope = rememberCoroutineScope()
+    val uiState = tagViewModel.uiState
 
     LaunchedEffect(key1 = Unit){
         tagViewModel.initTagImages(resources.obtainTypedArray(R.array.tagList))
@@ -54,12 +52,14 @@ fun TagScreen(
 
     WeekLayout(
         snackbarHostState = snackbarHostState,
-        topBar = {
+        topBar = remember{{
             BackTopBar(title = "태그 등록", onBack = onBackHome)
-        }
+        }}
     ) {
         Column(
-            modifier = Modifier.fillMaxSize().padding(top = it.calculateTopPadding()),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = it.calculateTopPadding()),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -77,7 +77,7 @@ fun TagScreen(
                 HorizontalSpacer(width = 10.dp)
                 TextField(
                     value = uiState.title,
-                    onValueChange = {tagViewModel.updateSelectTagText(it)},
+                    onValueChange = tagViewModel::updateSelectTagText,
                     modifier = Modifier.weight(0.5f)
                 )
                 HorizontalSpacer(width = 10.dp)

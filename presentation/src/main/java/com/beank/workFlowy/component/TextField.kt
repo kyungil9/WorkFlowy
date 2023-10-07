@@ -1,6 +1,8 @@
 package com.beank.workFlowy.component
 
+import android.util.Log
 import androidx.annotation.StringRes
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
@@ -17,7 +19,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -41,7 +44,8 @@ fun BasicField(
 }
 
 @Composable
-fun EmailField(value: () ->String, onNewValue: (String) -> Unit) {
+fun EmailField(value: () -> String, onNewValue: (String) -> Unit) {
+    Log.d("email","text:${value.hashCode()},onclick:${onNewValue.hashCode()}")
     OutlinedTextField(
         singleLine = true,
         modifier = Modifier.fieldModifier(),
@@ -72,20 +76,20 @@ private fun PasswordField(
     value: () -> String,
     @StringRes placeholder: Int,
     onNewValue: (String) -> Unit,
-    modifier: Modifier = Modifier.fieldModifier()
+    modifier: Modifier = Modifier
 ) {
     var isVisible by remember { mutableStateOf(false) }
 
     OutlinedTextField(
-        modifier = modifier,
+        modifier = modifier.fillMaxWidth(),
         value = value(),
         onValueChange = onNewValue,
         placeholder = { Text(text = stringResource(placeholder)) },
         leadingIcon = { Icon(imageVector = Icons.Default.Lock, contentDescription = "Lock") },
         trailingIcon = {
             IconButton(onClick = { isVisible = !isVisible }) {
-                Icon(painter = if (isVisible) painterResource(AppIcon.ic_visibility_on)
-                else painterResource(AppIcon.ic_visibility_off), contentDescription = "Visibility")
+                Icon(imageVector =  if (isVisible) ImageVector.vectorResource(AppIcon.ic_visibility_on)
+                else ImageVector.vectorResource(AppIcon.ic_visibility_off), contentDescription = "Visibility")
             }
         },
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),

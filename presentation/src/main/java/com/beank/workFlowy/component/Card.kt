@@ -3,19 +3,14 @@ package com.beank.workFlowy.component
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ShapeDefaults
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
@@ -23,10 +18,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.beank.workFlowy.ui.theme.shapes
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -71,6 +64,7 @@ fun ToggleCard(
     color: Color = MaterialTheme.colorScheme.scrim,
     onClick : (Boolean) -> Unit = {}
 ){
+    Log.d("card","onclick:${onClick.hashCode()},title:${title.hashCode()},checked:${checked.hashCode()}")
     Card(
         modifier = Modifier
             .fillMaxWidth()

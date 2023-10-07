@@ -1,10 +1,16 @@
 package com.beank.workFlowy.screen.analysis
 
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import com.beank.domain.model.Record
 
 @Stable
-data class AnalysisUiState(
-    val recordList : List<Record> = emptyList(),
-    val actProgress : Boolean = true
-)
+class AnalysisUiState(
+    recordList : List<Record> = emptyList(),
+    actProgress : Boolean = true
+){
+    var recordList by mutableStateOf(recordList)
+    var actProgress by mutableStateOf(actProgress)
+}

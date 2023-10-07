@@ -1,5 +1,6 @@
 package com.beank.workFlowy.component
 
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -14,7 +15,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import com.beank.presentation.R
 import com.beank.workFlowy.navigation.NavigationItem
@@ -29,8 +31,9 @@ fun WeekBottomBar(
     onUpdateSchedule : () -> Unit,
     onAdditionalSchedule : () -> Unit
 ){
+    Log.d("recomposition","topbar")
     BottomAppBar(
-        actions = {
+        actions = remember{{
             IconButton(onClick = onMoveMisson) {
                 Icon(
                     modifier = Modifier
@@ -40,7 +43,7 @@ fun WeekBottomBar(
                             interactionSource = remember { MutableInteractionSource() },
                             indication = rememberRipple(bounded = false, radius = 20.dp)
                         ),
-                    painter = painterResource(id = NavigationItem.MISSON.icon!!),
+                    imageVector = ImageVector.vectorResource(id = NavigationItem.MISSON.icon!!),
                     contentDescription = "미션 이동")
             }
             AnimatedVisibility(visible = checked.not()) {
@@ -53,7 +56,7 @@ fun WeekBottomBar(
                                 interactionSource = remember { MutableInteractionSource() },
                                 indication = rememberRipple(bounded = false, radius = 20.dp)
                             ),
-                        painter = painterResource(id = R.drawable.baseline_today_24),
+                        imageVector = ImageVector.vectorResource(id = R.drawable.baseline_today_24),
                         contentDescription = "오늘날짜 이동")
                 }
             }
@@ -68,7 +71,7 @@ fun WeekBottomBar(
                                     interactionSource = remember { MutableInteractionSource() },
                                     indication = rememberRipple(bounded = false, radius = 20.dp)
                                 ),
-                            painter = painterResource(id = R.drawable.baseline_check_box_24),
+                            imageVector = ImageVector.vectorResource(id = R.drawable.baseline_check_box_24),
                             contentDescription = "스케줄 완료")
                     }
                     IconButton(onClick = onDeleteSchedule) {
@@ -80,7 +83,7 @@ fun WeekBottomBar(
                                     interactionSource = remember { MutableInteractionSource() },
                                     indication = rememberRipple(bounded = false, radius = 20.dp)
                                 ),
-                            painter = painterResource(id = R.drawable.baseline_delete_outline_24),
+                            imageVector = ImageVector.vectorResource(id = R.drawable.baseline_delete_outline_24),
                             contentDescription = "스케줄 삭제")
                     }
                     IconButton(onClick = onUpdateSchedule) {
@@ -92,20 +95,20 @@ fun WeekBottomBar(
                                     interactionSource = remember { MutableInteractionSource() },
                                     indication = rememberRipple(bounded = false, radius = 20.dp)
                                 ),
-                            painter = painterResource(id = R.drawable.baseline_edit_24),
+                            imageVector = ImageVector.vectorResource(id = R.drawable.baseline_edit_24),
                             contentDescription = "스케줄 수정")
                     }
                 }
             }
-        },
+        }},
         containerColor = MaterialTheme.colorScheme.inversePrimary,
-        floatingActionButton = {
+        floatingActionButton = remember{{
             FloatingActionButton(
                 onClick = onAdditionalSchedule,
                 containerColor = MaterialTheme.colorScheme.tertiaryContainer
             ) {
-                Icon(painter = painterResource(id = R.drawable.baseline_add_24), contentDescription = "스케줄 추가", tint = MaterialTheme.colorScheme.onTertiaryContainer)
+                Icon(imageVector = ImageVector.vectorResource(id = R.drawable.baseline_add_24), contentDescription = "스케줄 추가", tint = MaterialTheme.colorScheme.onTertiaryContainer)
             }
-        }
+        }}
     )
 }

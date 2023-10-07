@@ -3,23 +3,16 @@ package com.beank.workFlowy.screen.schedule
 import android.content.res.TypedArray
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.compose.runtime.Stable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.beank.domain.model.Schedule
 import com.beank.domain.repository.LogRepository
 import com.beank.domain.usecase.ScheduleUsecases
-import com.beank.presentation.R
 import com.beank.workFlowy.screen.WorkFlowyViewModel
-import com.beank.workFlowy.utils.changeDayInfo
 import com.beank.workFlowy.utils.fromScheduleJson
 import com.beank.workFlowy.utils.imageToInt
 import com.beank.workFlowy.utils.intToImage
 import com.beank.workFlowy.utils.toLocalDate
-import com.beank.workFlowy.utils.transDayToShortKorean
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -37,8 +30,8 @@ class ScheduleViewModel @Inject constructor(
 ) : WorkFlowyViewModel(logRepository){
 
     private lateinit var typedSchedule : TypedArray
-    var uiState by mutableStateOf(ScheduleUiState())
-        private set
+
+    val uiState = ScheduleUiState()
 
     fun initScheduleImages(scheduleList : TypedArray){
         typedSchedule = scheduleList
@@ -48,25 +41,23 @@ class ScheduleViewModel @Inject constructor(
                 scheduleImages.add(scheduleList.getResourceId(i,0))
             }
             viewModelScope.launch(Dispatchers.Main) {
-                uiState = uiState.copy(scheduleImageList = scheduleImages)
+                uiState.scheduleImageList = scheduleImages
             }
         }
 
         val today = savedStateHandle.get<Int>("today")!!
         if (today == 0){
             val schedule = savedStateHandle.get<String>("schedule")?.fromScheduleJson()!!
-            uiState = uiState.copy(
-                id = schedule.id!!,
-                title = schedule.title,
-                comment = schedule.comment,
-                date = schedule.date,
-                startTime = schedule.startTime,
-                endTime = schedule.endTime,
-                timeToggle = schedule.time,
-                image = intToImage(schedule.icon,typedSchedule),
-                alarmToggle = schedule.alarm,
-                alarmState = schedule.alarmState
-            )
+            uiState.id = schedule.id!!
+            uiState.title = schedule.title
+            uiState.comment = schedule.comment
+            uiState.date = schedule.date
+            uiState.startTime = schedule.startTime
+            uiState.endTime = schedule.endTime
+            uiState.timeToggle = schedule.time
+            uiState.image = intToImage(schedule.icon,typedSchedule)
+            uiState.alarmToggle = schedule.alarm
+            uiState.alarmState = schedule.alarmState
         }else{
             val day = today.toLocalDate()
             onDateChange(day)
@@ -74,41 +65,42 @@ class ScheduleViewModel @Inject constructor(
     }
 
     fun onDateChange(date: LocalDate){
-        uiState = uiState.copy(date = date)
+        uiState.date = date
     }
     fun onTimeToggleChange(){
-        uiState = uiState.copy(timeToggle = uiState.timeToggle.not())
+        uiState.timeToggle = uiState.timeToggle.not()
     }
     fun onTitleChange(text : String){
-        uiState = uiState.copy(title = text)
+        uiState.title = text
     }
 
     fun onImageChange(image : Int){
-        uiState = uiState.copy(image = image)
+        uiState.image = image
     }
 
     fun onTimeChange(startHour : Int, startMinute : Int, endHour : Int, endMinute : Int) : Boolean{
         return if (startHour > endHour || (startHour == endHour && startMinute > endMinute)){
             false
         }else{
-            uiState = uiState.copy(startTime = LocalTime.of(startHour, startMinute), endTime = LocalTime.of(endHour, endMinute))
+            uiState.startTime = LocalTime.of(startHour, startMinute)
+            uiState.endTime = LocalTime.of(endHour, endMinute)
             true
         }
     }
 
     fun onCommentChange(text: String){
-        uiState = uiState.copy(comment = text)
+        uiState.comment = text
     }
 
-    fun onAlarmToggleChange(){
-        uiState = uiState.copy(alarmToggle = uiState.alarmToggle.not())
+    fun onAlarmToggleChange(value : Boolean){
+        uiState.alarmToggle = value
     }
 
     fun onAlarmStateChange(state : String){
-        uiState = uiState.copy(alarmState = state)
+        uiState.alarmState = state
     }
 
-    fun onAlarmTimeCalculate() : LocalDateTime{
+    private fun onAlarmTimeCalculate() : LocalDateTime{
         val alarmTime = LocalDateTime.of(uiState.date,uiState.startTime)
         return when(uiState.alarmState){
             "5분전" -> alarmTime.minusMinutes(5)

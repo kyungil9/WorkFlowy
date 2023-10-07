@@ -1,12 +1,10 @@
 package com.beank.workFlowy.component
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -18,12 +16,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -36,9 +32,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import com.beank.domain.model.Tag
 import com.beank.presentation.R
@@ -49,11 +46,12 @@ import java.time.Duration
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ActCard(
-    selectedTag: Tag,
+    selectedTag: () -> Tag,
     progressTime : () -> Duration,
-    progress : Boolean,
+    progress : () -> Boolean,
     onClickAct : () -> Unit
 ){
+    Log.d("recomposition","actcard")
     Button(
         onClick = onClickAct,
         modifier = Modifier
@@ -64,16 +62,16 @@ fun ActCard(
         colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primary),
         elevation = ButtonDefaults.elevatedButtonElevation(5.dp),
     ) {
-        if (progress){
+        if (progress()){
             Row(
                 modifier = Modifier.fillMaxSize(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
             ) {
-                CircularProgressIndicator()
+                //CircularProgressIndicator()
             }
         }
-        AnimatedVisibility(visible = !progress) {
+        AnimatedVisibility(visible = !progress()) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -82,7 +80,7 @@ fun ActCard(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Icon(
-                    painter = painterResource(id = intToImage(selectedTag.icon, LocalContext.current.resources.obtainTypedArray(R.array.tagList))),
+                    imageVector = ImageVector.vectorResource(id = intToImage(selectedTag().icon, LocalContext.current.resources.obtainTypedArray(R.array.tagList))),
                     contentDescription = null,
                     modifier = Modifier
                         .size(70.dp)
@@ -97,7 +95,7 @@ fun ActCard(
                             .padding(top = 5.dp, end = 25.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Text(text = selectedTag.title, style = MaterialTheme.typography.headlineMedium, color = MaterialTheme.colorScheme.onPrimaryContainer)
+                        Text(text = selectedTag().title, style = MaterialTheme.typography.headlineMedium, color = MaterialTheme.colorScheme.onPrimaryContainer)
                         Text(
                             text = "${zeroFormat.format(progressTime().toHours())}:${zeroFormat.format(progressTime().toMinutes()%60)}:${zeroFormat.format(progressTime().seconds%60)}",
                             style = MaterialTheme.typography.headlineSmall,
@@ -154,7 +152,7 @@ fun ActTagCard(
         ) {
             AnimatedVisibility(visible = clicked) {
                 Icon(
-                    painter = painterResource(id = R.drawable.baseline_close_24),
+                    imageVector = ImageVector.vectorResource(id = R.drawable.baseline_close_24),
                     contentDescription = null,
                     modifier = Modifier
                         .size(80.dp),
@@ -169,7 +167,7 @@ fun ActTagCard(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Icon(
-                        painter = painterResource(id = intToImage(tag.icon, LocalContext.current.resources.obtainTypedArray(R.array.tagList))),
+                        imageVector = ImageVector.vectorResource(id = intToImage(tag.icon, LocalContext.current.resources.obtainTypedArray(R.array.tagList))),
                         contentDescription = null,
                         modifier = Modifier
                             .size(50.dp),

@@ -1,10 +1,7 @@
 package com.beank.workFlowy.screen.analysis
 
-import android.app.DatePickerDialog
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -14,10 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -42,7 +36,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -58,14 +51,9 @@ import com.beank.workFlowy.utils.toMonthString
 import com.beank.workFlowy.utils.toStartTimeLong
 import com.beank.workFlowy.utils.toWeekString
 import com.beank.workFlowy.utils.toYearString
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import java.time.LocalDate
-import java.time.ZoneId
-import java.time.temporal.ChronoUnit
 import kotlin.math.abs
 
-@OptIn(ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun AnalysisScreen(
@@ -75,14 +63,14 @@ fun AnalysisScreen(
 ){
     val uiState = analysisViewModel.uiState
     val selectDay by analysisViewModel.selectDayFlow.collectAsStateWithLifecycle()
-    val toggleFlow by analysisViewModel.PeriodModeFlow.collectAsStateWithLifecycle()
+    val toggleFlow by analysisViewModel.periodModeFlow.collectAsStateWithLifecycle()
     val animate by analysisViewModel.animateStackChannel.collectAsStateWithLifecycle(initialValue = false)
 
     WeekLayout(
         snackbarHostState = snackbarHostState,
-        topBar = {
+        topBar = remember{{
             BackTopBar(title = "활동 분석", onBack = onBack)
-        }
+        }}
     ) {
         Column(
             modifier = Modifier.fillMaxSize().padding(top = it.calculateTopPadding(), start = 10.dp, end = 10.dp, bottom = 10.dp),

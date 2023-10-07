@@ -25,7 +25,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.beank.presentation.R
 import com.beank.workFlowy.component.BasicButton
 import com.beank.workFlowy.component.EmailField
@@ -44,7 +43,6 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
-import kotlin.reflect.KFunction1
 import com.beank.presentation.R.string as AppText
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -70,9 +68,7 @@ fun LoginScreen(
     )
     val token = stringResource(R.string.default_web_client_id)
     val context = LocalContext.current
-
-    val email by loginViewModel.email.collectAsStateWithLifecycle(initialValue = "")
-    val password by loginViewModel.password.collectAsStateWithLifecycle(initialValue = "")
+    val uiState = loginViewModel.uiState
 
     WeekLayout(snackbarHostState = snackbarHostState) {
         Column(
@@ -83,8 +79,8 @@ fun LoginScreen(
             if (user == null){
                 Image(painter = painterResource(id = R.drawable.workflowy_foreground), contentDescription = "어플화면",
                     modifier = Modifier.size(300.dp,300.dp))
-                EmailField(value = {email}, onNewValue = loginViewModel::onEmailChange)
-                PasswordField(value = {password}, onNewValue = loginViewModel::onPasswordChange)
+                EmailField(value = {uiState.email}, onNewValue = loginViewModel::onEmailChange)
+                PasswordField(value = {uiState.password}, onNewValue = loginViewModel::onPasswordChange)
                 BasicButton(text = AppText.sign_in, modifier = Modifier.basicButton()) {
                     loginViewModel.onSignInClick(openPopUpScreen)
                 }
@@ -112,6 +108,7 @@ fun LoginScreen(
     }
 
 }
+
 
 @Composable
 fun rememberFirebaseAuthLauncher(

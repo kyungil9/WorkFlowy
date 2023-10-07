@@ -2,9 +2,6 @@ package com.beank.workFlowy.screen.analysis
 
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
 import com.beank.domain.model.Record
 import com.beank.domain.model.onEmpty
@@ -52,18 +49,17 @@ class AnalysisViewModel @Inject constructor(
     private val _animateStackChannel = Channel<Boolean>(Channel.BUFFERED)
     private var todayJob : Job? = null
     val selectDayFlow get() = _selectDayFlow.asStateFlow()
-    val PeriodModeFlow get() = _periodModeFlow.asStateFlow()
+    val periodModeFlow get() = _periodModeFlow.asStateFlow()
     val animateStackChannel get() = _animateStackChannel.receiveAsFlow()
 
-    var uiState by mutableStateOf(AnalysisUiState())
-        private set
+    val uiState = AnalysisUiState()
 
     init {
         getPeriodRecord()
     }
 
     fun onPeriodModeChange(){
-        _periodModeFlow.value = (PeriodModeFlow.value+1)%4
+        _periodModeFlow.value = (periodModeFlow.value+1)%4
         onAnimationEventSend(false)
     }
 
@@ -80,7 +76,7 @@ class AnalysisViewModel @Inject constructor(
     }
 
     fun onRightDrag(){
-        when(PeriodModeFlow.value){
+        when(periodModeFlow.value){
             DAY -> _selectDayFlow.value = selectDayFlow.value.plusDays(1)
             WEEK -> _selectDayFlow.value = selectDayFlow.value.plusWeeks(1)
             MONTH -> _selectDayFlow.value = selectDayFlow.value.plusMonths(1)
@@ -89,7 +85,7 @@ class AnalysisViewModel @Inject constructor(
     }
 
     fun onLeftDrag(){
-        when(PeriodModeFlow.value){
+        when(periodModeFlow.value){
             DAY -> _selectDayFlow.value = selectDayFlow.value.minusDays(1)
             WEEK -> _selectDayFlow.value = selectDayFlow.value.minusWeeks(1)
             MONTH -> _selectDayFlow.value = selectDayFlow.value.minusMonths(1)
@@ -99,15 +95,17 @@ class AnalysisViewModel @Inject constructor(
 
     private fun getPeriodRecord() {
         launchCatching {
-            PeriodModeFlow.combine(selectDayFlow){ toggle, date -> PeriodDate(date, toggle)}.collectLatest { period ->
+            periodModeFlow.combine(selectDayFlow){ toggle, date -> PeriodDate(date, toggle)}.collectLatest { period ->
                 todayJob?.cancel()
                 todayJob = analysisUsecases.getPeriodRecord(period.startDate(),period.endDate())
                     .flowOn(Dispatchers.IO).cancellable().onEach { state ->
                         state.onEmpty {
-                            uiState = uiState.copy(recordList = emptyList(),actProgress = false)
+
+                            uiState.recordList = emptyList()
+                            uiState.actProgress = false
                         }
                         state.onLoading {
-                            uiState = uiState.copy(actProgress = true)
+                            uiState.actProgress = true
                         }
                         state.onSuccess { recordList ->
                             val totalRecord = ArrayList<Record>()
@@ -120,7 +118,8 @@ class AnalysisViewModel @Inject constructor(
                                 }
                             }
                             totalRecord.sortByDescending {it.progressTime}
-                            uiState = uiState.copy(recordList = totalRecord,actProgress = false)
+                            uiState.recordList = totalRecord
+                            uiState.actProgress = false
                         }
                         state.onException { message, e ->
                             SnackbarManager.showMessage(R.string.firebase_server_error)

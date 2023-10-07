@@ -1,24 +1,21 @@
 package com.beank.workFlowy.component
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -38,12 +35,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.beank.domain.model.Schedule
 import com.beank.presentation.R
-import com.beank.workFlowy.screen.home.WeekUiState
 import com.beank.workFlowy.utils.intToImage
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -51,6 +45,8 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.material3.IconButton
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextOverflow
 import com.beank.workFlowy.utils.toFormatString
 import kotlin.math.abs
@@ -58,7 +54,7 @@ import kotlin.math.abs
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ScheduleList(
-    scheduleList : List<Schedule>,
+    scheduleList : () -> List<Schedule>,
     onRightDrag : () -> Unit,
     onLeftDrag : () -> Unit,
     onClickSchedule: (Schedule) -> Unit
@@ -66,7 +62,7 @@ fun ScheduleList(
     val scrollState = rememberLazyListState()
     var dragOffsetX by remember { mutableFloatStateOf(0f) }
     var direction by remember { mutableIntStateOf(-1) }
-
+    Log.d("recomposition","schedulelist")
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -113,8 +109,8 @@ fun ScheduleList(
             },
         state = scrollState
     ) {
-        items(scheduleList) { schedule ->
-            ScheduleItem(schedule, onClickSchedule = onClickSchedule)
+        items(scheduleList(),key = {item -> item.id!! }) { schedule ->
+            ScheduleItem({schedule}, onClickSchedule = onClickSchedule)
         }
     }
 
@@ -123,16 +119,18 @@ fun ScheduleList(
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ScheduleItem(
-    schedule : Schedule,
+    schedule : () -> Schedule,
     onClickSchedule : (Schedule) -> Unit
 ){
     var commentToggle by remember { mutableStateOf(false)}
-    val cardColor by animateColorAsState(targetValue = if (schedule.check) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.primaryContainer, tween(500))
+    val cardColor by animateColorAsState(targetValue = if (schedule().check) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.primaryContainer, tween(500),
+        label = ""
+    )
     Card(
         Modifier
             .fillMaxWidth()
-            .clickable { onClickSchedule(schedule) }
-            .height(if (schedule.time && commentToggle) 160.dp else (if (commentToggle) 130.dp else (if (schedule.time) 100.dp else 80.dp)))
+            .clickable (onClick = remember{{onClickSchedule(schedule()) }})
+            .height(if (schedule().time && commentToggle) 160.dp else (if (commentToggle) 130.dp else (if (schedule().time) 100.dp else 80.dp)))
             .padding(10.dp),
         shape = MaterialTheme.shapes.small,
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary),
@@ -164,12 +162,12 @@ fun ScheduleItem(
             ) {
                 Row() {
                     Icon(
-                        painter = painterResource(id = intToImage(schedule.icon, LocalContext.current.resources.obtainTypedArray(R.array.scheduleList))),
+                        imageVector = ImageVector.vectorResource(id = intToImage(schedule().icon, LocalContext.current.resources.obtainTypedArray(R.array.scheduleList))),
                         contentDescription = "스케줄 이미지",
                         tint = MaterialTheme.colorScheme.onPrimaryContainer
                     )
                     Text(
-                        text = schedule.title,
+                        text = schedule().title,
                         style = MaterialTheme.typography.headlineSmall,
                         color = MaterialTheme.colorScheme.onPrimaryContainer,
                         modifier = Modifier.padding(start = 15.dp).width(200.dp),
@@ -190,15 +188,15 @@ fun ScheduleItem(
                     .fillMaxWidth()
                     .padding(start = 20.dp)
             ) {
-                if (schedule.time){
-                    Text(text = "${schedule.startTime.toFormatString()}~${schedule.endTime.toFormatString()}", style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.outline)
+                if (schedule().time){
+                    Text(text = "${schedule().startTime.toFormatString()}~${schedule().endTime.toFormatString()}", style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.outline)
                 }
-                if (schedule.alarm){
+                if (schedule().alarm){
                     Icon(
-                        painter = painterResource(id = R.drawable.baseline_notifications_none_24),
+                        imageVector = ImageVector.vectorResource(id = R.drawable.baseline_notifications_none_24),
                         contentDescription = "알람 이미지",
                         modifier = Modifier
-                            .padding(start = if (schedule.time) 15.dp else 0.dp, bottom = 10.dp),
+                            .padding(start = if (schedule().time) 15.dp else 0.dp, bottom = 10.dp),
                         tint = MaterialTheme.colorScheme.outline
                     )
                 }
@@ -214,7 +212,7 @@ fun ScheduleItem(
                     border = BorderStroke(1.dp, color = MaterialTheme.colorScheme.onSecondaryContainer)
                 ) {
                     Text(
-                        text = schedule.comment, style = MaterialTheme.typography.bodyLarge,
+                        text = schedule().comment, style = MaterialTheme.typography.bodyLarge,
                         maxLines = 2, color = MaterialTheme.colorScheme.onPrimaryContainer,
                         overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(start = 10.dp)
                     )
