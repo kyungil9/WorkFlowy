@@ -29,7 +29,7 @@ class WorkFlowyMessagingService : FirebaseMessagingService() {
 
     private fun sendNotification(message: RemoteMessage.Notification) {
 
-        val intent = Intent(this, com.beank.app.WorkFlowyActivity::class.java).apply {
+        val intent = Intent(this, WorkFlowyActivity::class.java).apply {
             addFlags(FLAG_ACTIVITY_CLEAR_TOP)
         }
 
