@@ -23,7 +23,7 @@ import com.beank.workFlowy.navigation.NavigationItem
 
 @Composable
 fun WeekBottomBar(
-    checked : Boolean,
+    checked : () -> Boolean,
     onMoveMisson : () -> Unit,
     onMoveToday : () -> Unit,
     onCheckSchedule : () -> Unit,
@@ -31,7 +31,7 @@ fun WeekBottomBar(
     onUpdateSchedule : () -> Unit,
     onAdditionalSchedule : () -> Unit
 ){
-    Log.d("recomposition","topbar")
+    Log.d("recomposition","bottombar")
     BottomAppBar(
         actions = remember{{
             IconButton(onClick = onMoveMisson) {
@@ -46,7 +46,7 @@ fun WeekBottomBar(
                     imageVector = ImageVector.vectorResource(id = NavigationItem.MISSON.icon!!),
                     contentDescription = "미션 이동")
             }
-            AnimatedVisibility(visible = checked.not()) {
+            AnimatedVisibility(visible = checked().not()) {
                 IconButton(onClick = onMoveToday) {
                     Icon(
                         modifier = Modifier
@@ -60,7 +60,7 @@ fun WeekBottomBar(
                         contentDescription = "오늘날짜 이동")
                 }
             }
-            AnimatedVisibility(visible = checked) {
+            AnimatedVisibility(visible = checked()) {
                 Row {
                     IconButton(onClick = onCheckSchedule) {
                         Icon(

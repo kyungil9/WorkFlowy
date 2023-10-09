@@ -166,27 +166,11 @@ class WeekViewModel @Inject constructor(
         }
     }
 
-    fun onRecordChange(){
-        if (uiState.recordList.isNotEmpty()){
-            launchCatching {
-                val endTime = LocalDateTime.now()
-                val progressTime = Duration.between(uiState.recordList[0].startTime,endTime).toMinutes()
-                weekUsecases.updateRecord(
-                    id = uiState.recordList[0].id!!,
-                    endTime = endTime,
-                    progressTime = progressTime,
-                    pause = true,
-                    date = LocalDate.now()
-                )
-            }
-        }
-    }
-
     fun onRecordReduce(){
         if (uiState.recordList.isNotEmpty()){
             launchCatching {
+                val record = uiState.recordList[0]
                 if (uiState.recordList[0].date != LocalDate.now()){//하루가 넘게 기록되고있는경우 쪼개기
-                    val record = uiState.recordList[0]
                     var startDay = record.date
                     for (i in 0 until ChronoUnit.DAYS.between(record.date,LocalDate.now()).toInt()){
                         val startTime = if (i == 0) record.startTime else LocalDateTime.of(startDay, LocalTime.of(0,0,0))
@@ -205,16 +189,27 @@ class WeekViewModel @Inject constructor(
                         )
                         startDay = startDay.plusDays(1)
                     }
+                    val today = LocalDate.now()
+                    val endTime = LocalDateTime.now()
+                    val startTime = LocalDateTime.of(today, LocalTime.of(0,0))
+                    val progressTime = Duration.between(startTime, endTime).toMinutes()
+                    weekUsecases.updateRecord(
+                        id = record.id!!,
+                        startTime = startTime,
+                        endTime = endTime,
+                        progressTime = progressTime,
+                        date = today
+                    )
+                }else {
+                    val endTime = LocalDateTime.now()
+                    val progressTime = Duration.between(record.startTime, endTime).toMinutes()
+                    weekUsecases.updateRecord(
+                        id = record.id!!,
+                        endTime = endTime,
+                        progressTime = progressTime,
+                        pause = true
+                    )
                 }
-                val endTime = LocalDateTime.now()
-                val progressTime = Duration.between(uiState.recordList[0].startTime,endTime).toMinutes()
-                weekUsecases.updateRecord(
-                    id = uiState.recordList[0].id!!,
-                    endTime = endTime,
-                    progressTime = progressTime,
-                    pause = true,
-                    date = LocalDate.now()
-                )
             }
         }
     }

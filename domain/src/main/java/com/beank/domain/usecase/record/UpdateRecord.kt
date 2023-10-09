@@ -12,4 +12,5 @@ class UpdateRecord @Inject constructor(
 ){
     operator fun invoke(id: String, endTime: LocalDateTime, progressTime : Long, pause : Boolean) = recordRepository.updateRecord(id,endTime,progressTime,pause)
     operator fun invoke(id: String, endTime: LocalDateTime, progressTime : Long, pause : Boolean, date: LocalDate) = recordRepository.updateRecord(id, endTime, progressTime, pause, date)
+    operator fun invoke(id: String, startTime: LocalDateTime, endTime: LocalDateTime, progressTime : Long, date: LocalDate) = recordRepository.updateRecord(id,startTime,endTime,progressTime,date)
 }

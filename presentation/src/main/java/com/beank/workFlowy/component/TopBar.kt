@@ -45,7 +45,7 @@ fun WeekAppBar(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Log.d("recomposition","topbar")
+        Log.d("recomposition","topinbar")
         IconButton(
             onClick = onHeaderIconClick
         ) {

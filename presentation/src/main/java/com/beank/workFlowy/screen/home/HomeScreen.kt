@@ -99,9 +99,9 @@ fun HomeScreen(
                 headerIcon = R.drawable.baseline_settings_24,
                 onHeaderIconClick = remember {{openScreen(NavigationItem.SETTING.route) }},
                 selectDay = {selectDayString},
-                onContentClick = {
+                onContentClick = remember{{
                     dateDialogState = true
-                },
+                }},
                 tailIcon = NavigationItem.ANALYSIS.icon,
                 onTailIconClick = remember {{
                     weekViewModel.onRecordReduce()
@@ -111,7 +111,7 @@ fun HomeScreen(
         }},
         bottomBar = remember{{
             WeekBottomBar(
-                checked = uiState.scheduleState,
+                checked = {uiState.scheduleState},
                 onMoveMisson = remember {{ openScreen(NavigationItem.MISSON.route)}},
                 onMoveToday = remember {{
                     scope.launch(Dispatchers.Default) {

@@ -155,7 +155,7 @@ fun StackItem(
 
 @RequiresApi(Build.VERSION_CODES.O)
 fun onProgressTimeCheck(record: Record) = if (record.pause)
-    Duration.between(LocalDateTime.of(record.date, LocalTime.of(0,0,0)),record.endTime).toMinutes()
+    Duration.between(record.startTime,record.endTime).toMinutes()
 else
     record.progressTime
 
