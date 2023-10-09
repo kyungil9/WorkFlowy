@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="app_name">일상기록</string>
-    <string name="default_web_client_id">934928992440-h2pja78ljrsijk8839m8jhh45mvkt0qv.apps.googleusercontent.com</string>
-    <string name="default_notification_channel_id" translatable="false">fcm_default_channel</string>
-</resources>
