@@ -25,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.beank.workFlowy.utils.Date
 import com.beank.workFlowy.utils.toInt
 import com.beank.workFlowy.utils.transDayToShortKorean
 import java.time.LocalDate
@@ -32,18 +33,17 @@ import java.time.LocalDate
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun WeekLazyList(
-    selectDay: () -> LocalDate,
     weekListState : LazyListState,
     onClickItem : (LocalDate) -> Unit,
-    weekDayList : () -> List<LocalDate>
+    weekDayList : () -> List<Date>
 ){
     Log.d("recomposition","weeklist")
     LazyRow(
         state = weekListState,
         modifier = Modifier.fillMaxWidth().height(70.dp)
     ){
-        items(weekDayList(), key = {it.toInt()}){ day ->
-            dayItem(day = {day}, selectDay = selectDay, onItemClick = onClickItem)
+        items(weekDayList(), key = {it.hashCode()}){ day ->
+            dayItem(day = {day}, onItemClick = onClickItem)
         }
     }
 
@@ -52,32 +52,32 @@ fun WeekLazyList(
 @OptIn(ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun dayItem(day : () ->LocalDate, selectDay : () -> LocalDate, onItemClick : (LocalDate) -> Unit){
+fun dayItem(day : () ->Date, onItemClick : (LocalDate) -> Unit){
     Log.d("recomposition","weekitem")
     Card(
-        onClick = remember{{ onItemClick(day())}},
+        onClick = remember{{ onItemClick(day().date) }},
         shape = MaterialTheme.shapes.small,
         colors = CardDefaults.cardColors(MaterialTheme.colorScheme.background),
         modifier = Modifier
             .size(55.dp, 70.dp)
             .border(
                 1.dp,
-                color = if (day().isEqual(selectDay())) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.background,
+                color = if (day().isChecked) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.background,
                 shape = MaterialTheme.shapes.small
             )
     ) {
-        val color = if (day().isEqual(LocalDate.now())) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.background
+        val color = if (day().date.isEqual(LocalDate.now())) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.background
         Column (
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ){
             Text(
-                text = transDayToShortKorean(day().dayOfWeek.value),
+                text = transDayToShortKorean(day().date.dayOfWeek.value),
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.labelLarge)
             Text(
-                text = day().dayOfMonth.toString(),
+                text = day().date.dayOfMonth.toString(),
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.headlineMedium,
                 modifier = Modifier.drawBehind {

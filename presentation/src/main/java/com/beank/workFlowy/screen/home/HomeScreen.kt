@@ -136,7 +136,6 @@ fun HomeScreen(
                 .padding(top = it.calculateTopPadding(), bottom = it.calculateBottomPadding())
         ) {
             WeekLazyList(
-                selectDay = {selectDay},
                 weekListState = weekListState,
                 onClickItem = onWeekListClick,
                 weekDayList = {uiState.weekDayList}

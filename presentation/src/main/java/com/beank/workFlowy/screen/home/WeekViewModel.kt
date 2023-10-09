@@ -87,22 +87,44 @@ class WeekViewModel @Inject constructor(
     }
 
     fun onSelectDayChange(day : LocalDate){
+        val beforeIndex = onDateIndexGet(selectDayFlow.value)
+        val beforeList = uiState.weekDayList[beforeIndex]
+        uiState.weekDayList[beforeIndex] = beforeList.copy(isChecked = false)
         _selectDayFlow.value = day
+        val afterIndex = onDateIndexGet(day)
+        val afterList = uiState.weekDayList[afterIndex]
+        uiState.weekDayList[afterIndex] = afterList.copy(isChecked = true)
         onScheduleStateChange(false)
     }
 
     fun plusSelectDay() : LocalDate {
+        val beforeIndex = onDateIndexGet(selectDayFlow.value)
+        val beforeList = uiState.weekDayList[beforeIndex]
+        uiState.weekDayList[beforeIndex] = beforeList.copy(isChecked = false)
         _selectDayFlow.value = selectDayFlow.value.plusDays(1)
         onScheduleStateChange(false)
+        val afterIndex = onDateIndexGet(_selectDayFlow.value)
+        val afterList = uiState.weekDayList[afterIndex]
+        uiState.weekDayList[afterIndex] = afterList.copy(isChecked = true)
+
         return selectDayFlow.value
     }
 
 
     fun minusSelectDay() : LocalDate {
+        val beforeIndex = onDateIndexGet(selectDayFlow.value)
+        val beforeList = uiState.weekDayList[beforeIndex]
+        uiState.weekDayList[beforeIndex] = beforeList.copy(isChecked = false)
         _selectDayFlow.value = selectDayFlow.value.minusDays(1)
         onScheduleStateChange(false)
+        val afterIndex = onDateIndexGet(_selectDayFlow.value)
+        val afterList = uiState.weekDayList[afterIndex]
+        uiState.weekDayList[afterIndex] = afterList.copy(isChecked = true)
+
         return selectDayFlow.value
     }
+
+    private fun onDateIndexGet(date: LocalDate) = ChronoUnit.DAYS.between(LocalDate.of(2021, 12, 28), date).toInt()
 
     fun onScheduleDelete(){
         launchCatching {

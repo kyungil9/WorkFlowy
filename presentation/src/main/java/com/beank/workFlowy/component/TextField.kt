@@ -81,7 +81,7 @@ private fun PasswordField(
     var isVisible by remember { mutableStateOf(false) }
 
     OutlinedTextField(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier.fieldModifier(),
         value = value(),
         onValueChange = onNewValue,
         placeholder = { Text(text = stringResource(placeholder)) },

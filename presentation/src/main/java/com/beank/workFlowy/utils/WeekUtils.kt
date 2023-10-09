@@ -70,12 +70,12 @@ fun LocalDate.toMonthString() = "${this.year%100}/${zeroFormat.format(this.month
 fun LocalDate.toYearString() = "${this.year}"
 
 @RequiresApi(Build.VERSION_CODES.O)
-fun makeDayList() : List<LocalDate>{
-    val dayList = ArrayList<LocalDate>()
+fun makeDayList() : List<Date>{
+    val dayList = ArrayList<Date>()
     var startDay = LocalDate.of(2021,12,28)
     val endDay = LocalDate.of(2026,1,3)
     for (i in 0 .. ChronoUnit.DAYS.between(startDay,endDay)){
-        dayList.add(startDay)
+        dayList.add(Date(startDay,startDay.isEqual(LocalDate.now())))
         startDay = startDay.plusDays(1)
     }
     return dayList
@@ -96,3 +96,8 @@ fun changeDayInfo(today : LocalDate) : Int {
     }
     return endDay
 }
+
+data class Date(
+    val date: LocalDate,
+    val isChecked : Boolean
+)
