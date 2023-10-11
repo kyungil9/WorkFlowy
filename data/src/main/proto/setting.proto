@@ -8,4 +8,5 @@ message Setting {
   bool dynamicTheme = 2;
   bool noticeAlarm = 3;
   bool scheduleAlarm = 4;
+  bool trigger = 5;
 }

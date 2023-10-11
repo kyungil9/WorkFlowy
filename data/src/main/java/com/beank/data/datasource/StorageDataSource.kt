@@ -7,6 +7,8 @@ interface StorageDataSource {
     val store : CollectionReference
     fun getUid() : String?
     fun <T : Any> save(collectionId: String, document: T)
+
+    suspend fun <T : Any> saveToReturnId(collectionId: String, document: T) : String
     fun <T : Any> replace(collectionId: String, documentId: String, document : T)
     fun <T : Any> update(collectionId: String, documentId: String, document : Map<String,T>)
     fun delete(collectionId: String, documentId: String)

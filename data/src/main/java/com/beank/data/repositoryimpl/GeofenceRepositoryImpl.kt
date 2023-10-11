@@ -2,8 +2,12 @@ package com.beank.data.repositoryimpl
 
 import android.annotation.SuppressLint
 import android.app.PendingIntent
+import android.os.Build
+import androidx.annotation.RequiresApi
 import com.beank.data.datasource.StorageDataSource
 import com.beank.data.entity.WeekGeoTrigger
+import com.beank.data.mapper.toGeofenceData
+import com.beank.data.mapper.toWeekGeoTrigger
 import com.beank.data.utils.dataStateObjects
 import com.beank.domain.model.FireStoreState
 import com.beank.domain.model.GeofenceData
@@ -16,6 +20,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
+@RequiresApi(Build.VERSION_CODES.O)
 class GeofenceRepositoryImpl @Inject constructor(
     private val geofencingClient: GeofencingClient,
     private val pendingIntent: PendingIntent,
@@ -48,26 +53,27 @@ class GeofenceRepositoryImpl @Inject constructor(
             .setLoiteringDelay(geofenceData.delayTime)
             .build()
 
-    override suspend fun getChooseTrigger(id: String): String? =
+    override suspend fun getChooseTrigger(id: String): GeofenceData? =
         storage.store.document(storage.getUid()!!).collection(GEOTRIGGER).document(id).get()
-            .await().toObject(WeekGeoTrigger::class.java)?.id
+            .await().toObject(WeekGeoTrigger::class.java)?.toGeofenceData()
 
     override fun getGeoTriggerList(): Flow<FireStoreState<List<GeofenceData>>> =
         storage.store.document(storage.getUid()!!).collection(GEOTRIGGER).dataStateObjects<WeekGeoTrigger,GeofenceData>()
 
-    override fun addGeofenceToClient(geofenceData: GeofenceData, onSuccess : () -> Unit, onFail : () -> Unit) {
-        storage.save(GEOTRIGGER,geofenceData)
-        geofencingClient.addGeofences(getGeofencingRequest(createGeofence(geofenceData)),pendingIntent).run {
+    override suspend fun addGeofenceToClient(geofenceData: GeofenceData, onSuccess : () -> Unit, onFail : () -> Unit) {
+        val id = storage.saveToReturnId(GEOTRIGGER,geofenceData.toWeekGeoTrigger())
+        geofencingClient.addGeofences(getGeofencingRequest(createGeofence(geofenceData.copy(id = id))),pendingIntent).run {
             addOnSuccessListener { onSuccess() }
             addOnFailureListener { onFail() }
         }
     }
 
-    override fun addGeofenceListToClient(geofenceDataList: List<GeofenceData>, onSuccess : () -> Unit, onFail : () -> Unit) {
+
+    override suspend fun addGeofenceListToClient(geofenceDataList: List<GeofenceData>, onSuccess : () -> Unit, onFail : () -> Unit) {
         val geofenceList = ArrayList<Geofence>()
         geofenceDataList.forEach { geofenceData ->
-            geofenceList.add(createGeofence(geofenceData))
-            storage.save(GEOTRIGGER,geofenceData)
+            val id = storage.saveToReturnId(GEOTRIGGER,geofenceData.toWeekGeoTrigger())
+            geofenceList.add(createGeofence(geofenceData.copy(id = id)))
         }
         geofencingClient.addGeofences(getGeofencingRequest(geofenceList),pendingIntent).run {
             addOnSuccessListener { onSuccess() }
@@ -80,7 +86,7 @@ class GeofenceRepositoryImpl @Inject constructor(
             addOnSuccessListener {
                 geofencingClient.addGeofences(getGeofencingRequest(createGeofence(geofenceData)),pendingIntent).run {
                     addOnSuccessListener {
-                        storage.replace(GEOTRIGGER,geofenceData.id!!,geofenceData)
+                        storage.replace(GEOTRIGGER,geofenceData.id!!,geofenceData.toWeekGeoTrigger())
                         onSuccess()
                     }
                     addOnFailureListener { onFail() }

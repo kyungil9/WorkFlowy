@@ -8,13 +8,13 @@ import kotlinx.coroutines.flow.Flow
 
 interface GeofenceRepository {
 
-    suspend fun getChooseTrigger(id: String): String?
+    suspend fun getChooseTrigger(id: String): GeofenceData?
 
     fun getGeoTriggerList(): Flow<FireStoreState<List<GeofenceData>>>
 
-    fun addGeofenceToClient(geofenceData: GeofenceData, onSuccess: () -> Unit, onFail: () -> Unit)
+    suspend fun addGeofenceToClient(geofenceData: GeofenceData, onSuccess: () -> Unit, onFail: () -> Unit)
 
-    fun addGeofenceListToClient(geofenceDataList: List<GeofenceData>, onSuccess: () -> Unit, onFail: () -> Unit)
+    suspend fun addGeofenceListToClient(geofenceDataList: List<GeofenceData>, onSuccess: () -> Unit, onFail: () -> Unit)
 
     fun updateGeofenceToClient(geofenceData: GeofenceData,onSuccess: () -> Unit, onFail: () -> Unit)
 

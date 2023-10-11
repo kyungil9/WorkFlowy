@@ -14,4 +14,6 @@ interface SettingDataSource {
     suspend fun updateNoticeAlarm(state : Boolean)
 
     suspend fun updateScheduleAlarm(state : Boolean)
+
+    suspend fun updateTrigger(state: Boolean)
 }

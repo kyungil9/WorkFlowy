@@ -7,6 +7,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 class StorageDataSourceImpl @Inject constructor(
@@ -22,6 +23,15 @@ class StorageDataSourceImpl @Inject constructor(
         trace(SAVE_TASK_TRACE){
             store.document(auth.currentUser!!.uid).collection(collectionId).add(document)
         }
+
+    override suspend fun <T : Any> saveToReturnId(collectionId: String, document: T): String {
+        var id = ""
+        store.document(auth.currentUser!!.uid).collection(collectionId).add(document).addOnSuccessListener {
+            id = it.id
+        }.await()
+        return id
+    }
+
 
     override fun <T : Any> replace(collectionId: String, documentId: String, document: T) : Unit =
         trace(UPDATE_TASK_TRACE){

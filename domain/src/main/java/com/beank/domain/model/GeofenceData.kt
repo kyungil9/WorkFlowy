@@ -7,7 +7,7 @@ import java.time.LocalTime
 
 @RequiresApi(Build.VERSION_CODES.O)
 data class GeofenceData(
-    val id : String? = null,
+    var id : String? = null,
     var tag : String = "",
     var latitude : Double = 0.0,
     var lonitude : Double = 0.0,

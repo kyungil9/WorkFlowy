@@ -35,4 +35,5 @@ object FirebaseModule {
     @Singleton
     @Provides
     fun storage() = Firebase.storage.reference
+
 }

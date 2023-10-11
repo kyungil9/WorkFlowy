@@ -10,6 +10,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationManagerCompat
 import com.beank.app.utils.goAsync
 import com.beank.app.utils.notificationBuilder
+import com.beank.domain.model.GeofenceData
 import com.beank.domain.model.Record
 import com.beank.domain.usecase.GeoUsecases
 import com.google.android.gms.location.Geofence
@@ -43,36 +44,34 @@ class GeofenceBroadcastReceiver : BroadcastReceiver(){
         if ((geofenceTransition == Geofence.GEOFENCE_TRANSITION_DWELL)or(geofenceTransition == Geofence.GEOFENCE_TRANSITION_EXIT)) {
             val triggeringGeofences = geofencingEvent.triggeringGeofences!!
             onRecordReduce(geoUsecases.getCurrentRecord())//현재 까지 진행중이던 기록 저장
-            var tagId : String? = ""
+            var geofenceData : GeofenceData? = null
+            val timenow = LocalTime.now()
             for (geofence in triggeringGeofences){//들어온 이벤트에서 트리거된거 각자 처리 when
-                //record 업데이트 추가
-                //현제 record를 가져와서 수정하고 새로운 record를 id이용해서 추가
-                //현재를 get으로만 가져오기?
-                //시간 체크!!
-                val tagId = geoUsecases.getChooseTagId(geofence.requestId)
-                tagId?.let {tag ->
-                    geoUsecases.insertRecord(//새 기록 등록
-                        Record(
-                            id = null,
-                            tag = tag,//id를 통해서 실제 트리거 tag가져와야할듯?
-                            date = LocalDate.now(),
-                            startTime = LocalDateTime.now(),
-                            endTime = null,
-                            progressTime = 0,
-                            pause = false
+                geofenceData = geoUsecases.getChooseGeofence(geofence.requestId)
+                geofenceData?.let {geo ->
+                    if (geo.startTime.isAfter(timenow) && geo.endTime.isBefore(timenow) || !geo.timeOption) {//시간안에 동작
+                        geoUsecases.insertRecord(//새 기록 등록
+                            Record(
+                                id = null,
+                                tag = geo.id!!,//id를 통해서 실제 트리거 tag가져와야할듯?
+                                date = LocalDate.now(),
+                                startTime = LocalDateTime.now(),
+                                endTime = null,
+                                progressTime = 0,
+                                pause = false
+                            )
                         )
-                    )
+                    }
                 }
 
             }
-            if (ActivityCompat.checkSelfPermission(context!!, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED && tagId?.isNotEmpty()!!) {
+            if (ActivityCompat.checkSelfPermission(context!!, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED && geofenceData != null) {
                 notification.notify(random.nextInt(),
-                    notificationBuilder(context,"새로운 기록 시작","$tagId 에 대한 기록을 시작합니다.").build())
+                    notificationBuilder(context,"새로운 기록 시작","${geofenceData.id} 에 대한 기록을 시작합니다.").build())
             }
-
         }else {
             //error
-
+            Log.e(TAG, "error code 1")
         }
 
 

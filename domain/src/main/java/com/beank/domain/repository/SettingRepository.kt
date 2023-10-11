@@ -8,9 +8,11 @@ interface SettingRepository {
     fun getDynamicTheme() : Flow<Boolean>
     fun getNoticeAlarm() : Flow<Boolean>
     fun getScheduleAlarm() : Flow<Boolean>
+    fun getTriggerToggle() : Flow<Boolean>
 
     suspend fun updateDarkTheme(state : Boolean)
     suspend fun updateDynamicTheme(state : Boolean)
     suspend fun updateNoticeAlarm(state : Boolean)
     suspend fun updateScheduleAlarm(state : Boolean)
+    suspend fun updateTriggerToggle(state: Boolean)
 }

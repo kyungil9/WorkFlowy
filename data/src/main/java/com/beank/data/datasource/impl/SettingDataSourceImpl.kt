@@ -44,4 +44,12 @@ class SettingDataSourceImpl @Inject constructor(
         }
     }
 
+    override suspend fun updateTrigger(state: Boolean) {
+        settingDataStore.updateData { setting ->
+            setting.toBuilder()
+                .setTrigger(state)
+                .build()
+        }
+    }
+
 }

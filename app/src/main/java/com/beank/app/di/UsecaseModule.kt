@@ -19,7 +19,7 @@ import com.beank.domain.usecase.UserUsecases
 import com.beank.domain.usecase.WeekUsecases
 import com.beank.domain.usecase.account.CreateAccount
 import com.beank.domain.usecase.account.LoginAccount
-import com.beank.domain.usecase.geo.GetChooseTagId
+import com.beank.domain.usecase.geo.GetChooseGeofence
 import com.beank.domain.usecase.message.InsertToken
 import com.beank.domain.usecase.record.GetCurrentRecord
 import com.beank.domain.usecase.record.GetNowRecord
@@ -36,10 +36,12 @@ import com.beank.domain.usecase.setting.GetDarkTheme
 import com.beank.domain.usecase.setting.GetDynamicTheme
 import com.beank.domain.usecase.setting.GetNoticeAlarm
 import com.beank.domain.usecase.setting.GetScheduleAlarm
+import com.beank.domain.usecase.setting.GetTriggerToggle
 import com.beank.domain.usecase.setting.UpdateDarkTheme
 import com.beank.domain.usecase.setting.UpdateDynamicTheme
 import com.beank.domain.usecase.setting.UpdateNoticeAlarm
 import com.beank.domain.usecase.setting.UpdateScheduleAlarm
+import com.beank.domain.usecase.setting.UpdateTriggerToggle
 import com.beank.domain.usecase.tag.CheckTagTitle
 import com.beank.domain.usecase.tag.DeleteTag
 import com.beank.domain.usecase.tag.GetAllTag
@@ -127,10 +129,12 @@ object UsecaseModule {
         getDynamicTheme = GetDynamicTheme(settingRepository),
         getNoticeAlarm = GetNoticeAlarm(settingRepository),
         getScheduleAlarm = GetScheduleAlarm(settingRepository),
+        getTriggerToggle = GetTriggerToggle(settingRepository),
         updateDarkTheme = UpdateDarkTheme(settingRepository),
         updateDynamicTheme = UpdateDynamicTheme(settingRepository),
         updateNoticeAlarm = UpdateNoticeAlarm(settingRepository),
-        updateScheduleAlarm = UpdateScheduleAlarm(settingRepository)
+        updateScheduleAlarm = UpdateScheduleAlarm(settingRepository),
+        updateTriggerToggle = UpdateTriggerToggle(settingRepository)
     )
 
     @Provides
@@ -148,7 +152,7 @@ object UsecaseModule {
         getCurrentRecord = GetCurrentRecord(recordRepository),
         updateRecord = UpdateRecord(recordRepository),
         insertRecord = InsertRecord(recordRepository),
-        getChooseTagId = GetChooseTagId(geofenceRepository)
+        getChooseGeofence = GetChooseGeofence(geofenceRepository)
     )
 
 }

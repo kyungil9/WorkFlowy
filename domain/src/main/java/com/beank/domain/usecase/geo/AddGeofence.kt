@@ -7,8 +7,8 @@ import javax.inject.Inject
 class AddGeofence @Inject constructor(
     private val geofenceRepository: GeofenceRepository
 ) {
-    operator fun invoke(geofenceData: GeofenceData, onSuccess : () -> Unit = {}, onFail : () -> Unit = {})
+    suspend operator fun invoke(geofenceData: GeofenceData, onSuccess : () -> Unit = {}, onFail : () -> Unit = {})
         = geofenceRepository.addGeofenceToClient(geofenceData, onSuccess, onFail)
-    operator fun invoke(geofenceList: List<GeofenceData>, onSuccess : () -> Unit = {}, onFail : () -> Unit = {})
+    suspend operator fun invoke(geofenceList: List<GeofenceData>, onSuccess : () -> Unit = {}, onFail : () -> Unit = {})
         = geofenceRepository.addGeofenceListToClient(geofenceList,onSuccess,onFail)
 }

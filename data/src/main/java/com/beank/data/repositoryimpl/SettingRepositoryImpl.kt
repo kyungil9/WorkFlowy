@@ -18,6 +18,8 @@ class SettingRepositoryImpl @Inject constructor(
 
     override fun getScheduleAlarm(): Flow<Boolean> = settingDataSource.getSettingState().map { it.scheduleAlarm }
 
+    override fun getTriggerToggle(): Flow<Boolean> = settingDataSource.getSettingState().map { it.trigger }
+
     override suspend fun updateDarkTheme(state : Boolean) : Unit = settingDataSource.updateDarkTheme(state)
 
     override suspend fun updateDynamicTheme(state : Boolean) : Unit = settingDataSource.updateDynamicTheme(state)
@@ -25,4 +27,6 @@ class SettingRepositoryImpl @Inject constructor(
     override suspend fun updateNoticeAlarm(state : Boolean) : Unit = settingDataSource.updateNoticeAlarm(state)
 
     override suspend fun updateScheduleAlarm(state : Boolean) : Unit = settingDataSource.updateScheduleAlarm(state)
+
+    override suspend fun updateTriggerToggle(state: Boolean) : Unit = settingDataSource.updateTrigger(state)
 }
