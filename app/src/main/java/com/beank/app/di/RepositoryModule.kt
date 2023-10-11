@@ -1,6 +1,7 @@
 package com.beank.app.di
 
 import com.beank.data.repositoryimpl.AccountRepositoryImpl
+import com.beank.data.repositoryimpl.GeofenceRepositoryImpl
 import com.beank.data.repositoryimpl.LogRepositoryImpl
 import com.beank.data.repositoryimpl.MessageRepositoryImpl
 import com.beank.data.repositoryimpl.RecordRepositoryImpl
@@ -9,6 +10,7 @@ import com.beank.data.repositoryimpl.SettingRepositoryImpl
 import com.beank.data.repositoryimpl.TagRepositoryImpl
 import com.beank.data.repositoryimpl.UserRepositoryImpl
 import com.beank.domain.repository.AccountRepository
+import com.beank.domain.repository.GeofenceRepository
 import com.beank.domain.repository.LogRepository
 import com.beank.domain.repository.MessageRepository
 import com.beank.domain.repository.RecordRepository
@@ -58,5 +60,9 @@ abstract class RepositoryModule {
     @Singleton
     @Binds
     abstract fun bindsUserRepository(impl : UserRepositoryImpl) : UserRepository
+
+    @Singleton
+    @Binds
+    abstract fun bindsGeofenceRepository(impl : GeofenceRepositoryImpl) : GeofenceRepository
 
 }

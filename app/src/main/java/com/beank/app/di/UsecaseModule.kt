@@ -1,6 +1,7 @@
 package com.beank.app.di
 
 import com.beank.domain.repository.AccountRepository
+import com.beank.domain.repository.GeofenceRepository
 import com.beank.domain.repository.MessageRepository
 import com.beank.domain.repository.RecordRepository
 import com.beank.domain.repository.ScheduleRepository
@@ -8,6 +9,7 @@ import com.beank.domain.repository.SettingRepository
 import com.beank.domain.repository.TagRepository
 import com.beank.domain.repository.UserRepository
 import com.beank.domain.usecase.AnalysisUsecases
+import com.beank.domain.usecase.GeoUsecases
 import com.beank.domain.usecase.LoginUsecases
 import com.beank.domain.usecase.ScheduleUsecases
 import com.beank.domain.usecase.SettingUsecases
@@ -17,7 +19,9 @@ import com.beank.domain.usecase.UserUsecases
 import com.beank.domain.usecase.WeekUsecases
 import com.beank.domain.usecase.account.CreateAccount
 import com.beank.domain.usecase.account.LoginAccount
+import com.beank.domain.usecase.geo.GetChooseTagId
 import com.beank.domain.usecase.message.InsertToken
+import com.beank.domain.usecase.record.GetCurrentRecord
 import com.beank.domain.usecase.record.GetNowRecord
 import com.beank.domain.usecase.record.GetPeriodRecord
 import com.beank.domain.usecase.record.InsertRecord
@@ -136,6 +140,15 @@ object UsecaseModule {
         updateUserNickName = UpdateUserNickName(userRepository),
         updateUserGrade = UpdateUserGrade(userRepository),
         uploadImageUrl = UploadImageUrl(userRepository)
+    )
+
+    @Provides
+    @Singleton
+    fun providesGeoUseCases(recordRepository: RecordRepository,geofenceRepository: GeofenceRepository) = GeoUsecases(
+        getCurrentRecord = GetCurrentRecord(recordRepository),
+        updateRecord = UpdateRecord(recordRepository),
+        insertRecord = InsertRecord(recordRepository),
+        getChooseTagId = GetChooseTagId(geofenceRepository)
     )
 
 }

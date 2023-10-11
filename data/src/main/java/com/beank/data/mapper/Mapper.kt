@@ -3,10 +3,12 @@ package com.beank.data.mapper
 import android.net.Uri
 import android.os.Build
 import androidx.annotation.RequiresApi
+import com.beank.data.entity.WeekGeoTrigger
 import com.beank.data.entity.WeekUserInfo
 import com.beank.data.entity.WeekRecord
 import com.beank.data.entity.WeekSchedule
 import com.beank.data.entity.WeekTag
+import com.beank.domain.model.GeofenceData
 import com.beank.domain.model.Record
 import com.beank.domain.model.Schedule
 import com.beank.domain.model.Tag
@@ -54,6 +56,20 @@ fun WeekUserInfo.toUserInfo() = UserInfo(
 )
 
 @RequiresApi(Build.VERSION_CODES.O)
+fun WeekGeoTrigger.toGeofenceData() = GeofenceData(
+    id = id,
+    tag = tag,
+    latitude = latitude,
+    lonitude = lonitude,
+    radius = radius,
+    delayTime = delayTime,
+    timeOption = timeOption,
+    startTime = startTime.toLocalTime(),
+    endTime = endTime.toLocalTime(),
+    geoEvent = geoEvent
+)
+
+@RequiresApi(Build.VERSION_CODES.O)
 fun Schedule.toWeekSchedule() = WeekSchedule(
     id = id,
     date = date.toInt(),
@@ -91,6 +107,20 @@ fun UserInfo.toWeekUserInfo() = WeekUserInfo(
     nickname = nickname,
     grade = grade,
     urlImage = urlImage.toString()
+)
+
+@RequiresApi(Build.VERSION_CODES.O)
+fun GeofenceData.toWeekGeoTrigger() = WeekGeoTrigger(
+    id = id,
+    tag = tag,
+    latitude = latitude,
+    lonitude = lonitude,
+    radius = radius,
+    delayTime = delayTime,
+    timeOption = timeOption,
+    startTime = startTime.toFormatString(),
+    endTime = endTime.toFormatString(),
+    geoEvent = geoEvent
 )
 
 @RequiresApi(Build.VERSION_CODES.O)

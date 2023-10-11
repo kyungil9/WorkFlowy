@@ -1,6 +1,7 @@
 package com.beank.data.repositoryimpl
 
 import android.util.Log
+import androidx.test.espresso.remote.EspressoRemoteMessage.To
 import com.beank.data.datasource.StorageDataSource
 import com.beank.domain.repository.MessageRepository
 import com.google.firebase.messaging.FirebaseMessaging
@@ -14,7 +15,7 @@ class MessageRepositoryImpl @Inject constructor(
     override fun insertToken() {
         message.token.addOnCompleteListener { task ->
             if (task.isSuccessful){
-                storage.save(TOKEN, mapOf("token" to task.result))
+                storage.replace(TOKEN, TOKEN ,mapOf("token" to task.result))
             }
         }
     }

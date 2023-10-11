@@ -15,11 +15,13 @@ interface RecordRepository {
 
     fun getPauseRecord(pause: Boolean) : Flow<FireStoreState<NowRecord>> //??수정?
 
+    suspend fun getCurrentRecord() : Record
+
     fun insertRecord(record: Record)
 
     fun updateRecord(id : String, endTime: LocalDateTime, progressTime : Long, pause : Boolean)
 
-    fun updateRecord(id : String, endTime: LocalDateTime, progressTime : Long, pause : Boolean, date: LocalDate)
+    fun updateRecord(id : String, startTime: LocalDateTime, endTime: LocalDateTime, progressTime : Long, pause : Boolean, date: LocalDate)
 
     fun updateRecord(id : String, startTime: LocalDateTime, endTime: LocalDateTime, progressTime : Long, date: LocalDate)
 }

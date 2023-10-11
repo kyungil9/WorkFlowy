@@ -7,6 +7,7 @@ import com.beank.data.entity.WeekRecord
 import com.beank.data.entity.WeekTag
 import com.beank.data.mapper.toInt
 import com.beank.data.mapper.toLong
+import com.beank.data.mapper.toRecordModel
 import com.beank.data.mapper.toTagModel
 import com.beank.data.mapper.toWeekRecord
 import com.beank.data.utils.dataStateObjects
@@ -62,6 +63,10 @@ class RecordRepositoryImpl @Inject constructor(
             }
     }
 
+    override suspend fun getCurrentRecord(): Record = storage.store.document(storage.getUid()!!).collection(RECORD)
+        .whereEqualTo("pause",true).get().await().documents[0].toObject<WeekRecord>()!!.toRecordModel()
+
+
     override fun insertRecord(record: Record) : Unit =
         storage.save(RECORD,record.toWeekRecord())
 
@@ -73,8 +78,9 @@ class RecordRepositoryImpl @Inject constructor(
         ))
     }
 
-    override fun updateRecord(id: String, endTime: LocalDateTime, progressTime: Long, pause: Boolean, date: LocalDate) {
+    override fun updateRecord(id: String, startTime: LocalDateTime, endTime: LocalDateTime, progressTime: Long, pause: Boolean, date: LocalDate) {
         storage.update(RECORD,id, mapOf(
+            "startTime" to startTime.toLong(),
             "endTime" to endTime.toLong(),
             "progressTime" to progressTime,
             "pause" to pause,
