@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.hilt)
     alias(libs.plugins.google)
     alias(libs.plugins.crashlytics)
+    alias(libs.plugins.secret.gradle)
     id 'kotlin-kapt'
 }
 
@@ -65,6 +66,9 @@ dependencies {
     //firebase
     implementation(platform(libs.firebase.bom))
     implementation(libs.bundles.firebase)
+
+    implementation(libs.gms.play.services.location)
+    implementation(libs.gms.play.services.maps)
 
     implementation(libs.activity.compose)
 }

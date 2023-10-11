@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.hilt) apply false
     alias(libs.plugins.google) apply false
     alias(libs.plugins.crashlytics) apply false
+    alias(libs.plugins.secret.gradle) apply false
 }
 
 task clean(type: Delete) {

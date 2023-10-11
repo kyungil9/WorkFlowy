@@ -50,6 +50,8 @@ dependencies {
     //test
     implementation(libs.bundles.testing)
 
+    implementation(libs.gms.play.services.location)
+
 }
 
 protobuf {
