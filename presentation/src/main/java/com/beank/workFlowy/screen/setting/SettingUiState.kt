@@ -17,6 +17,7 @@ class SettingUiState(
     dynamicThemeToggle : Boolean = false,
     noticeToggle : Boolean = true,
     scheduleToggle : Boolean = true,
+    triggerToggle : Boolean = false,
     tempNickname : String = ""
 ){
     var nickname by mutableStateOf(nickname)
@@ -27,5 +28,6 @@ class SettingUiState(
     var dynamicThemeToggle by mutableStateOf(dynamicThemeToggle)
     var noticeToggle by mutableStateOf(noticeToggle)
     var scheduleToggle by mutableStateOf(scheduleToggle)
+    var triggerToggle by mutableStateOf(triggerToggle)
     var tempNickname by mutableStateOf(tempNickname)
 }

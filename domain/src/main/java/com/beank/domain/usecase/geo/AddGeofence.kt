@@ -9,6 +9,4 @@ class AddGeofence @Inject constructor(
 ) {
     suspend operator fun invoke(geofenceData: GeofenceData, onSuccess : () -> Unit = {}, onFail : () -> Unit = {})
         = geofenceRepository.addGeofenceToClient(geofenceData, onSuccess, onFail)
-    suspend operator fun invoke(geofenceList: List<GeofenceData>, onSuccess : () -> Unit = {}, onFail : () -> Unit = {})
-        = geofenceRepository.addGeofenceListToClient(geofenceList,onSuccess,onFail)
 }

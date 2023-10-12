@@ -1,5 +1,7 @@
 package com.beank.domain.usecase
 
+import com.beank.domain.usecase.geo.RemoveGeofence
+import com.beank.domain.usecase.geo.StartGeofenceToClient
 import com.beank.domain.usecase.setting.GetDarkTheme
 import com.beank.domain.usecase.setting.GetDynamicTheme
 import com.beank.domain.usecase.setting.GetNoticeAlarm
@@ -21,5 +23,7 @@ data class SettingUsecases(
     val updateDynamicTheme: UpdateDynamicTheme,
     val updateNoticeAlarm: UpdateNoticeAlarm,
     val updateScheduleAlarm: UpdateScheduleAlarm,
-    val updateTriggerToggle: UpdateTriggerToggle
+    val updateTriggerToggle: UpdateTriggerToggle,
+    val startGeofenceToClient: StartGeofenceToClient,
+    val removeGeofence: RemoveGeofence
 )

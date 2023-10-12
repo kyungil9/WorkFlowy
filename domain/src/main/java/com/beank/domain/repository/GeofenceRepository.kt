@@ -14,9 +14,11 @@ interface GeofenceRepository {
 
     suspend fun addGeofenceToClient(geofenceData: GeofenceData, onSuccess: () -> Unit, onFail: () -> Unit)
 
-    suspend fun addGeofenceListToClient(geofenceDataList: List<GeofenceData>, onSuccess: () -> Unit, onFail: () -> Unit)
+    suspend fun startGeofenceToClient(onSuccess : () -> Unit, onFail : () -> Unit)
 
     fun updateGeofenceToClient(geofenceData: GeofenceData,onSuccess: () -> Unit, onFail: () -> Unit)
 
     fun removeGeofenceToClient(id: String, onSuccess: () -> Unit, onFail: () -> Unit)
+
+    fun removeGeofenceToClient(onSuccess: () -> Unit, onFail: () -> Unit)
 }

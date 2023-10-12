@@ -207,12 +207,11 @@ fun SettingScreen(
                 TextCard(title = stringResource(id = AppText.themeSetting))
                 ToggleCard(title = stringResource(id = AppText.darkTheme), checked = {uiState.darkThemeToggle}, onClick = settingViewModel::onDarkThemeUpdate)
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                    ToggleCard(
-                        title = stringResource(id = AppText.dynamicTheme),
-                        checked = {uiState.dynamicThemeToggle},
-                        onClick = settingViewModel::onDynamicThemeUpdate
-                    )
+                    ToggleCard(title = stringResource(id = AppText.dynamicTheme), checked = {uiState.dynamicThemeToggle}, onClick = settingViewModel::onDynamicThemeUpdate)
                 }
+                VerticalSpacer(height = 10.dp)
+                ToggleCard(title = stringResource(id = AppText.triggerToggle), checked = {uiState.triggerToggle}, onClick = settingViewModel::onTriggerToggleUpdate)
+                SettingCard(title = stringResource(id = AppText.triggerSetting), onClick = {})
                 VerticalSpacer(height = 5.dp)
                 HorizontalDivider(modifier = Modifier.fillMaxWidth(), thickness = 1.dp)
                 VerticalSpacer(height = 5.dp)

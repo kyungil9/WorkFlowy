@@ -68,12 +68,11 @@ class GeofenceRepositoryImpl @Inject constructor(
         }
     }
 
-
-    override suspend fun addGeofenceListToClient(geofenceDataList: List<GeofenceData>, onSuccess : () -> Unit, onFail : () -> Unit) {
+    override suspend fun startGeofenceToClient(onSuccess : () -> Unit, onFail : () -> Unit) {
+        val geofenceDataList = storage.store.document(storage.getUid()!!).collection(GEOTRIGGER).get().await().toObjects(WeekGeoTrigger::class.java).map { it.toGeofenceData() }
         val geofenceList = ArrayList<Geofence>()
         geofenceDataList.forEach { geofenceData ->
-            val id = storage.saveToReturnId(GEOTRIGGER,geofenceData.toWeekGeoTrigger())
-            geofenceList.add(createGeofence(geofenceData.copy(id = id)))
+            geofenceList.add(createGeofence(geofenceData))
         }
         geofencingClient.addGeofences(getGeofencingRequest(geofenceList),pendingIntent).run {
             addOnSuccessListener { onSuccess() }
@@ -99,6 +98,13 @@ class GeofenceRepositoryImpl @Inject constructor(
     override fun removeGeofenceToClient(id: String, onSuccess : () -> Unit, onFail : () -> Unit) {
         storage.delete(GEOTRIGGER,id)
         geofencingClient.removeGeofences(listOf(id)).run {
+            addOnSuccessListener { onSuccess() }
+            addOnFailureListener { onFail() }
+        }
+    }
+
+    override fun removeGeofenceToClient(onSuccess: () -> Unit, onFail: () -> Unit) {
+        geofencingClient.removeGeofences(pendingIntent).run {
             addOnSuccessListener { onSuccess() }
             addOnFailureListener { onFail() }
         }

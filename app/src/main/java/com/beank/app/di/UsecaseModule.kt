@@ -15,11 +15,17 @@ import com.beank.domain.usecase.ScheduleUsecases
 import com.beank.domain.usecase.SettingUsecases
 import com.beank.domain.usecase.SignUpUsecases
 import com.beank.domain.usecase.TagUsecases
+import com.beank.domain.usecase.TriggerUsecases
 import com.beank.domain.usecase.UserUsecases
 import com.beank.domain.usecase.WeekUsecases
 import com.beank.domain.usecase.account.CreateAccount
 import com.beank.domain.usecase.account.LoginAccount
+import com.beank.domain.usecase.geo.AddGeofence
 import com.beank.domain.usecase.geo.GetChooseGeofence
+import com.beank.domain.usecase.geo.GetGeoTriggerList
+import com.beank.domain.usecase.geo.RemoveGeofence
+import com.beank.domain.usecase.geo.StartGeofenceToClient
+import com.beank.domain.usecase.geo.UpdateGeofence
 import com.beank.domain.usecase.message.InsertToken
 import com.beank.domain.usecase.record.GetCurrentRecord
 import com.beank.domain.usecase.record.GetNowRecord
@@ -124,7 +130,7 @@ object UsecaseModule {
 
     @Provides
     @Singleton
-    fun provideSettingUseCases(settingRepository: SettingRepository) = SettingUsecases(
+    fun provideSettingUseCases(settingRepository: SettingRepository,geofenceRepository: GeofenceRepository) = SettingUsecases(
         getDarkTheme = GetDarkTheme(settingRepository),
         getDynamicTheme = GetDynamicTheme(settingRepository),
         getNoticeAlarm = GetNoticeAlarm(settingRepository),
@@ -134,7 +140,9 @@ object UsecaseModule {
         updateDynamicTheme = UpdateDynamicTheme(settingRepository),
         updateNoticeAlarm = UpdateNoticeAlarm(settingRepository),
         updateScheduleAlarm = UpdateScheduleAlarm(settingRepository),
-        updateTriggerToggle = UpdateTriggerToggle(settingRepository)
+        updateTriggerToggle = UpdateTriggerToggle(settingRepository),
+        startGeofenceToClient = StartGeofenceToClient(geofenceRepository),
+        removeGeofence = RemoveGeofence(geofenceRepository)
     )
 
     @Provides
@@ -153,6 +161,15 @@ object UsecaseModule {
         updateRecord = UpdateRecord(recordRepository),
         insertRecord = InsertRecord(recordRepository),
         getChooseGeofence = GetChooseGeofence(geofenceRepository)
+    )
+
+    @Provides
+    @Singleton
+    fun providesTriggerUseCases(geofenceRepository: GeofenceRepository) = TriggerUsecases(
+        addGeofence = AddGeofence(geofenceRepository),
+        updateGeofence = UpdateGeofence(geofenceRepository),
+        removeGeofence = RemoveGeofence(geofenceRepository),
+        getGeoTriggerList = GetGeoTriggerList(geofenceRepository)
     )
 
 }

@@ -216,6 +216,9 @@ class WeekViewModel @Inject constructor(
 
     private fun getAllTagInfo() = weekUsecases.getAllTag()
         .flowOn(Dispatchers.IO).onEach { state ->
+            state.onEmpty {
+                uiState.tagList = emptyList()
+            }
             state.onSuccess { tagList ->
                 uiState.tagList = tagList
             }

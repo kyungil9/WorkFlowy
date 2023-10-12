@@ -1,9 +1,13 @@
 package com.beank.workFlowy.screen
 
 import android.Manifest
-import android.content.pm.PackageManager
+import android.content.ActivityNotFoundException
+import android.content.Context
+import android.content.Intent
 import android.content.res.Resources
 import android.os.Build
+import android.provider.Settings
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
@@ -12,7 +16,7 @@ import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
-import androidx.core.content.ContextCompat
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.beank.workFlowy.component.PermissionDialog
@@ -22,14 +26,19 @@ import com.beank.workFlowy.navigation.NavigationGraph
 import com.beank.workFlowy.ui.theme.WorkFlowyTheme
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.permissions.shouldShowRationale
 import kotlinx.coroutines.CoroutineScope
+import com.beank.presentation.R.string as AppText
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun WorkFlowyApp() {
     WorkFlowyTheme {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q ){
+            RequestLocationPermissionDialog(LocalContext.current)
+        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU ) {
             RequestNotificationPermissionDialog()
         }
@@ -63,7 +72,47 @@ fun RequestNotificationPermissionDialog() {
     val permissionState = rememberPermissionState(permission = Manifest.permission.POST_NOTIFICATIONS)
 
     if (!permissionState.status.isGranted) {
-        if (permissionState.status.shouldShowRationale) RationaleDialog()
-        else PermissionDialog { permissionState.launchPermissionRequest() }
+        if (permissionState.status.shouldShowRationale) RationaleDialog(stringResource(id = AppText.notification_permission_title),stringResource(id = AppText.notification_permission_description))
+        else PermissionDialog(stringResource(id = AppText.notification_permission_title),stringResource(id = AppText.notification_permission_description)) { permissionState.launchPermissionRequest() }
     }
 }
+
+@OptIn(ExperimentalPermissionsApi::class)
+@RequiresApi(Build.VERSION_CODES.Q)
+@Composable
+fun RequestLocationPermissionDialog(context: Context) {
+    val backgroundPermissionState = rememberPermissionState(permission = Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+    val foregroundPermissionState = rememberMultiplePermissionsState(permissions = listOf(
+        Manifest.permission.ACCESS_COARSE_LOCATION,
+        Manifest.permission.ACCESS_FINE_LOCATION
+    ))
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {//?????????
+        if (!backgroundPermissionState.status.isGranted) {
+            if (backgroundPermissionState.status.shouldShowRationale)
+                RationaleDialog(stringResource(id = AppText.background_permission_title), stringResource(id = AppText.background_permission_description)){
+                    Log.d("test", "backgorod")
+                    val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                    intent.putExtra(Intent.EXTRA_PACKAGE_NAME, context.packageName)
+                    try {
+                        context.startActivity(intent)
+                    } catch (e: ActivityNotFoundException) {
+
+                    }
+                }
+            else {
+                PermissionDialog(stringResource(id = AppText.background_permission_title), stringResource(id = AppText.background_permission_description)) {
+
+                }
+            }
+        }
+    }
+    if (!foregroundPermissionState.allPermissionsGranted){
+        if (foregroundPermissionState.shouldShowRationale)
+            RationaleDialog(stringResource(id = AppText.location_permission_title),stringResource(id = AppText.location_permission_description))
+        else
+            PermissionDialog(stringResource(id = AppText.location_permission_title),stringResource(id = AppText.location_permission_description)) { foregroundPermissionState.launchMultiplePermissionRequest() }
+    }
+
+}
+
+

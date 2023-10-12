@@ -37,6 +37,7 @@ class SettingViewModel @Inject constructor(
         getDynamicThemeInfo()
         getNoticeAlarmInfo()
         getScheduleAlarmInfo()
+        getTriggerInfo()
     }
 
     fun onImageUpload(uri: Uri, onFail : () -> Unit){
@@ -71,6 +72,18 @@ class SettingViewModel @Inject constructor(
         launchCatching {
             uiState.dynamicThemeToggle = toggle
             settingUsecases.updateDynamicTheme(toggle)
+        }
+    }
+
+    fun onTriggerToggleUpdate(toggle: Boolean){
+        launchCatching {
+            if (toggle) {
+                settingUsecases.startGeofenceToClient()//등록된 트리거 백그라운드 올리기
+            }else{
+                settingUsecases.removeGeofence()//트리거 해제
+            }
+            uiState.triggerToggle = toggle
+            settingUsecases.updateTriggerToggle(toggle)
         }
     }
 
@@ -110,6 +123,11 @@ class SettingViewModel @Inject constructor(
     private fun getScheduleAlarmInfo() = settingUsecases.getScheduleAlarm()
         .flowOn(Dispatchers.IO).onEach {toggle ->
             uiState.scheduleToggle = toggle
+        }.launchIn(viewModelScope)
+
+    private fun getTriggerInfo() = settingUsecases.getTriggerToggle()
+        .flowOn(Dispatchers.IO).onEach { toggle ->
+            uiState.triggerToggle = toggle
         }.launchIn(viewModelScope)
 
     private fun getUserInfo() = userUsecases.getUserInfo()

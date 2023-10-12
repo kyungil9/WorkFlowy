@@ -8,5 +8,8 @@ class RemoveGeofence @Inject constructor(
     private val geofenceRepository: GeofenceRepository
 ) {
     operator fun invoke(id : String, onSuccess : () -> Unit = {}, onFail : () -> Unit = {})
-            = geofenceRepository.removeGeofenceToClient(id, onSuccess, onFail)
+        = geofenceRepository.removeGeofenceToClient(id, onSuccess, onFail)
+
+    operator fun invoke(onSuccess: () -> Unit = {}, onFail: () -> Unit = {})
+        = geofenceRepository.removeGeofenceToClient(onSuccess, onFail)
 }
