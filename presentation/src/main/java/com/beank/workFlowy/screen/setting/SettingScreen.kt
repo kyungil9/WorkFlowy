@@ -7,6 +7,7 @@ import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -56,6 +57,9 @@ import com.beank.workFlowy.component.VerticalSpacer
 import com.beank.workFlowy.component.WeekLayout
 import com.beank.workFlowy.component.snackbar.SnackbarManager
 import com.beank.workFlowy.navigation.NavigationItem
+import com.beank.workFlowy.screen.RequestBackgroundPermissionDialog
+import com.beank.workFlowy.screen.RequestLocationPermissionDialog
+import com.beank.workFlowy.screen.RequestNotificationPermissionDialog
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.integration.compose.placeholder
@@ -67,7 +71,8 @@ fun SettingScreen(
     settingViewModel: SettingViewModel = hiltViewModel(),
     snackbarHostState: SnackbarHostState,
     onBackClear : (String) -> Unit,
-    onBack : () -> Unit
+    onBack : () -> Unit,
+    onMove : (String) -> Unit
 ){
     val launcher = rememberImageLauncher(onImageSuccess = {
         settingViewModel.onImageUpload(it) {
@@ -210,9 +215,12 @@ fun SettingScreen(
                     ToggleCard(title = stringResource(id = AppText.dynamicTheme), checked = {uiState.dynamicThemeToggle}, onClick = settingViewModel::onDynamicThemeUpdate)
                 }
                 VerticalSpacer(height = 10.dp)
+
+                SettingCard(title = stringResource(id = AppText.triggerTitle))
                 ToggleCard(title = stringResource(id = AppText.triggerToggle), checked = {uiState.triggerToggle}, onClick = settingViewModel::onTriggerToggleUpdate)
-                SettingCard(title = stringResource(id = AppText.triggerSetting), onClick = {})
+                SettingCard(title = stringResource(id = AppText.triggerSetting), padding = 25.dp, onClick = {onMove(NavigationItem.TRIGGER.route)})
                 VerticalSpacer(height = 5.dp)
+
                 HorizontalDivider(modifier = Modifier.fillMaxWidth(), thickness = 1.dp)
                 VerticalSpacer(height = 5.dp)
 
@@ -226,8 +234,17 @@ fun SettingScreen(
                 VerticalSpacer(height = 5.dp)
 
                 SettingCard(title = stringResource(id = AppText.logout), color = MaterialTheme.colorScheme.error, onClick = onSignOut)
+
             }
         }
+    }
+    if ((uiState.noticeToggle || uiState.scheduleToggle) &&  Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU ){
+        RequestNotificationPermissionDialog()
+    }
+    if (uiState.triggerToggle && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
+            RequestBackgroundPermissionDialog()
+        RequestLocationPermissionDialog()
     }
 }
 

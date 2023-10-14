@@ -20,6 +20,8 @@ import com.beank.workFlowy.screen.schedule.ScheduleScreen
 import com.beank.workFlowy.screen.setting.SettingScreen
 import com.beank.workFlowy.screen.sign_up.SignUpScreen
 import com.beank.workFlowy.screen.tag.TagScreen
+import com.beank.workFlowy.screen.trigger.TriggerScreen
+import com.beank.workFlowy.screen.trigger_setting.TriggerSettingScreen
 import com.beank.workFlowy.ui.theme.black
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -124,9 +126,30 @@ fun NavigationGraph(
             SettingScreen(
                 onBackClear = appState::navigateAllclear,
                 onBack = appState::popUp,
-                snackbarHostState = appState.snackbarHostState
+                snackbarHostState = appState.snackbarHostState,
+                onMove = appState::navigate
             )
         }
+
+        composable(
+            route = NavigationItem.TRIGGER.route
+        ){
+            TriggerScreen(
+                snackbarHostState = appState.snackbarHostState,
+                onBack = appState::popUp,
+                onMove = appState::navigate
+            )
+        }
+
+        composable(
+            route = NavigationItem.ADDTRIGGER.route
+        ){
+            TriggerSettingScreen(
+                snackbarHostState = appState.snackbarHostState,
+                onBack = appState::popUp
+            )
+        }
+
 
     }
 }

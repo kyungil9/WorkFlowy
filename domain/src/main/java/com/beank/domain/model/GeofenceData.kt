@@ -9,6 +9,7 @@ import java.time.LocalTime
 data class GeofenceData(
     var id : String? = null,
     var tag : String = "",
+    var tagImage : Int = 0,
     var latitude : Double = 0.0,
     var lonitude : Double = 0.0,
     var radius : Float = 100f,

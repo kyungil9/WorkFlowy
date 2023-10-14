@@ -37,7 +37,7 @@ import com.beank.presentation.R.string as AppText
 fun WorkFlowyApp() {
     WorkFlowyTheme {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q ){
-            RequestLocationPermissionDialog(LocalContext.current)
+            RequestLocationPermissionDialog()
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU ) {
             RequestNotificationPermissionDialog()
@@ -80,37 +80,33 @@ fun RequestNotificationPermissionDialog() {
 @OptIn(ExperimentalPermissionsApi::class)
 @RequiresApi(Build.VERSION_CODES.Q)
 @Composable
-fun RequestLocationPermissionDialog(context: Context) {
-    val backgroundPermissionState = rememberPermissionState(permission = Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+fun RequestLocationPermissionDialog() {
     val foregroundPermissionState = rememberMultiplePermissionsState(permissions = listOf(
         Manifest.permission.ACCESS_COARSE_LOCATION,
         Manifest.permission.ACCESS_FINE_LOCATION
     ))
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {//?????????
-        if (!backgroundPermissionState.status.isGranted) {
-            if (backgroundPermissionState.status.shouldShowRationale)
-                RationaleDialog(stringResource(id = AppText.background_permission_title), stringResource(id = AppText.background_permission_description)){
-                    Log.d("test", "backgorod")
-                    val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                    intent.putExtra(Intent.EXTRA_PACKAGE_NAME, context.packageName)
-                    try {
-                        context.startActivity(intent)
-                    } catch (e: ActivityNotFoundException) {
-
-                    }
-                }
-            else {
-                PermissionDialog(stringResource(id = AppText.background_permission_title), stringResource(id = AppText.background_permission_description)) {
-
-                }
-            }
-        }
-    }
     if (!foregroundPermissionState.allPermissionsGranted){
         if (foregroundPermissionState.shouldShowRationale)
             RationaleDialog(stringResource(id = AppText.location_permission_title),stringResource(id = AppText.location_permission_description))
         else
             PermissionDialog(stringResource(id = AppText.location_permission_title),stringResource(id = AppText.location_permission_description)) { foregroundPermissionState.launchMultiplePermissionRequest() }
+    }
+}
+@OptIn(ExperimentalPermissionsApi::class)
+@RequiresApi(Build.VERSION_CODES.R)
+@Composable
+fun RequestBackgroundPermissionDialog() {
+    val backgroundPermissionState = rememberPermissionState(permission = Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+    if (!backgroundPermissionState.status.isGranted) {
+        if (backgroundPermissionState.status.shouldShowRationale)
+            RationaleDialog(stringResource(id = AppText.background_permission_title), stringResource(id = AppText.background_permission_description)){
+                backgroundPermissionState.launchPermissionRequest()
+            }
+        else {
+            PermissionDialog(stringResource(id = AppText.background_permission_title), stringResource(id = AppText.background_permission_description)) {
+                backgroundPermissionState.launchPermissionRequest()
+            }
+        }
     }
 
 }

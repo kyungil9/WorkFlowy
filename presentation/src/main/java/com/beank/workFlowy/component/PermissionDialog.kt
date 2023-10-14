@@ -27,7 +27,6 @@ fun PermissionDialog(title : String, text : String, onRequestPermission: () -> U
             confirmButton = {
                 TextButton(
                     onClick = {
-                        Log.d("test22222", "backgorod")
                         onRequestPermission()
                         showWarningDialog = false
                     },

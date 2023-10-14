@@ -29,6 +29,7 @@ fun SettingCard(
     height : Dp = 50.dp,
     color: Color = MaterialTheme.colorScheme.scrim,
     enable : Boolean = true,
+    padding : Dp = 15.dp,
     onClick : () -> Unit = {}
 ){
     Card(
@@ -44,7 +45,7 @@ fun SettingCard(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 15.dp, vertical = 10.dp)
+                .padding(horizontal = padding, vertical = 10.dp)
         ) {
             Text(text = title, style = MaterialTheme.typography.headlineSmall, color = color)
             HorizontalSpacer(width = 15.dp)

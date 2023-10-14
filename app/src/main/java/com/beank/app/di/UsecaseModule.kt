@@ -15,6 +15,7 @@ import com.beank.domain.usecase.ScheduleUsecases
 import com.beank.domain.usecase.SettingUsecases
 import com.beank.domain.usecase.SignUpUsecases
 import com.beank.domain.usecase.TagUsecases
+import com.beank.domain.usecase.TriggerSettingUsecases
 import com.beank.domain.usecase.TriggerUsecases
 import com.beank.domain.usecase.UserUsecases
 import com.beank.domain.usecase.WeekUsecases
@@ -166,10 +167,15 @@ object UsecaseModule {
     @Provides
     @Singleton
     fun providesTriggerUseCases(geofenceRepository: GeofenceRepository) = TriggerUsecases(
-        addGeofence = AddGeofence(geofenceRepository),
-        updateGeofence = UpdateGeofence(geofenceRepository),
         removeGeofence = RemoveGeofence(geofenceRepository),
         getGeoTriggerList = GetGeoTriggerList(geofenceRepository)
+    )
+
+    @Provides
+    @Singleton
+    fun providesTriggerSettingUseCases(geofenceRepository: GeofenceRepository) = TriggerSettingUsecases(
+        addGeofence = AddGeofence(geofenceRepository),
+        updateGeofence = UpdateGeofence(geofenceRepository)
     )
 
 }

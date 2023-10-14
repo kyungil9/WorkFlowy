@@ -7,6 +7,7 @@ import java.time.LocalTime
 data class WeekGeoTrigger(
     @DocumentId val id : String? = null,
     val tag : String = "",
+    val tagImage : Int = 0,
     val latitude : Double = 0.0,
     val lonitude : Double = 0.0,
     val radius : Float = 100f,

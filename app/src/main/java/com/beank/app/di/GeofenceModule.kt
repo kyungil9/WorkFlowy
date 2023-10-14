@@ -27,7 +27,7 @@ object GeofenceModule{
     @Provides
     fun providesGeofenceIntent(@ApplicationContext context: Context) : PendingIntent {
         val intent = Intent(context,GeofenceBroadcastReceiver::class.java)
-        return PendingIntent.getBroadcast(context,0,intent,PendingIntent.FLAG_UPDATE_CURRENT)
+        return PendingIntent.getBroadcast(context,0,intent,PendingIntent.FLAG_IMMUTABLE)
     }
 
 

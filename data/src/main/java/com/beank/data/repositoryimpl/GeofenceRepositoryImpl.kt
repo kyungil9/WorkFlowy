@@ -74,9 +74,11 @@ class GeofenceRepositoryImpl @Inject constructor(
         geofenceDataList.forEach { geofenceData ->
             geofenceList.add(createGeofence(geofenceData))
         }
-        geofencingClient.addGeofences(getGeofencingRequest(geofenceList),pendingIntent).run {
-            addOnSuccessListener { onSuccess() }
-            addOnFailureListener { onFail() }
+        if (geofenceList.isNotEmpty()){
+            geofencingClient.addGeofences(getGeofencingRequest(geofenceList),pendingIntent).run {
+                addOnSuccessListener { onSuccess() }
+                addOnFailureListener { onFail() }
+            }
         }
     }
 

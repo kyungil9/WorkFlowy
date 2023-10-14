@@ -59,6 +59,7 @@ fun WeekUserInfo.toUserInfo() = UserInfo(
 fun WeekGeoTrigger.toGeofenceData() = GeofenceData(
     id = id,
     tag = tag,
+    tagImage = tagImage,
     latitude = latitude,
     lonitude = lonitude,
     radius = radius,
@@ -113,6 +114,7 @@ fun UserInfo.toWeekUserInfo() = WeekUserInfo(
 fun GeofenceData.toWeekGeoTrigger() = WeekGeoTrigger(
     id = id,
     tag = tag,
+    tagImage = tagImage,
     latitude = latitude,
     lonitude = lonitude,
     radius = radius,
@@ -130,5 +132,6 @@ fun modelCasting(model : Any) : Any = when(model){
     is WeekSchedule -> model.toScheduleModel()
     is WeekTag -> model.toTagModel()
     is WeekUserInfo -> model.toUserInfo()
+    is WeekGeoTrigger -> model.toGeofenceData()
     else -> model
 }
