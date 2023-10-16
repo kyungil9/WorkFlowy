@@ -68,7 +68,6 @@ dependencies {
     implementation(libs.bundles.firebase)
 
     implementation(libs.gms.play.services.location)
-    implementation(libs.gms.play.services.maps)
 
     implementation(libs.activity.compose)
 }

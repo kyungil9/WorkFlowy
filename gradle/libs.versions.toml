@@ -31,6 +31,7 @@ protobuf = "4.0.0-rc-2"
 glide = "1.0.0-beta01"
 glide-com = "4.14.2"
 map = "18.1.0"
+compose-map = "2.5.3"
 
 # plugin
 androidStudioGradlePlugin = "8.1.2"
@@ -81,6 +82,7 @@ dagger-hilt-android = { group = "com.google.dagger", name = "hilt-android", vers
 dagger-hilt-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "dagger" }
 hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hilt" }
 
+compose-map = {group = "com.google.maps.android", name = "maps-compose", version.ref = "compose-map"}
 gms-play-services-maps = {group = "com.google.android.gms", name = "play-services-maps", version.ref = "map"}
 gms-play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "gms-service-location" }
 
