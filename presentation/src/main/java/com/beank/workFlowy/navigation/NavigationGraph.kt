@@ -137,12 +137,19 @@ fun NavigationGraph(
             TriggerScreen(
                 snackbarHostState = appState.snackbarHostState,
                 onBack = appState::popUp,
-                onMove = appState::navigate
+                onMove = appState::navigate,
+                onUpdate = appState::navigate,
             )
         }
 
         composable(
-            route = NavigationItem.ADDTRIGGER.route
+            route = "${NavigationItem.ADDTRIGGER.route}?geo={geo}",
+            arguments = listOf(
+                navArgument("geo"){
+                    type = NavType.StringType
+                    defaultValue = ""
+                }
+            )
         ){
             TriggerSettingScreen(
                 snackbarHostState = appState.snackbarHostState,

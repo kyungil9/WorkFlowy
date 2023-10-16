@@ -2,6 +2,8 @@ package com.beank.workFlowy.utils
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import com.beank.domain.model.GeofenceData
+import com.beank.domain.model.GeofenceEvent
 import com.beank.domain.model.Schedule
 import com.google.gson.Gson
 import java.text.DecimalFormat
@@ -31,6 +33,24 @@ fun Schedule.toScheduleJson() : String?{
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
+fun GeofenceData.toGeofenceJson() : String? {
+    val temp = JsonGeofenceData(
+        id,
+        tag,
+        tagImage,
+        latitude,
+        lonitude,
+        radius,
+        delayTime,
+        timeOption,
+        startTime.toFormatString(),
+        endTime.toFormatString(),
+        geoEvent
+    )
+    return Gson().toJson(temp)
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
 fun String.fromScheduleJson(): Schedule{
     val json = Gson().fromJson(this,JsonSchedule::class.java)
     return Schedule(
@@ -48,6 +68,26 @@ fun String.fromScheduleJson(): Schedule{
     )
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
+fun String.fromGeofenceJson() : GeofenceData{
+    val json = Gson().fromJson(this,JsonGeofenceData::class.java)
+    return GeofenceData(
+        json.id,
+        json.tag,
+        json.tagImage,
+        json.latitude,
+        json.lonitude,
+        json.radius,
+        json.delayTime,
+        json.timeOption,
+        json.startTime.toLocalTime(),
+        json.endTime.toLocalTime(),
+        json.geoEvent
+    )
+}
+
+
+
 data class JsonSchedule(
     var id: String? = null,
     var date: Int = 0,
@@ -60,6 +100,20 @@ data class JsonSchedule(
     var check : Boolean = false,
     var alarm : Boolean = false,
     var alarmState : String = "5분전"
+)
+
+data class JsonGeofenceData(
+    var id : String? = null,
+    var tag : String = "",
+    var tagImage : Int = 0,
+    var latitude : Double = 0.0,
+    var lonitude : Double = 0.0,
+    var radius : Float = 100f,
+    var delayTime : Int = 300000,
+    var timeOption : Boolean = false,
+    var startTime : String = "00:00",
+    var endTime : String = "00:00",
+    var geoEvent : Int = GeofenceEvent.EnterRequest
 )
 
 

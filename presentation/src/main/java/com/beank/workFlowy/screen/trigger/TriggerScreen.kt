@@ -17,6 +17,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DismissDirection
 import androidx.compose.material3.DismissValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -56,7 +57,8 @@ fun TriggerScreen(
     triggerViewModel: TriggerViewModel = hiltViewModel(),
     snackbarHostState : SnackbarHostState,
     onBack : () -> Unit,
-    onMove : (String) -> Unit
+    onMove : (String) -> Unit,
+    onUpdate : (String,GeofenceData) -> Unit
 ) {
     val scrollState = rememberLazyListState()
     val uiState = triggerViewModel.uiState
@@ -92,7 +94,7 @@ fun TriggerScreen(
                     .padding(top = it.calculateTopPadding())
             ) {
                 items(uiState.triggerList, key = { item -> item.hashCode() }) { geofenceData ->
-                    TriggerItem(geofenceData = { geofenceData }, onRemove = triggerViewModel::onTriggerRemove)
+                    TriggerItem(geofenceData = { geofenceData }, onRemove = triggerViewModel::onTriggerRemove, onUpdate = onUpdate)
                 }
             }
         }
@@ -105,7 +107,8 @@ fun TriggerScreen(
 @Composable
 fun TriggerItem(
     geofenceData: () -> GeofenceData,
-    onRemove : (String) -> Unit
+    onRemove : (String) -> Unit,
+    onUpdate : (String,GeofenceData) -> Unit
 ){
     var show by remember { mutableStateOf(true)}
     val dismissState = rememberDismissState(
@@ -129,7 +132,11 @@ fun TriggerItem(
     }
     LaunchedEffect(key1 = show){
         if (!show){
-            onRemove(geofenceData().id!!)
+            when(dismissState.dismissDirection){
+                DismissDirection.StartToEnd -> onRemove(geofenceData().id!!)
+                DismissDirection.EndToStart -> onUpdate(NavigationItem.ADDTRIGGER.route,geofenceData())
+                null -> Unit
+            }
         }
     }
 

@@ -11,9 +11,11 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Stable
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
+import com.beank.domain.model.GeofenceData
 import com.beank.domain.model.Schedule
 import com.beank.workFlowy.component.snackbar.SnackbarManager
 import com.beank.workFlowy.component.snackbar.SnackbarMessage.Companion.toMessage
+import com.beank.workFlowy.utils.toGeofenceJson
 import com.beank.workFlowy.utils.toInt
 import com.beank.workFlowy.utils.toScheduleJson
 import kotlinx.coroutines.CoroutineScope
@@ -55,6 +57,12 @@ class WorkFlowyState(
 
     fun navigate(route: String, schedule: Schedule){
         navController.navigate("${route}?schedule=${schedule.toScheduleJson()}"){
+            launchSingleTop = true
+        }
+    }
+
+    fun navigate(route: String, geo : GeofenceData){
+        navController.navigate("${route}?geo=${geo.toGeofenceJson()}"){
             launchSingleTop = true
         }
     }
