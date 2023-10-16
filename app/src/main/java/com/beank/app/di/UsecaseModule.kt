@@ -173,9 +173,10 @@ object UsecaseModule {
 
     @Provides
     @Singleton
-    fun providesTriggerSettingUseCases(geofenceRepository: GeofenceRepository) = TriggerSettingUsecases(
+    fun providesTriggerSettingUseCases(geofenceRepository: GeofenceRepository,tagRepository: TagRepository) = TriggerSettingUsecases(
         addGeofence = AddGeofence(geofenceRepository),
-        updateGeofence = UpdateGeofence(geofenceRepository)
+        updateGeofence = UpdateGeofence(geofenceRepository),
+        getAllTag = GetAllTag(tagRepository)
     )
 
 }
