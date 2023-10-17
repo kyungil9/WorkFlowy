@@ -157,12 +157,14 @@ object UsecaseModule {
 
     @Provides
     @Singleton
-    fun providesGeoUseCases(recordRepository: RecordRepository,geofenceRepository: GeofenceRepository) = GeoUsecases(
-        getCurrentRecord = GetCurrentRecord(recordRepository),
-        updateRecord = UpdateRecord(recordRepository),
-        insertRecord = InsertRecord(recordRepository),
-        getChooseGeofence = GetChooseGeofence(geofenceRepository)
-    )
+    fun providesGeoUseCases(recordRepository: RecordRepository,geofenceRepository: GeofenceRepository) : GeoUsecases{
+        return GeoUsecases(
+            getCurrentRecord = GetCurrentRecord(recordRepository),
+            updateRecord = UpdateRecord(recordRepository),
+            insertRecord = InsertRecord(recordRepository),
+            getChooseGeofence = GetChooseGeofence(geofenceRepository)
+        )
+    }
 
     @Provides
     @Singleton
@@ -178,5 +180,11 @@ object UsecaseModule {
         updateGeofence = UpdateGeofence(geofenceRepository),
         getAllTag = GetAllTag(tagRepository)
     )
+
+    @Provides
+    @Singleton
+    fun providesAlarmUseCases(settingRepository: SettingRepository) : GetNoticeAlarm {
+        return GetNoticeAlarm(settingRepository)
+    }
 
 }
