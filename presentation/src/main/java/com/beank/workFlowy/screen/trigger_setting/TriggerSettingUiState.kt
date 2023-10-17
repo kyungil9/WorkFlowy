@@ -16,8 +16,8 @@ import java.time.LocalTime
 class TriggerSettingUiState(
     tagList : List<Tag> = emptyList(),
     id : String = "",
-    tag : String = "",
-    tagImage : Int = 0,
+    tag : String = "휴식중",
+    tagImage : Int = 2,
     latitude : Double = 37.5642135,
     lonitude : Double = 127.0016985,
     radius : Double = 30.0,

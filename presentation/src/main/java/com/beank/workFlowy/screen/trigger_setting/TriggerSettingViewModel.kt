@@ -5,6 +5,7 @@ import androidx.annotation.RequiresApi
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.beank.domain.model.GeofenceData
+import com.beank.domain.model.GeofenceEvent
 import com.beank.domain.model.Tag
 import com.beank.domain.model.onEmpty
 import com.beank.domain.model.onException
@@ -35,6 +36,7 @@ class TriggerSettingViewModel @Inject constructor(
     val uiState = TriggerSettingUiState()
 
     init {
+        getAllTagInfo()
         val geofenceData = savedStateHandle.get<String>("geo")
         if (!geofenceData.isNullOrEmpty()){
             val geofence = geofenceData.fromGeofenceJson()
@@ -52,7 +54,6 @@ class TriggerSettingViewModel @Inject constructor(
                 uiState.geoEvent = geo.geoEvent
             }
         }
-        getAllTagInfo()
     }
 
     fun onTagSelect(tag: Tag){
@@ -64,6 +65,29 @@ class TriggerSettingViewModel @Inject constructor(
         uiState.latitude = latLng.latitude
         uiState.lonitude = latLng.longitude
         uiState.radius = radius
+    }
+
+    fun onTimeOptionUpdate(value : Boolean){
+        uiState.timeOption = value
+    }
+
+    fun onGeoEventUpdate(trigger : String){
+        uiState.geoEvent = when(trigger){
+            "Enter" -> GeofenceEvent.EnterRequest
+            "Exit" -> GeofenceEvent.ExitRequest
+            "Enter/Exit" -> GeofenceEvent.EnterOrExitRequest
+            else -> GeofenceEvent.EnterRequest
+        }
+    }
+
+    fun onDelayTimeUpdate(time : String){
+        uiState.delayTime = when(time){
+            "5분" -> 300000
+            "10분" -> 600000
+            "15분" -> 900000
+            "30분" -> 1800000
+            else -> 300000
+        }
     }
 
     fun onTimeChange(startHour : Int, startMinute : Int, endHour : Int, endMinute : Int) : Boolean{
@@ -121,8 +145,6 @@ class TriggerSettingViewModel @Inject constructor(
             }
             state.onSuccess { tagList ->
                 uiState.tagList = tagList
-                uiState.tag = tagList[0].title
-                uiState.tagImage = tagList[0].icon
             }
             state.onException { message, e ->
                 e.message?.let {

@@ -9,13 +9,17 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DismissDirection
 import androidx.compose.material3.DismissValue
@@ -33,6 +37,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
@@ -137,6 +142,8 @@ fun TriggerItem(
                 DismissDirection.EndToStart -> onUpdate(NavigationItem.ADDTRIGGER.route,geofenceData())
                 null -> Unit
             }
+            show = true
+            dismissState.reset()
         }
     }
 
@@ -145,46 +152,57 @@ fun TriggerItem(
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun TriggerItem(geofenceData: () -> GeofenceData){
-    Row(
+    Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(80.dp)
-            .padding(horizontal = 15.dp)
-            .background(MaterialTheme.colorScheme.secondaryContainer)
-    ) {
-        Icon(
-            imageVector = ImageVector.vectorResource(id = intToImage(geofenceData().tagImage, LocalContext.current.resources.obtainTypedArray(R.array.tagList))),
-            contentDescription = "트리거 태그 이미지",
-            tint = MaterialTheme.colorScheme.onSecondaryContainer
-        )
-        Column (
-            verticalArrangement = Arrangement.Center,
+            .height(60.dp)
+            .padding(horizontal = 10.dp, vertical = 5.dp),
+        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.primaryContainer),
+        shape = MaterialTheme.shapes.small,
+        elevation = CardDefaults.cardElevation(defaultElevation = 5.dp)
+    ){
+        Row(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 10.dp)
-        ){
-            Row {
-                Text(
-                    text = when (geofenceData().geoEvent) {
-                        GeofenceEvent.EnterRequest -> "Enter"
-                        GeofenceEvent.ExitRequest -> "Exit"
-                        GeofenceEvent.EnterOrExitRequest -> "Enter/Exit"
-                        else -> ""
-                    },
-                    style = MaterialTheme.typography.headlineMedium,
-                    color = MaterialTheme.colorScheme.onSecondaryContainer
-                )
-                HorizontalSpacer(width = 10.dp)
-                Text(
-                    text = geofenceData().tag,
-                    style = MaterialTheme.typography.headlineSmall,
-                    color = MaterialTheme.colorScheme.onSecondaryContainer
-                )
-            }
-            if (geofenceData().timeOption){
-                Text(text = "${geofenceData().startTime.toFormatString()}~${geofenceData().endTime.toFormatString()}",
-                    style = MaterialTheme.typography.titleLarge,
-                    color = MaterialTheme.colorScheme.outline)
+                .fillMaxSize(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            HorizontalSpacer(width = 15.dp)
+            Icon(
+                modifier = Modifier.size(50.dp),
+                imageVector = ImageVector.vectorResource(id = intToImage(geofenceData().tagImage, LocalContext.current.resources.obtainTypedArray(R.array.tagList))),
+                contentDescription = "트리거 태그 이미지",
+                tint = MaterialTheme.colorScheme.onPrimaryContainer
+            )
+            HorizontalSpacer(width = 20.dp)
+            Column (
+                verticalArrangement = Arrangement.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight()
+            ){
+                Row {
+                    Text(
+                        text = when (geofenceData().geoEvent) {
+                            GeofenceEvent.EnterRequest -> "Enter"
+                            GeofenceEvent.ExitRequest -> "Exit"
+                            GeofenceEvent.EnterOrExitRequest -> "Enter/Exit"
+                            else -> ""
+                        },
+                        style = MaterialTheme.typography.headlineMedium,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                    )
+                    HorizontalSpacer(width = 10.dp)
+                    Text(
+                        text = geofenceData().tag,
+                        style = MaterialTheme.typography.headlineSmall,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                    )
+                }
+                if (geofenceData().timeOption){
+                    Text(text = "${geofenceData().startTime.toFormatString()}~${geofenceData().endTime.toFormatString()}",
+                        style = MaterialTheme.typography.titleLarge,
+                        color = MaterialTheme.colorScheme.outline)
+                }
             }
         }
     }

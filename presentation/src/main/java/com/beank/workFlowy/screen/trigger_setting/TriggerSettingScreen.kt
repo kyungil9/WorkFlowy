@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import android.location.Geocoder
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -18,6 +19,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
@@ -31,6 +33,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -62,17 +65,23 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.beank.domain.model.GeofenceEvent
 import com.beank.domain.model.Tag
 import com.beank.presentation.R
 import com.beank.workFlowy.component.CustomAlertDialog
+import com.beank.workFlowy.component.TextCard
 import com.beank.workFlowy.component.TextTopBar
 import com.beank.workFlowy.component.TimeRangePickerDialog
+import com.beank.workFlowy.component.ToggleCard
 import com.beank.workFlowy.component.VerticalSpacer
 import com.beank.workFlowy.component.WeekLayout
 import com.beank.workFlowy.component.snackbar.SnackbarManager
 import com.beank.workFlowy.screen.RequestLocationPermissionDialog
+import com.beank.workFlowy.utils.exchangeEvent
+import com.beank.workFlowy.utils.exchangeTime
 import com.beank.workFlowy.utils.getAddress
 import com.beank.workFlowy.utils.intToImage
+import com.beank.workFlowy.utils.zeroFormat
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
@@ -95,6 +104,8 @@ fun TriggerSettingScreen(
     snackbarHostState : SnackbarHostState,
     onBack : () -> Unit,
 ){
+    val timeList = listOf("5분","10분","15분","30분")
+    val triggerList = listOf("Enter","Exit","Enter/Exit")
     val context = LocalContext.current
     val uiState = triggerSettingViewModel.uiState
     val configuration = LocalConfiguration.current
@@ -176,7 +187,8 @@ fun TriggerSettingScreen(
                     .height(if (tagToggle) 250.dp else 85.dp)
                     .padding(10.dp),
                 colors = CardDefaults.cardColors(MaterialTheme.colorScheme.secondaryContainer),
-                shape = MaterialTheme.shapes.medium
+                shape = MaterialTheme.shapes.medium,
+                elevation = CardDefaults.cardElevation(defaultElevation = 5.dp)
             ) {
                 Column(
                     verticalArrangement = Arrangement.Center,
@@ -234,14 +246,27 @@ fun TriggerSettingScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(300.dp)
-                    .padding(10.dp)
+                    .padding(10.dp),
+                colors = CardDefaults.cardColors(MaterialTheme.colorScheme.secondaryContainer),
+                shape = MaterialTheme.shapes.medium,
+                elevation = CardDefaults.cardElevation(defaultElevation = 5.dp)
             ) {
                 Column {
-                    Button(
-                        onClick = { mapToggle = true },
-                        modifier = Modifier.padding(end = 10.dp)
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 10.dp, vertical = 5.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(text = "위치 선택")
+                        Text(text = "위치 선택", style = MaterialTheme.typography.headlineSmall, color = MaterialTheme.colorScheme.onSecondaryContainer)
+                        IconButton(onClick = { mapToggle = true }) {
+                            Icon(
+                                imageVector = Icons.Default.Search,
+                                contentDescription = "위치 지정",
+                                tint = MaterialTheme.colorScheme.onSecondaryContainer
+                            )
+                        }
                     }
                     GoogleMap(
                         uiSettings = mapUiSetting,
@@ -256,6 +281,52 @@ fun TriggerSettingScreen(
                 }
             }
 
+            TextCard(title = "트리거 조건 설정")
+            LazyRow(modifier = Modifier.fillMaxWidth()){
+                items(triggerList, key = {it}){trigger ->
+                    FilterChip(
+                        modifier = Modifier.padding(horizontal = 5.dp),
+                        selected = (trigger == uiState.geoEvent.exchangeEvent()),
+                        onClick = { triggerSettingViewModel.onGeoEventUpdate(trigger) },
+                        label = { Text(text = trigger)})
+                }
+            }
+
+            TextCard(title = "시간 딜레이 설정")
+            LazyRow(modifier = Modifier.fillMaxWidth()){
+                items(timeList, key = {it}){time ->
+                    FilterChip(
+                        modifier = Modifier.padding(horizontal = 5.dp),
+                        selected = (time == uiState.delayTime.exchangeTime()),
+                        onClick = { triggerSettingViewModel.onDelayTimeUpdate(time) },
+                        label = { Text(text = time)})
+                }
+            }
+
+            ToggleCard(title = "시간 범위 설정", checked = { uiState.timeOption }, height = 50.dp, onClick = triggerSettingViewModel::onTimeOptionUpdate)
+            AnimatedVisibility(visible = uiState.timeOption) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp)
+                        .padding(horizontal = 10.dp)
+                        .clickable { showTimeState = true }
+                ){
+                    Icon(
+                        imageVector = ImageVector.vectorResource(id = com.google.android.material.R.drawable.ic_clock_black_24dp),
+                        contentDescription = "시간 선택 아이콘",
+                        tint = MaterialTheme.colorScheme.onSecondaryContainer,
+                        modifier = Modifier.size(40.dp)
+                    )
+                    Text(
+                        text = "${zeroFormat.format(uiState.startTime.hour)}:${zeroFormat.format(uiState.startTime.minute)} ~ ${zeroFormat.format(uiState.endTime.hour)}:${zeroFormat.format(uiState.endTime.minute)}",
+                        style = MaterialTheme.typography.headlineSmall,
+                        color = MaterialTheme.colorScheme.onSecondaryContainer,
+                        modifier = Modifier.padding(start = 25.dp)
+                    )
+                }
+            }
 
 
         }
