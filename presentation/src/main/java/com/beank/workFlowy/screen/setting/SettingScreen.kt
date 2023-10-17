@@ -41,10 +41,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -144,15 +146,15 @@ fun SettingScreen(
                             }else{
                                 Text(text = uiState.nickname, style = MaterialTheme.typography.headlineMedium, color = MaterialTheme.colorScheme.onSecondaryContainer)
                             }
-                            IconButton(onClick = {
+                            IconButton(onClick = remember{{
                                 if (editNickname)
                                     settingViewModel.onNicknameUpdate()
                                 else
                                     settingViewModel.onNicknameRefresh()
                                 editNickname = editNickname.not()
-                            }) {
+                            }}) {
                                 Icon(
-                                    painter = painterResource(id = if (editNickname) R.drawable.baseline_check_24 else R.drawable.baseline_edit_24),
+                                    imageVector = ImageVector.vectorResource(id = if (editNickname) R.drawable.baseline_check_24 else R.drawable.baseline_edit_24),
                                     contentDescription = "닉네임 수정",
                                     tint = MaterialTheme.colorScheme.onSecondaryContainer
                                 )

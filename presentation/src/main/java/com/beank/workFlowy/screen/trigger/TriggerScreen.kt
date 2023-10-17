@@ -132,7 +132,7 @@ fun TriggerItem(
     ) {
         SwipeToDismiss(
             state = dismissState,
-            background = {DissmissBackground(dismissState = dismissState)},
+            background = {DissmissBackground(dismissState = {dismissState})},
             dismissContent = { TriggerItem(geofenceData = geofenceData)})
     }
     LaunchedEffect(key1 = show){
