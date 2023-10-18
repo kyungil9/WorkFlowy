@@ -3,6 +3,7 @@ package com.beank.data.repositoryimpl
 import android.annotation.SuppressLint
 import android.app.PendingIntent
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import com.beank.data.datasource.StorageDataSource
 import com.beank.data.entity.WeekGeoTrigger
@@ -13,6 +14,11 @@ import com.beank.domain.model.FireStoreState
 import com.beank.domain.model.GeofenceData
 import com.beank.domain.model.GeofenceEvent
 import com.beank.domain.repository.GeofenceRepository
+import com.google.android.gms.location.ActivityRecognitionClient
+import com.google.android.gms.location.ActivityRecognitionResult
+import com.google.android.gms.location.ActivityTransition
+import com.google.android.gms.location.ActivityTransitionRequest
+import com.google.android.gms.location.DetectedActivity
 import com.google.android.gms.location.Geofence
 import com.google.android.gms.location.GeofencingClient
 import com.google.android.gms.location.GeofencingRequest
@@ -23,6 +29,7 @@ import javax.inject.Inject
 @RequiresApi(Build.VERSION_CODES.O)
 class GeofenceRepositoryImpl @Inject constructor(
     private val geofencingClient: GeofencingClient,
+    private val activityRecognitionClient: ActivityRecognitionClient,
     private val pendingIntent: PendingIntent,
     private val storage : StorageDataSource
 ) : GeofenceRepository {
@@ -53,6 +60,7 @@ class GeofenceRepositoryImpl @Inject constructor(
             .setLoiteringDelay(geofenceData.delayTime)
             .build()
 
+
     override suspend fun getChooseTrigger(id: String): GeofenceData? =
         storage.store.document(storage.getUid()!!).collection(GEOTRIGGER).document(id).get()
             .await().toObject(WeekGeoTrigger::class.java)?.toGeofenceData()
@@ -69,6 +77,19 @@ class GeofenceRepositoryImpl @Inject constructor(
     }
 
     override suspend fun startGeofenceToClient(onSuccess : () -> Unit, onFail : () -> Unit) {
+        val transitions = mutableListOf<ActivityTransition>()
+        transitions += ActivityTransition.Builder()
+            .setActivityType(DetectedActivity.WALKING)
+            .setActivityTransition(ActivityTransition.ACTIVITY_TRANSITION_ENTER)
+            .build()
+        transitions += ActivityTransition.Builder()
+            .setActivityType(DetectedActivity.WALKING)
+            .setActivityTransition(ActivityTransition.ACTIVITY_TRANSITION_EXIT)
+            .build()
+        val task = activityRecognitionClient.requestActivityTransitionUpdates(ActivityTransitionRequest(transitions),pendingIntent)
+        task.addOnSuccessListener {
+            Log.d("walk","ok")
+        }
         val geofenceDataList = storage.store.document(storage.getUid()!!).collection(GEOTRIGGER).get().await().toObjects(WeekGeoTrigger::class.java).map { it.toGeofenceData() }
         val geofenceList = ArrayList<Geofence>()
         geofenceDataList.forEach { geofenceData ->
@@ -110,6 +131,7 @@ class GeofenceRepositoryImpl @Inject constructor(
             addOnSuccessListener { onSuccess() }
             addOnFailureListener { onFail() }
         }
+        val task = activityRecognitionClient.removeActivityTransitionUpdates(pendingIntent)
     }
     companion object{
         private const val GEOTRIGGER = "GeoTrigger"
