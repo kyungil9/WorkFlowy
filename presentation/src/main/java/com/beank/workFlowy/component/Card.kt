@@ -65,7 +65,6 @@ fun ToggleCard(
     color: Color = MaterialTheme.colorScheme.scrim,
     onClick : (Boolean) -> Unit = {}
 ){
-    Log.d("card","onclick:${onClick.hashCode()},title:${title.hashCode()},checked:${checked.hashCode()}")
     Card(
         modifier = Modifier
             .fillMaxWidth()

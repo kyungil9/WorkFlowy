@@ -130,7 +130,7 @@ fun ScheduleItem(
         Modifier
             .fillMaxWidth()
             .clickable (onClick = remember{{onClickSchedule(schedule()) }})
-            .height(if (schedule().time && commentToggle) 160.dp else (if (commentToggle) 130.dp else (if (schedule().time) 100.dp else 80.dp)))
+            .height(if (schedule().time && commentToggle) 160.dp else (if (commentToggle) 130.dp else (if (schedule().time || schedule().alarm) 100.dp else 80.dp)))
             .padding(10.dp),
         shape = MaterialTheme.shapes.small,
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary),

@@ -79,6 +79,7 @@ class SettingViewModel @Inject constructor(
         launchCatching {
             if (toggle) {
                 settingUsecases.startGeofenceToClient()//등록된 트리거 백그라운드 올리기
+
             }else{
                 settingUsecases.removeGeofence()//트리거 해제
             }
@@ -86,6 +87,8 @@ class SettingViewModel @Inject constructor(
             settingUsecases.updateTriggerToggle(toggle)
         }
     }
+
+
 
     fun onNicknameUpdate() {
         launchCatching {

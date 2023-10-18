@@ -14,6 +14,7 @@ import com.beank.domain.repository.LogRepository
 import com.beank.domain.usecase.TriggerSettingUsecases
 import com.beank.presentation.R
 import com.beank.workFlowy.component.snackbar.SnackbarManager
+import com.beank.workFlowy.component.snackbar.SnackbarMessage
 import com.beank.workFlowy.screen.WorkFlowyViewModel
 import com.beank.workFlowy.utils.fromGeofenceJson
 import com.google.android.gms.maps.model.LatLng
@@ -114,7 +115,7 @@ class TriggerSettingViewModel @Inject constructor(
                 startTime  = uiState.startTime,
                 endTime = uiState.endTime,
                 geoEvent = uiState.geoEvent
-            ))
+            ), onSuccess = {SnackbarManager.showMessage(SnackbarMessage.StringSnackbar("정상 등록"))})
         }
     }
 
@@ -133,7 +134,8 @@ class TriggerSettingViewModel @Inject constructor(
                     startTime  = uiState.startTime,
                     endTime = uiState.endTime,
                     geoEvent = uiState.geoEvent
-                )
+                ),
+                onSuccess = {SnackbarManager.showMessage(SnackbarMessage.StringSnackbar("정상 업뎃등록"))}
             )
         }
     }

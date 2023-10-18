@@ -129,16 +129,16 @@ fun TriggerSettingScreen(
         position = CameraPosition.fromLatLngZoom(LatLng(uiState.latitude,uiState.lonitude),18f)
     }
     val mapUiSetting by remember { mutableStateOf(MapUiSettings(
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false
+        compassEnabled = false,
+        indoorLevelPickerEnabled = false,
+        mapToolbarEnabled = false,
+        myLocationButtonEnabled = false,
+        rotationGesturesEnabled = false,
+        scrollGesturesEnabled = false,
+        scrollGesturesEnabledDuringRotateOrZoom = false,
+        tiltGesturesEnabled = false,
+        zoomControlsEnabled = false,
+        zoomGesturesEnabled = false
     )) }
     val fusedLocationProviderClient = remember {LocationServices.getFusedLocationProviderClient(context)}
 
@@ -232,7 +232,7 @@ fun TriggerSettingScreen(
                                 .padding(vertical = 10.dp, horizontal = 5.dp)
                                 .height(150.dp)
                         ){
-                            items(uiState.tagList, key = {it.id!!}){tag ->
+                            items(uiState.tagList, key = {item -> item.id!!}){tag ->
                                 TagItem(tag = tag, onClick = triggerSettingViewModel::onTagSelect)
                             }
                         }
@@ -275,7 +275,7 @@ fun TriggerSettingScreen(
                         Circle(
                             center = LatLng(uiState.latitude,uiState.lonitude),
                             radius = uiState.radius,
-                            fillColor = MaterialTheme.colorScheme.secondaryContainer
+                            strokeColor = MaterialTheme.colorScheme.secondaryContainer
                         )
                     }
                 }
@@ -283,7 +283,7 @@ fun TriggerSettingScreen(
 
             TextCard(title = "트리거 조건 설정")
             LazyRow(modifier = Modifier.fillMaxWidth()){
-                items(triggerList, key = {it}){trigger ->
+                items(triggerList, key = {item -> item}){trigger ->
                     FilterChip(
                         modifier = Modifier.padding(horizontal = 5.dp),
                         selected = (trigger == uiState.geoEvent.exchangeEvent()),
@@ -294,7 +294,7 @@ fun TriggerSettingScreen(
 
             TextCard(title = "시간 딜레이 설정")
             LazyRow(modifier = Modifier.fillMaxWidth()){
-                items(timeList, key = {it}){time ->
+                items(timeList, key = {item -> item}){time ->
                     FilterChip(
                         modifier = Modifier.padding(horizontal = 5.dp),
                         selected = (time == uiState.delayTime.exchangeTime()),
@@ -337,9 +337,9 @@ fun TriggerSettingScreen(
                 radius = uiState.radius,
                 context = context,
                 onCancle = {mapToggle = false},
-                onConfirm = {latlon,radius ->
+                onConfirm = {latlon,radius,slider ->
                     triggerSettingViewModel.onLatLngUpdate(latlon,radius)
-                    cameraPositionState.position = CameraPosition.fromLatLngZoom(LatLng(uiState.latitude,uiState.lonitude),18f)
+                    cameraPositionState.position = CameraPosition.fromLatLngZoom(LatLng(uiState.latitude,uiState.lonitude),18f - slider/10)
                 }
             )
         }
@@ -428,7 +428,7 @@ fun GoogleMapDialog(
     radius : Double,
     context : Context,
     onCancle : () -> Unit,
-    onConfirm : (LatLng,Double) -> Unit
+    onConfirm : (LatLng,Double,Float) -> Unit
 ){
     val cameraPositionState = rememberCameraPositionState{
         position = CameraPosition.fromLatLngZoom(latLng,18f)
@@ -455,7 +455,7 @@ fun GoogleMapDialog(
         ){
             Column {
                 TextTopBar(title = "위치 선택", onCancle = onCancle, onConfirm = {
-                    onConfirm(selectLatLng,selectRadius)
+                    onConfirm(selectLatLng,selectRadius,sliderState)
                     onCancle()
                 })
                 Row (

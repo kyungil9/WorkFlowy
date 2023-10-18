@@ -38,6 +38,7 @@ fun WorkFlowyApp() {
     WorkFlowyTheme {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q ){
             RequestLocationPermissionDialog()
+            RequestTransitionPermissionDialog()
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU ) {
             RequestNotificationPermissionDialog()
@@ -92,6 +93,20 @@ fun RequestLocationPermissionDialog() {
             PermissionDialog(stringResource(id = AppText.location_permission_title),stringResource(id = AppText.location_permission_description)) { foregroundPermissionState.launchMultiplePermissionRequest() }
     }
 }
+
+@OptIn(ExperimentalPermissionsApi::class)
+@RequiresApi(Build.VERSION_CODES.Q)
+@Composable
+fun RequestTransitionPermissionDialog() {
+    val permissionState = rememberPermissionState(permission = Manifest.permission.ACTIVITY_RECOGNITION)
+    if (!permissionState.status.isGranted){
+        if (permissionState.status.shouldShowRationale)
+            RationaleDialog(stringResource(id = AppText.transition_title),stringResource(id = AppText.transition_description))
+        else
+            PermissionDialog(stringResource(id = AppText.transition_title),stringResource(id = AppText.transition_description)) { permissionState.launchPermissionRequest() }
+    }
+}
+
 @OptIn(ExperimentalPermissionsApi::class)
 @RequiresApi(Build.VERSION_CODES.R)
 @Composable
