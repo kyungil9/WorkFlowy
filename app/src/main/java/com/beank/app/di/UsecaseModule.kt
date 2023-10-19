@@ -41,11 +41,13 @@ import com.beank.domain.usecase.schedule.UpdateCheckSchedule
 import com.beank.domain.usecase.schedule.UpdateSchedule
 import com.beank.domain.usecase.setting.GetDarkTheme
 import com.beank.domain.usecase.setting.GetDynamicTheme
+import com.beank.domain.usecase.setting.GetGeoState
 import com.beank.domain.usecase.setting.GetNoticeAlarm
 import com.beank.domain.usecase.setting.GetScheduleAlarm
 import com.beank.domain.usecase.setting.GetTriggerToggle
 import com.beank.domain.usecase.setting.UpdateDarkTheme
 import com.beank.domain.usecase.setting.UpdateDynamicTheme
+import com.beank.domain.usecase.setting.UpdateGeoState
 import com.beank.domain.usecase.setting.UpdateNoticeAlarm
 import com.beank.domain.usecase.setting.UpdateScheduleAlarm
 import com.beank.domain.usecase.setting.UpdateTriggerToggle
@@ -157,12 +159,14 @@ object UsecaseModule {
 
     @Provides
     @Singleton
-    fun providesGeoUseCases(recordRepository: RecordRepository,geofenceRepository: GeofenceRepository) : GeoUsecases{
+    fun providesGeoUseCases(recordRepository: RecordRepository,geofenceRepository: GeofenceRepository,settingRepository: SettingRepository) : GeoUsecases{
         return GeoUsecases(
             getCurrentRecord = GetCurrentRecord(recordRepository),
             updateRecord = UpdateRecord(recordRepository),
             insertRecord = InsertRecord(recordRepository),
-            getChooseGeofence = GetChooseGeofence(geofenceRepository)
+            getChooseGeofence = GetChooseGeofence(geofenceRepository),
+            getGeoState = GetGeoState(settingRepository),
+            updateGeoState = UpdateGeoState(settingRepository)
         )
     }
 

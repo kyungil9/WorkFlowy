@@ -20,6 +20,11 @@ class SettingRepositoryImpl @Inject constructor(
 
     override fun getTriggerToggle(): Flow<Boolean> = settingDataSource.getSettingState().map { it.trigger }
 
+    override fun getMoveTriggerToggle(): Flow<Boolean> = settingDataSource.getSettingState().map { it.moveTrigger }
+
+    override fun getGeoState(): Flow<Boolean> = settingDataSource.getSettingState().map { it.geo }
+
+
     override suspend fun updateDarkTheme(state : Boolean) : Unit = settingDataSource.updateDarkTheme(state)
 
     override suspend fun updateDynamicTheme(state : Boolean) : Unit = settingDataSource.updateDynamicTheme(state)
@@ -29,4 +34,9 @@ class SettingRepositoryImpl @Inject constructor(
     override suspend fun updateScheduleAlarm(state : Boolean) : Unit = settingDataSource.updateScheduleAlarm(state)
 
     override suspend fun updateTriggerToggle(state: Boolean) : Unit = settingDataSource.updateTrigger(state)
+
+    override suspend fun updateMoveTriggerToggle(state: Boolean) : Unit = settingDataSource.updateMoveTrigger(state)
+
+    override suspend fun updateGeoState(state: Boolean) : Unit = settingDataSource.updateGeoState(state)
+
 }

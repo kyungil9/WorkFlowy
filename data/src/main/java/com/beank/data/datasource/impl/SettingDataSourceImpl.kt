@@ -52,4 +52,21 @@ class SettingDataSourceImpl @Inject constructor(
         }
     }
 
+    override suspend fun updateMoveTrigger(state: Boolean) {
+        settingDataStore.updateData { setting ->
+            setting.toBuilder()
+                .setMoveTrigger(state)
+                .build()
+        }
+    }
+
+    override suspend fun updateGeoState(state: Boolean) {
+        settingDataStore.updateData { setting ->
+            setting.toBuilder()
+                .setGeo(state)
+                .build()
+        }
+    }
+
+
 }
