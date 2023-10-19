@@ -2,6 +2,7 @@ package com.beank.app.service
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.util.Log
 import androidx.compose.runtime.collectAsState
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationManagerCompat
@@ -16,6 +17,8 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.random.Random
@@ -26,22 +29,14 @@ class WorkFlowyMessagingService : FirebaseMessagingService() {
     @Inject lateinit var getNoticeAlarm: GetNoticeAlarm
     private val random = Random
     private val serviceJob = Job()
-    private var alarmState = true
     private val serviceScope = CoroutineScope(Dispatchers.IO + serviceJob)
-
-    override fun onCreate() {
-        super.onCreate()
-        serviceScope.launch {
-            getNoticeAlarm().collectLatest {
-                alarmState = it
-            }
-        }
-    }
 
     override fun onMessageReceived(remoteMessage: RemoteMessage){
         remoteMessage.notification?.let { message ->
-            if (alarmState){
-                sendNotification(message)
+            serviceScope.launch {
+                if (getNoticeAlarm().first()){//??
+                    sendNotification(message)
+                }
             }
         }
     }

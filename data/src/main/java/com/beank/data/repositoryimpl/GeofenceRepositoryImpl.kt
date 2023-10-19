@@ -51,12 +51,7 @@ class GeofenceRepositoryImpl @Inject constructor(
                 geofenceData.radius
             )
             .setExpirationDuration(Geofence.NEVER_EXPIRE)
-            .setTransitionTypes(when(geofenceData.geoEvent){
-                GeofenceEvent.EnterRequest -> Geofence.GEOFENCE_TRANSITION_DWELL
-                GeofenceEvent.ExitRequest -> Geofence.GEOFENCE_TRANSITION_EXIT
-                GeofenceEvent.EnterOrExitRequest -> Geofence.GEOFENCE_TRANSITION_DWELL or Geofence.GEOFENCE_TRANSITION_EXIT
-                else -> Geofence.GEOFENCE_TRANSITION_DWELL
-            })
+            .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_DWELL or Geofence.GEOFENCE_TRANSITION_EXIT)
             .setLoiteringDelay(geofenceData.delayTime)
             .build()
 
@@ -77,16 +72,7 @@ class GeofenceRepositoryImpl @Inject constructor(
     }
 
     override suspend fun startGeofenceToClient(onSuccess : () -> Unit, onFail : () -> Unit) {
-        val transitions = mutableListOf<ActivityTransition>()
-        transitions += ActivityTransition.Builder()
-            .setActivityType(DetectedActivity.WALKING)
-            .setActivityTransition(ActivityTransition.ACTIVITY_TRANSITION_ENTER)
-            .build()
-        transitions += ActivityTransition.Builder()
-            .setActivityType(DetectedActivity.WALKING)
-            .setActivityTransition(ActivityTransition.ACTIVITY_TRANSITION_EXIT)
-            .build()
-        val task = activityRecognitionClient.requestActivityTransitionUpdates(ActivityTransitionRequest(transitions),pendingIntent)
+        val task = activityRecognitionClient.requestActivityTransitionUpdates(ActivityTransitionRequest(initTransitions()),pendingIntent)
         task.addOnSuccessListener {
             Log.d("walk","ok")
         }
@@ -131,7 +117,44 @@ class GeofenceRepositoryImpl @Inject constructor(
             addOnSuccessListener { onSuccess() }
             addOnFailureListener { onFail() }
         }
-        val task = activityRecognitionClient.removeActivityTransitionUpdates(pendingIntent)
+        activityRecognitionClient.removeActivityTransitionUpdates(pendingIntent)
+    }
+
+    private fun initTransitions() : List<ActivityTransition>{
+        val transitions = mutableListOf<ActivityTransition>()
+        transitions += ActivityTransition.Builder()
+            .setActivityType(DetectedActivity.WALKING)
+            .setActivityTransition(ActivityTransition.ACTIVITY_TRANSITION_ENTER)
+            .build()
+        transitions += ActivityTransition.Builder()
+            .setActivityType(DetectedActivity.WALKING)
+            .setActivityTransition(ActivityTransition.ACTIVITY_TRANSITION_EXIT)
+            .build()
+        transitions += ActivityTransition.Builder()
+            .setActivityType(DetectedActivity.RUNNING)
+            .setActivityTransition(ActivityTransition.ACTIVITY_TRANSITION_ENTER)
+            .build()
+        transitions += ActivityTransition.Builder()
+            .setActivityType(DetectedActivity.RUNNING)
+            .setActivityTransition(ActivityTransition.ACTIVITY_TRANSITION_EXIT)
+            .build()
+        transitions += ActivityTransition.Builder()
+            .setActivityType(DetectedActivity.ON_BICYCLE)
+            .setActivityTransition(ActivityTransition.ACTIVITY_TRANSITION_ENTER)
+            .build()
+        transitions += ActivityTransition.Builder()
+            .setActivityType(DetectedActivity.ON_BICYCLE)
+            .setActivityTransition(ActivityTransition.ACTIVITY_TRANSITION_EXIT)
+            .build()
+        transitions += ActivityTransition.Builder()
+            .setActivityType(DetectedActivity.IN_VEHICLE)
+            .setActivityTransition(ActivityTransition.ACTIVITY_TRANSITION_ENTER)
+            .build()
+        transitions += ActivityTransition.Builder()
+            .setActivityType(DetectedActivity.IN_VEHICLE)
+            .setActivityTransition(ActivityTransition.ACTIVITY_TRANSITION_EXIT)
+            .build()
+        return transitions
     }
     companion object{
         private const val GEOTRIGGER = "GeoTrigger"

@@ -9,4 +9,6 @@ message Setting {
   bool noticeAlarm = 3;
   bool scheduleAlarm = 4;
   bool trigger = 5;
+  bool moveTrigger = 6;
+  bool geo = 7;
 }

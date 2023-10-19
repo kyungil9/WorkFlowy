@@ -3,6 +3,7 @@ package com.beank.app.di
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import androidx.work.WorkManager
 import com.beank.app.service.GeofenceBroadcastReceiver
 import com.google.android.gms.location.ActivityRecognition
 import com.google.android.gms.location.ActivityRecognitionClient
@@ -18,6 +19,12 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object GeofenceModule{
+
+    @Singleton
+    @Provides
+    fun providesWorkManager(@ApplicationContext context: Context) : WorkManager {
+        return WorkManager.getInstance(context)
+    }
 
     @Singleton
     @Provides
