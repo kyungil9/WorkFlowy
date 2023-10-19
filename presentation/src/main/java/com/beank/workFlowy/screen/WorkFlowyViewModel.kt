@@ -8,12 +8,13 @@ import com.beank.workFlowy.component.snackbar.SnackbarMessage.Companion.toSnackb
 import com.google.firebase.FirebaseException
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 open class WorkFlowyViewModel(private val logRepository : LogRepository) : ViewModel() {
     fun launchCatching(snackbar : Boolean = true, block: suspend CoroutineScope.() -> Unit) =
         viewModelScope.launch (
-            CoroutineExceptionHandler{ _, throwable ->
+            Dispatchers.IO + CoroutineExceptionHandler{ _, throwable ->
                 if (snackbar)
                     SnackbarManager.showMessage(throwable.toSnackbarMessage())
                 logRepository.logNonFatalCrash(throwable)

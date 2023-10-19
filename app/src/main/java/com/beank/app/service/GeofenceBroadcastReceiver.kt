@@ -52,25 +52,24 @@ class GeofenceBroadcastReceiver : BroadcastReceiver(){
                 if (activityEvent){
                     val result = ActivityTransitionResult.extractResult(intent)!!
                     val event = result.transitionEvents.last()
-                        if (event.activityType == DetectedActivity.WALKING || event.activityType == DetectedActivity.IN_VEHICLE ||
-                            event.activityType == DetectedActivity.ON_BICYCLE || event.activityType == DetectedActivity.RUNNING){
-                            if (event.transitionType == ActivityTransition.ACTIVITY_TRANSITION_ENTER){
-                                val activityWorkRequest = OneTimeWorkRequestBuilder<RecordWorker>()
-                                    .setInputData(workDataOf(
-                                        "activity" to event.transitionType,
-                                        "dateTime" to LocalDateTime.now().toLong()))
-                                    .build()
-                                workManager.enqueue(activityWorkRequest)
-                            }else if (event.transitionType == ActivityTransition.ACTIVITY_TRANSITION_EXIT){
-                                val activityWorkRequest = OneTimeWorkRequestBuilder<RecordWorker>()
-                                    .setInputData(workDataOf(
-                                        "activity" to "Exit",
-                                        "dateTime" to LocalDateTime.now().toLong()))
-                                    .build()
-                                workManager.enqueue(activityWorkRequest)
-                            }
+                    if (event.activityType == DetectedActivity.WALKING || event.activityType == DetectedActivity.IN_VEHICLE ||
+                        event.activityType == DetectedActivity.ON_BICYCLE || event.activityType == DetectedActivity.RUNNING){
+                        if (event.transitionType == ActivityTransition.ACTIVITY_TRANSITION_ENTER){
+                            val activityWorkRequest = OneTimeWorkRequestBuilder<RecordWorker>()
+                                .setInputData(workDataOf(
+                                    "activity" to event.transitionType,
+                                    "dateTime" to LocalDateTime.now().toLong()))
+                                .build()
+                            workManager.enqueue(activityWorkRequest)
+                        }else if (event.transitionType == ActivityTransition.ACTIVITY_TRANSITION_EXIT){
+                            val activityWorkRequest = OneTimeWorkRequestBuilder<RecordWorker>()
+                                .setInputData(workDataOf(
+                                    "activity" to "Exit",
+                                    "dateTime" to LocalDateTime.now().toLong()))
+                                .build()
+                            workManager.enqueue(activityWorkRequest)
                         }
-
+                    }
                 }
             }
             return
