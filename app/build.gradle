@@ -67,7 +67,12 @@ dependencies {
     implementation(platform(libs.firebase.bom))
     implementation(libs.bundles.firebase)
 
+    //google-location
     implementation(libs.gms.play.services.location)
 
+    //compose
     implementation(libs.activity.compose)
+
+    //workManager
+    implementation(libs.work)
 }
