@@ -33,6 +33,7 @@ glide-com = "4.14.2"
 map = "18.1.0"
 compose-map = "2.5.3"
 work = "2.8.1"
+hilt-work = "1.0.0"
 
 # plugin
 androidStudioGradlePlugin = "8.1.2"
@@ -82,6 +83,7 @@ dagger = { module = "com.google.dagger:dagger", version.ref = "dagger" }
 dagger-hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "dagger" }
 dagger-hilt-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "dagger" }
 hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hilt" }
+hilt-work = { group = "androidx.hilt", name = "hilt-work", version.ref = "hilt-work"}
 
 compose-map = {group = "com.google.maps.android", name = "maps-compose", version.ref = "compose-map"}
 gms-play-services-maps = {group = "com.google.android.gms", name = "play-services-maps", version.ref = "map"}
@@ -119,7 +121,7 @@ compose = ["compose-foundation", "compose-ui", "compose-ui-preview", "compose-vi
 lifecycle = ["lifecycle-compose", "lifecycle-viewmodel-ktx", "lifecycle-runtime-ktx", "lifecycle-runtime-compose", "lifecycle-service"]
 coroutines = ["coroutines"]
 material3 = ["compose-material3","compose-material3-window"]
-hilt = ["dagger-hilt-android"]
+hilt = ["dagger-hilt-android","hilt-work"]
 testing = ["jUnit", "test-ext", "test-espresso"]
 firebase = ["firebase-analytics", "firebase-auth", "firebase-firestore", "firebase-crashlytics","firebase-message","firebase-message-directboot","google-auth","firebase-storage"]
 
