@@ -22,57 +22,67 @@ import javax.inject.Inject
 class GeofenceBroadcastReceiver : BroadcastReceiver(){
     @Inject lateinit var workManager: WorkManager
 
-    override fun onReceive(context : Context?, intent : Intent?) {
-        val geofencingEvent = intent?.let { GeofencingEvent.fromIntent(it) }
-        val activityEvent = intent?.let { ActivityTransitionResult.hasResult(intent) }
-        if (geofencingEvent != null) {
-            if (geofencingEvent.hasError()) {
-                val errorMessage = GeofenceStatusCodes
-                    .getStatusCodeString(geofencingEvent.errorCode)
-                Log.e(TAG, errorMessage)
-                return
-            }
-            val geofenceTransition = geofencingEvent?.geofenceTransition!!
-            if ((geofenceTransition == Geofence.GEOFENCE_TRANSITION_DWELL)or(geofenceTransition == Geofence.GEOFENCE_TRANSITION_EXIT)) {
-                val triggeringGeofences = geofencingEvent.triggeringGeofences!!
+    override fun onReceive(context : Context?, intented : Intent?) {
+        intented?.let { intent ->
+            if (intent.action == "android.intent.action.BOOT_COMPLETED" || intent.action == "android.intent.action.LOCKED_BOOT_COMPLETED"){
+                //지오펜스 재등록 기능 추가
                 val geoWorkRequest = OneTimeWorkRequestBuilder<RecordWorker>()
                     .setInputData(workDataOf(
-                        "geofenceId" to triggeringGeofences.last().requestId,
-                        "geoState" to geofenceTransition,
-                        "dateTime" to LocalDateTime.now().toLong()))
+                        "reboot" to true
+                    ))
                     .build()
                 workManager.enqueue(geoWorkRequest)
+            }else{
+                val geofencingEvent = GeofencingEvent.fromIntent(intent)
+                val activityEvent = ActivityTransitionResult.hasResult(intent)
+                if (geofencingEvent != null) {
+                    if (geofencingEvent.hasError()) {
+                        val errorMessage = GeofenceStatusCodes
+                            .getStatusCodeString(geofencingEvent.errorCode)
+                        Log.e(TAG, errorMessage)
+                        return
+                    }
+                    val geofenceTransition = geofencingEvent?.geofenceTransition!!
+                    if ((geofenceTransition == Geofence.GEOFENCE_TRANSITION_DWELL)or(geofenceTransition == Geofence.GEOFENCE_TRANSITION_EXIT)) {
+                        val triggeringGeofences = geofencingEvent.triggeringGeofences!!
+                        val geoWorkRequest = OneTimeWorkRequestBuilder<RecordWorker>()
+                            .setInputData(workDataOf(
+                                "geofenceId" to triggeringGeofences.last().requestId,
+                                "geoState" to geofenceTransition,
+                                "dateTime" to LocalDateTime.now().toLong()))
+                            .build()
+                        workManager.enqueue(geoWorkRequest)
 
-            }else {
-                //error
-                Log.e(TAG, "error code 1")
-            }
-        }else{
-            if (activityEvent != null){
-                if (activityEvent){
-                    val result = ActivityTransitionResult.extractResult(intent)!!
-                    val event = result.transitionEvents.last()
-                    if (event.activityType == DetectedActivity.WALKING || event.activityType == DetectedActivity.IN_VEHICLE ||
-                        event.activityType == DetectedActivity.ON_BICYCLE || event.activityType == DetectedActivity.RUNNING){
-                        if (event.transitionType == ActivityTransition.ACTIVITY_TRANSITION_ENTER){
-                            val activityWorkRequest = OneTimeWorkRequestBuilder<RecordWorker>()
-                                .setInputData(workDataOf(
-                                    "activity" to event.transitionType,
-                                    "dateTime" to LocalDateTime.now().toLong()))
-                                .build()
-                            workManager.enqueue(activityWorkRequest)
-                        }else if (event.transitionType == ActivityTransition.ACTIVITY_TRANSITION_EXIT){
-                            val activityWorkRequest = OneTimeWorkRequestBuilder<RecordWorker>()
-                                .setInputData(workDataOf(
-                                    "activity" to "Exit",
-                                    "dateTime" to LocalDateTime.now().toLong()))
-                                .build()
-                            workManager.enqueue(activityWorkRequest)
+                    }else {
+                        //error
+                        Log.e(TAG, "error code 1")
+                    }
+                }else{
+                    if (activityEvent){
+                        val result = ActivityTransitionResult.extractResult(intent)!!
+                        val event = result.transitionEvents.last()
+                        if (event.activityType == DetectedActivity.WALKING || event.activityType == DetectedActivity.IN_VEHICLE ||
+                            event.activityType == DetectedActivity.ON_BICYCLE || event.activityType == DetectedActivity.RUNNING){
+                            if (event.transitionType == ActivityTransition.ACTIVITY_TRANSITION_ENTER){
+                                val activityWorkRequest = OneTimeWorkRequestBuilder<RecordWorker>()
+                                    .setInputData(workDataOf(
+                                        "activity" to event.transitionType,
+                                        "dateTime" to LocalDateTime.now().toLong()))
+                                    .build()
+                                workManager.enqueue(activityWorkRequest)
+                            }else if (event.transitionType == ActivityTransition.ACTIVITY_TRANSITION_EXIT){
+                                val activityWorkRequest = OneTimeWorkRequestBuilder<RecordWorker>()
+                                    .setInputData(workDataOf(
+                                        "activity" to "Exit",
+                                        "dateTime" to LocalDateTime.now().toLong()))
+                                    .build()
+                                workManager.enqueue(activityWorkRequest)
+                            }
                         }
                     }
+                    return
                 }
             }
-            return
         }
     }
 
