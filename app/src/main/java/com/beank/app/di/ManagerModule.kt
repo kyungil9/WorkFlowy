@@ -1,5 +1,6 @@
 package com.beank.app.di
 
+import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
@@ -15,15 +16,21 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
+import kotlin.random.Random
 
 @Module
 @InstallIn(SingletonComponent::class)
-object GeofenceModule{
+object ManagerModule{
 
     @Singleton
     @Provides
     fun providesWorkManager(@ApplicationContext context: Context) : WorkManager {
         return WorkManager.getInstance(context)
+    }
+    @Singleton
+    @Provides
+    fun proviedsAlarmManager(@ApplicationContext context: Context) : AlarmManager {
+        return context.getSystemService(AlarmManager::class.java)
     }
 
     @Singleton
@@ -42,7 +49,6 @@ object GeofenceModule{
     @Provides
     fun providesGeofenceIntent(@ApplicationContext context: Context) : PendingIntent {
         val intent = Intent(context,GeofenceBroadcastReceiver::class.java)
-        return PendingIntent.getBroadcast(context,0,intent,PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
+        return PendingIntent.getBroadcast(context, Random.nextInt(),intent,PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
     }
-
 }
