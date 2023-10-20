@@ -52,7 +52,7 @@ class RecordWorker @AssistedInject constructor(
     private val ioDispatchers = Dispatchers.IO + coroutineExceptionHandler
 
 
-    suspend fun onGeofenceWork(geofenceId : String, geoState : Int, dateTime: LocalDateTime){
+    private suspend fun onGeofenceWork(geofenceId : String, geoState : Int, dateTime: LocalDateTime){
         val geofenceData = geoUsecases.getChooseGeofence(geofenceId)
         geofenceData?.let {geo ->
             if (geo.geoEvent == geoState) {
@@ -65,7 +65,7 @@ class RecordWorker @AssistedInject constructor(
         }
     }
 
-    suspend fun onActivityWork(state : Int, dateTime: LocalDateTime){
+    private suspend fun onActivityWork(state : Int, dateTime: LocalDateTime){
         onRecordReduce()
         val tag = if (state == ActivityTransition.ACTIVITY_TRANSITION_ENTER) "이동중" else "개인시간"
         onRecordInsert(tag,dateTime)//새 기록 추가
@@ -141,15 +141,20 @@ class RecordWorker @AssistedInject constructor(
         return geoUsecases.getGeoState().first()
     }
 
+    private suspend fun onTriggerToggleState() : Boolean {
+        return geoUsecases.getTriggerToggle().first()
+    }
+
     override suspend fun doWork(): Result = coroutineScope {
         try {
             val geofenceId = inputData.getString("geofenceId")
             val geoState = inputData.getInt("geoState",0)
             val activityState = inputData.getInt("activity",0)
             val dateTime = inputData.getLong("dateTime",0).toLocalDateTime()
+            val reboot = inputData.getBoolean("reboot", false)
 
             withContext(ioDispatchers){
-                if (geofenceId != null){
+                if (geofenceId != null){//지오펜서 트리거 처리
                     if (geoState == Geofence.GEOFENCE_TRANSITION_EXIT){
                         geoUsecases.updateGeoState(false)
                     }else{
@@ -160,7 +165,10 @@ class RecordWorker @AssistedInject constructor(
                         geoState = geoState,
                         dateTime = dateTime
                     )
-                }else{
+                }else if (reboot){//재부팅시 트리거 재등록 처리
+                    if (onTriggerToggleState())
+                        geoUsecases.startGeofenceToClient()
+                }else{//이동중 트리거 처리
                     if (!onGeoStateCheck()){
                         onActivityWork(
                             state = activityState,

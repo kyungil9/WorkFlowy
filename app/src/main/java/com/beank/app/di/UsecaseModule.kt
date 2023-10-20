@@ -166,7 +166,9 @@ object UsecaseModule {
             insertRecord = InsertRecord(recordRepository),
             getChooseGeofence = GetChooseGeofence(geofenceRepository),
             getGeoState = GetGeoState(settingRepository),
-            updateGeoState = UpdateGeoState(settingRepository)
+            updateGeoState = UpdateGeoState(settingRepository),
+            getTriggerToggle = GetTriggerToggle(settingRepository),
+            startGeofenceToClient = StartGeofenceToClient(geofenceRepository)
         )
     }
 
