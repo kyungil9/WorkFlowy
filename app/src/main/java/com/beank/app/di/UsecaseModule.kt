@@ -8,6 +8,7 @@ import com.beank.domain.repository.ScheduleRepository
 import com.beank.domain.repository.SettingRepository
 import com.beank.domain.repository.TagRepository
 import com.beank.domain.repository.UserRepository
+import com.beank.domain.usecase.AlarmUsecases
 import com.beank.domain.usecase.AnalysisUsecases
 import com.beank.domain.usecase.GeoUsecases
 import com.beank.domain.usecase.LoginUsecases
@@ -35,6 +36,7 @@ import com.beank.domain.usecase.record.InsertRecord
 import com.beank.domain.usecase.record.StartNewRecord
 import com.beank.domain.usecase.record.UpdateRecord
 import com.beank.domain.usecase.schedule.DeleteSchedule
+import com.beank.domain.usecase.schedule.GetAlarmSchedule
 import com.beank.domain.usecase.schedule.GetTodaySchedule
 import com.beank.domain.usecase.schedule.InsertSchedule
 import com.beank.domain.usecase.schedule.UpdateCheckSchedule
@@ -189,8 +191,13 @@ object UsecaseModule {
 
     @Provides
     @Singleton
-    fun providesAlarmUseCases(settingRepository: SettingRepository) : GetNoticeAlarm {
-        return GetNoticeAlarm(settingRepository)
-    }
+    fun providesAlarmUseCases(settingRepository: SettingRepository,scheduleRepository: ScheduleRepository) = AlarmUsecases(
+        getNoticeAlarm = GetNoticeAlarm(settingRepository),
+        getScheduleAlarm = GetScheduleAlarm(settingRepository),
+        getAlarmSchedule = GetAlarmSchedule(scheduleRepository)
+    )
+
+
+
 
 }

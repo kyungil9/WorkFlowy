@@ -13,7 +13,6 @@ import com.beank.domain.model.Record
 import com.beank.domain.model.Schedule
 import com.beank.domain.model.Tag
 import com.beank.domain.model.UserInfo
-import java.net.URI
 
 @RequiresApi(Build.VERSION_CODES.O)
 fun WeekSchedule.toScheduleModel() = Schedule(

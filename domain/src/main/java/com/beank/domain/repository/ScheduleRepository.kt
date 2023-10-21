@@ -10,6 +10,8 @@ interface ScheduleRepository {
 
     fun getScheduleInfo(today : LocalDate) : Flow<FireStoreState<List<Schedule>>>
 
+    suspend fun getAlarmSchedule(today: LocalDate) : List<Schedule>
+
     fun insertSchedule(schedule: Schedule)
 
     fun updateSchedule(schedule: Schedule)
