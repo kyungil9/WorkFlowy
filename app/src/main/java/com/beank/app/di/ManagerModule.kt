@@ -6,6 +6,8 @@ import android.content.Context
 import android.content.Intent
 import androidx.work.OneTimeWorkRequest
 import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.PeriodicWorkRequest
+import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import com.beank.app.service.GeofenceBroadcastReceiver
 import com.beank.app.service.MessageWorker
@@ -20,6 +22,8 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import java.time.Duration
+import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 import kotlin.random.Random
 

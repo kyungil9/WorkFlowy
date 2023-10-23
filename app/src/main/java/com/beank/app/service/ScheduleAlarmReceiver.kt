@@ -26,17 +26,26 @@ class ScheduleAlarmReceiver : BroadcastReceiver() {
                     .build()
                 workManager.enqueue(messageWorkRequest)
             }else{
-                val title = it.getStringExtra("title").toString()
-                val message = it.getStringExtra("body").toString()
-                val messageWorkRequest = OneTimeWorkRequestBuilder<MessageWorker>()
-                    .setInputData(workDataOf(
-                        "mode" to MessageMode.LOCAL,
-                        "title" to title,
-                        "body" to message
-                    ))
-                    .setBackoffCriteria(BackoffPolicy.LINEAR,30000,TimeUnit.MILLISECONDS)
-                    .build()
-                workManager.enqueue(messageWorkRequest)
+                val repeat = it.getBooleanExtra("repeat",false)
+                if (repeat){//12시마다 반복
+                    val messageWorkRequest = OneTimeWorkRequestBuilder<MessageWorker>()
+                        .setInputData(workDataOf("mode" to MessageMode.TODAY))
+                        .setBackoffCriteria(BackoffPolicy.LINEAR,30000,TimeUnit.MILLISECONDS)
+                        .build()
+                    workManager.enqueue(messageWorkRequest)
+                }else{
+                    val title = it.getStringExtra("title").toString()
+                    val message = it.getStringExtra("body").toString()
+                    val messageWorkRequest = OneTimeWorkRequestBuilder<MessageWorker>()
+                        .setInputData(workDataOf(
+                            "mode" to MessageMode.LOCAL,
+                            "title" to title,
+                            "body" to message
+                        ))
+                        .setBackoffCriteria(BackoffPolicy.LINEAR,30000,TimeUnit.MILLISECONDS)
+                        .build()
+                    workManager.enqueue(messageWorkRequest)
+                }
             }
         }
     }

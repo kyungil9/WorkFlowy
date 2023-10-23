@@ -50,5 +50,6 @@ object MessageMode {
     const val CANCLE = 5
     const val CANCLEALL = 6
     const val TODAY = 7
+    const val REPEAT = 8
 }
 

@@ -2,6 +2,10 @@ package com.beank.workFlowy.screen.setting
 
 import android.net.Uri
 import androidx.lifecycle.viewModelScope
+import androidx.work.BackoffPolicy
+import androidx.work.OneTimeWorkRequest
+import androidx.work.WorkManager
+import androidx.work.workDataOf
 import com.beank.domain.model.onEmpty
 import com.beank.domain.model.onException
 import com.beank.domain.model.onLoading
@@ -12,11 +16,13 @@ import com.beank.domain.usecase.UserUsecases
 import com.beank.domain.usecase.account.SignOut
 import com.beank.workFlowy.component.snackbar.SnackbarManager
 import com.beank.workFlowy.screen.WorkFlowyViewModel
+import com.beank.workFlowy.utils.MessageMode
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import com.beank.presentation.R.string as AppText
 
@@ -25,7 +31,8 @@ import com.beank.presentation.R.string as AppText
 class SettingViewModel @Inject constructor(
     private val settingUsecases: SettingUsecases,
     private val userUsecases: UserUsecases,
-    private val signOut: SignOut,
+    private val workManager: WorkManager,
+    private val messageRequest : OneTimeWorkRequest.Builder,
     logRepository: LogRepository
 ) : WorkFlowyViewModel(logRepository) {
 
@@ -49,6 +56,11 @@ class SettingViewModel @Inject constructor(
 
     fun onNoticeAlarmUpdate(toggle : Boolean){
         launchCatching {
+            if (toggle){
+                settingUsecases.subscribeNotice()
+            }else{
+                settingUsecases.unsubscribeNotice()
+            }
             uiState.noticeToggle = toggle
             settingUsecases.updateNoticeAlarm(toggle)
         }
@@ -56,6 +68,19 @@ class SettingViewModel @Inject constructor(
 
     fun onScheduleAlarmUpdate(toggle : Boolean){
         launchCatching {
+            if (toggle){
+                val messageWorkRequest = messageRequest
+                    .setInputData(workDataOf("mode" to MessageMode.REPEAT))
+                    .setBackoffCriteria(BackoffPolicy.LINEAR,30000, TimeUnit.MILLISECONDS)
+                    .build()
+                workManager.enqueue(messageWorkRequest)
+            }else{
+                val messageWorkRequest = messageRequest
+                    .setInputData(workDataOf("mode" to MessageMode.CANCLEALL))
+                    .setBackoffCriteria(BackoffPolicy.LINEAR,30000, TimeUnit.MILLISECONDS)
+                    .build()
+                workManager.enqueue(messageWorkRequest)
+            }
             uiState.scheduleToggle = toggle
             settingUsecases.updateScheduleAlarm(toggle)
         }
@@ -105,7 +130,7 @@ class SettingViewModel @Inject constructor(
     }
 
 
-    fun signOut() = signOut.invoke()
+    fun signOut() = settingUsecases.signOut()
 
 
     private fun getDarkThemeInfo() = settingUsecases.getDarkTheme()

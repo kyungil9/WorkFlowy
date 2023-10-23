@@ -22,6 +22,7 @@ import com.beank.domain.usecase.UserUsecases
 import com.beank.domain.usecase.WeekUsecases
 import com.beank.domain.usecase.account.CreateAccount
 import com.beank.domain.usecase.account.LoginAccount
+import com.beank.domain.usecase.account.SignOut
 import com.beank.domain.usecase.geo.AddGeofence
 import com.beank.domain.usecase.geo.GetChooseGeofence
 import com.beank.domain.usecase.geo.GetGeoTriggerList
@@ -29,6 +30,8 @@ import com.beank.domain.usecase.geo.RemoveGeofence
 import com.beank.domain.usecase.geo.StartGeofenceToClient
 import com.beank.domain.usecase.geo.UpdateGeofence
 import com.beank.domain.usecase.message.InsertToken
+import com.beank.domain.usecase.message.SubscribeNotice
+import com.beank.domain.usecase.message.UnsubscribeNotice
 import com.beank.domain.usecase.record.GetCurrentRecord
 import com.beank.domain.usecase.record.GetNowRecord
 import com.beank.domain.usecase.record.GetPeriodRecord
@@ -137,7 +140,7 @@ object UsecaseModule {
 
     @Provides
     @Singleton
-    fun provideSettingUseCases(settingRepository: SettingRepository,geofenceRepository: GeofenceRepository) = SettingUsecases(
+    fun provideSettingUseCases(settingRepository: SettingRepository,geofenceRepository: GeofenceRepository,messageRepository: MessageRepository,accountRepository: AccountRepository) = SettingUsecases(
         getDarkTheme = GetDarkTheme(settingRepository),
         getDynamicTheme = GetDynamicTheme(settingRepository),
         getNoticeAlarm = GetNoticeAlarm(settingRepository),
@@ -149,7 +152,10 @@ object UsecaseModule {
         updateScheduleAlarm = UpdateScheduleAlarm(settingRepository),
         updateTriggerToggle = UpdateTriggerToggle(settingRepository),
         startGeofenceToClient = StartGeofenceToClient(geofenceRepository),
-        removeGeofence = RemoveGeofence(geofenceRepository)
+        removeGeofence = RemoveGeofence(geofenceRepository),
+        subscribeNotice = SubscribeNotice(messageRepository),
+        unsubscribeNotice = UnsubscribeNotice(messageRepository),
+        signOut = SignOut(accountRepository)
     )
 
     @Provides

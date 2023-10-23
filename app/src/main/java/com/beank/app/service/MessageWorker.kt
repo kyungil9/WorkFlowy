@@ -25,7 +25,9 @@ import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
+import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.LocalTime
 import kotlin.random.Random
 
 @HiltWorker
@@ -91,6 +93,36 @@ class MessageWorker @AssistedInject constructor(
         }
     }
 
+    private suspend fun onAlarmRepeat() {
+        val pendingIntent = Intent(applicationContext,ScheduleAlarmReceiver::class.java).let { intent ->
+            intent.putExtra("repeast",true)
+            PendingIntent.getBroadcast(applicationContext,0,intent,PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
+        }
+        val time = LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(0,0)).toLong()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S){
+            if (alarmManager.canScheduleExactAlarms()) {
+                alarmManager.setExactAndAllowWhileIdle(
+                    AlarmManager.RTC_WAKEUP,
+                    time,//시간대 설정
+                    pendingIntent
+                )
+            }
+        }else{
+            alarmManager.setAndAllowWhileIdle(
+                AlarmManager.RTC_WAKEUP,
+                time,
+                pendingIntent
+            )
+        }
+    }
+
+    private suspend fun onAlarmRepeatCancle() {
+        val pendingIntent = Intent(applicationContext,ScheduleAlarmReceiver::class.java).let { intent ->
+            PendingIntent.getBroadcast(applicationContext,0,intent,PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
+        }
+        alarmManager.cancel(pendingIntent)
+    }
+
     private suspend fun onAlarmDelete(id : Int){
         val pendingIntent = Intent(applicationContext,ScheduleAlarmReceiver::class.java).let { intent ->
             PendingIntent.getBroadcast(applicationContext,id,intent,PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)}
@@ -154,12 +186,17 @@ class MessageWorker @AssistedInject constructor(
                         }else{
                             onAlarmListDelect()
                         }
+                        onAlarmRepeatCancle()
                     }
                     MessageMode.TODAY -> {
                         //schedule알람 설정 -> workmanager 12 00분마다 실행
                         if (onScheduleAlarmCheck()){
                             onTodayAlarmListUpdate(false)
                         }
+                    }
+                    MessageMode.REPEAT -> {
+                        onTodayAlarmListUpdate(true)
+                        onAlarmRepeat()
                     }
                     else -> {}
                 }
