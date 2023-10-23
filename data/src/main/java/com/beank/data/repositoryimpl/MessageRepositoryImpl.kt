@@ -20,6 +20,19 @@ class MessageRepositoryImpl @Inject constructor(
         }
     }
 
+    override fun newToken(token: String) {
+        storage.replace(TOKEN, TOKEN ,mapOf("token" to token))
+        subscribeNotice()
+    }
+
+    override fun subscribeNotice() {
+        message.subscribeToTopic("NOTICE")
+    }
+
+    override fun unsubscribeNotice() {
+        message.unsubscribeFromTopic("NOTICE")
+    }
+
     companion object{
         private val TOKEN = "Token"
     }

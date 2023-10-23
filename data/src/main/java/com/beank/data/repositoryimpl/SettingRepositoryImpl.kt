@@ -3,6 +3,7 @@ package com.beank.data.repositoryimpl
 import com.beank.data.datasource.SettingDataSource
 import com.beank.domain.repository.SettingRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
@@ -14,7 +15,7 @@ class SettingRepositoryImpl @Inject constructor(
 
     override fun getDynamicTheme(): Flow<Boolean> = settingDataSource.getSettingState().map { it.dynamicTheme }
 
-    override fun getNoticeAlarm(): Flow<Boolean> = settingDataSource.getSettingState().map { it.noticeAlarm }
+    override  fun getNoticeAlarm(): Flow<Boolean> = settingDataSource.getSettingState().map { it.noticeAlarm }
 
     override fun getScheduleAlarm(): Flow<Boolean> = settingDataSource.getSettingState().map { it.scheduleAlarm }
 
@@ -23,6 +24,10 @@ class SettingRepositoryImpl @Inject constructor(
     override fun getMoveTriggerToggle(): Flow<Boolean> = settingDataSource.getSettingState().map { it.moveTrigger }
 
     override fun getGeoState(): Flow<Boolean> = settingDataSource.getSettingState().map { it.geo }
+
+    override suspend fun getNoticeState(): Boolean = settingDataSource.getSettingState().first().noticeAlarm
+
+    override suspend fun getScheduleState(): Boolean = settingDataSource.getSettingState().first().scheduleAlarm
 
 
     override suspend fun updateDarkTheme(state : Boolean) : Unit = settingDataSource.updateDarkTheme(state)

@@ -45,7 +45,9 @@ import com.beank.domain.usecase.setting.GetDarkTheme
 import com.beank.domain.usecase.setting.GetDynamicTheme
 import com.beank.domain.usecase.setting.GetGeoState
 import com.beank.domain.usecase.setting.GetNoticeAlarm
+import com.beank.domain.usecase.setting.GetNoticeState
 import com.beank.domain.usecase.setting.GetScheduleAlarm
+import com.beank.domain.usecase.setting.GetScheduleState
 import com.beank.domain.usecase.setting.GetTriggerToggle
 import com.beank.domain.usecase.setting.UpdateDarkTheme
 import com.beank.domain.usecase.setting.UpdateDynamicTheme
@@ -192,8 +194,8 @@ object UsecaseModule {
     @Provides
     @Singleton
     fun providesAlarmUseCases(settingRepository: SettingRepository,scheduleRepository: ScheduleRepository) = AlarmUsecases(
-        getNoticeAlarm = GetNoticeAlarm(settingRepository),
-        getScheduleAlarm = GetScheduleAlarm(settingRepository),
+        getNoticeAlarm = GetNoticeState(settingRepository),
+        getScheduleAlarm = GetScheduleState(settingRepository),
         getAlarmSchedule = GetAlarmSchedule(scheduleRepository)
     )
 

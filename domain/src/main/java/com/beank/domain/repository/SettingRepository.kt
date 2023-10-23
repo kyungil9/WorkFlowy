@@ -12,6 +12,9 @@ interface SettingRepository {
     fun getMoveTriggerToggle() : Flow<Boolean>
     fun getGeoState() : Flow<Boolean>
 
+    suspend fun getScheduleState() : Boolean
+    suspend fun getNoticeState() : Boolean
+
     suspend fun updateDarkTheme(state : Boolean)
     suspend fun updateDynamicTheme(state : Boolean)
     suspend fun updateNoticeAlarm(state : Boolean)
