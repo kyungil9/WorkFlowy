@@ -84,6 +84,7 @@ dagger-hilt-android = { group = "com.google.dagger", name = "hilt-android", vers
 dagger-hilt-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "dagger" }
 hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hilt" }
 hilt-work = { group = "androidx.hilt", name = "hilt-work", version.ref = "hilt-work"}
+hilt-compiler = { group = "androidx.hilt", name = "hilt-compiler", version.ref = "hilt-work"}
 
 compose-map = {group = "com.google.maps.android", name = "maps-compose", version.ref = "compose-map"}
 gms-play-services-maps = {group = "com.google.android.gms", name = "play-services-maps", version.ref = "map"}

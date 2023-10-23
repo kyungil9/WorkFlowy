@@ -62,6 +62,7 @@ dependencies {
     //hilt
     implementation(libs.bundles.hilt)
     kapt(libs.dagger.hilt.compiler)
+    kapt(libs.hilt.compiler)
 
     //firebase
     implementation(platform(libs.firebase.bom))
