@@ -6,6 +6,8 @@ import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
 import com.beank.data.datasource.StorageDataSource
+import com.beank.data.di.ActivityPendingIntent
+import com.beank.data.di.GeoPendingIntent
 import com.beank.data.entity.WeekGeoTrigger
 import com.beank.data.mapper.toGeofenceData
 import com.beank.data.mapper.toWeekGeoTrigger
@@ -30,7 +32,8 @@ import javax.inject.Inject
 class GeofenceRepositoryImpl @Inject constructor(
     private val geofencingClient: GeofencingClient,
     private val activityRecognitionClient: ActivityRecognitionClient,
-    private val pendingIntent: PendingIntent,
+    @GeoPendingIntent private val geoPendingIntent: PendingIntent,
+    @ActivityPendingIntent private val activityPendingIntent: PendingIntent,
     private val storage : StorageDataSource
 ) : GeofenceRepository {
 
@@ -65,14 +68,14 @@ class GeofenceRepositoryImpl @Inject constructor(
 
     override suspend fun addGeofenceToClient(geofenceData: GeofenceData, onSuccess : () -> Unit, onFail : () -> Unit) {
         val id = storage.saveToReturnId(GEOTRIGGER,geofenceData.toWeekGeoTrigger())
-        geofencingClient.addGeofences(getGeofencingRequest(createGeofence(geofenceData.copy(id = id))),pendingIntent).run {
+        geofencingClient.addGeofences(getGeofencingRequest(createGeofence(geofenceData.copy(id = id))),geoPendingIntent).run {
             addOnSuccessListener { onSuccess() }
             addOnFailureListener { onFail() }
         }
     }
 
     override suspend fun startGeofenceToClient(onSuccess : () -> Unit, onFail : () -> Unit) {
-        val task = activityRecognitionClient.requestActivityTransitionUpdates(ActivityTransitionRequest(initTransitions()),pendingIntent)
+        val task = activityRecognitionClient.requestActivityTransitionUpdates(ActivityTransitionRequest(initTransitions()),activityPendingIntent)
         task.addOnSuccessListener {
             Log.d("walk","ok")
         }
@@ -82,7 +85,7 @@ class GeofenceRepositoryImpl @Inject constructor(
             geofenceList.add(createGeofence(geofenceData))
         }
         if (geofenceList.isNotEmpty()){
-            geofencingClient.addGeofences(getGeofencingRequest(geofenceList),pendingIntent).run {
+            geofencingClient.addGeofences(getGeofencingRequest(geofenceList),geoPendingIntent).run {
                 addOnSuccessListener { onSuccess() }
                 addOnFailureListener { onFail() }
             }
@@ -92,7 +95,7 @@ class GeofenceRepositoryImpl @Inject constructor(
     override fun updateGeofenceToClient(geofenceData: GeofenceData, onSuccess: () -> Unit, onFail: () -> Unit) {
         geofencingClient.removeGeofences(listOf(geofenceData.id)).run {
             addOnSuccessListener {
-                geofencingClient.addGeofences(getGeofencingRequest(createGeofence(geofenceData)),pendingIntent).run {
+                geofencingClient.addGeofences(getGeofencingRequest(createGeofence(geofenceData)),geoPendingIntent).run {
                     addOnSuccessListener {
                         storage.replace(GEOTRIGGER,geofenceData.id!!,geofenceData.toWeekGeoTrigger())
                         onSuccess()
@@ -113,29 +116,21 @@ class GeofenceRepositoryImpl @Inject constructor(
     }
 
     override fun removeGeofenceToClient(onSuccess: () -> Unit, onFail: () -> Unit) {
-        geofencingClient.removeGeofences(pendingIntent).run {
+        geofencingClient.removeGeofences(geoPendingIntent).run {
             addOnSuccessListener { onSuccess() }
             addOnFailureListener { onFail() }
         }
-        activityRecognitionClient.removeActivityTransitionUpdates(pendingIntent)
+        activityRecognitionClient.removeActivityTransitionUpdates(activityPendingIntent)
     }
 
     private fun initTransitions() : List<ActivityTransition>{
         val transitions = mutableListOf<ActivityTransition>()
         transitions += ActivityTransition.Builder()
-            .setActivityType(DetectedActivity.WALKING)
+            .setActivityType(DetectedActivity.ON_FOOT)
             .setActivityTransition(ActivityTransition.ACTIVITY_TRANSITION_ENTER)
             .build()
         transitions += ActivityTransition.Builder()
-            .setActivityType(DetectedActivity.WALKING)
-            .setActivityTransition(ActivityTransition.ACTIVITY_TRANSITION_EXIT)
-            .build()
-        transitions += ActivityTransition.Builder()
-            .setActivityType(DetectedActivity.RUNNING)
-            .setActivityTransition(ActivityTransition.ACTIVITY_TRANSITION_ENTER)
-            .build()
-        transitions += ActivityTransition.Builder()
-            .setActivityType(DetectedActivity.RUNNING)
+            .setActivityType(DetectedActivity.ON_FOOT)
             .setActivityTransition(ActivityTransition.ACTIVITY_TRANSITION_EXIT)
             .build()
         transitions += ActivityTransition.Builder()

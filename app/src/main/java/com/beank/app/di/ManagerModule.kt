@@ -6,6 +6,8 @@ import android.content.Context
 import android.content.Intent
 import androidx.work.WorkManager
 import com.beank.app.service.GeofenceBroadcastReceiver
+import com.beank.data.di.ActivityPendingIntent
+import com.beank.data.di.GeoPendingIntent
 import com.google.android.gms.location.ActivityRecognition
 import com.google.android.gms.location.ActivityRecognitionClient
 import com.google.android.gms.location.GeofencingClient
@@ -47,8 +49,17 @@ object ManagerModule{
 
     @Singleton
     @Provides
+    @GeoPendingIntent
     fun providesGeofenceIntent(@ApplicationContext context: Context) : PendingIntent {
         val intent = Intent(context,GeofenceBroadcastReceiver::class.java)
-        return PendingIntent.getBroadcast(context, Random.nextInt(),intent,PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
+        return PendingIntent.getBroadcast(context, 0,intent,PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
+    }
+
+    @Singleton
+    @Provides
+    @ActivityPendingIntent
+    fun providesActivityIntent(@ApplicationContext context: Context) : PendingIntent {
+        val intent = Intent(context,GeofenceBroadcastReceiver::class.java)
+        return PendingIntent.getBroadcast(context, 1,intent,PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
     }
 }

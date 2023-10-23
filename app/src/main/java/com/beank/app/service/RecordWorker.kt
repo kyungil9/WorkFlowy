@@ -12,6 +12,7 @@ import androidx.work.CoroutineWorker
 import androidx.work.ForegroundInfo
 import androidx.work.WorkerParameters
 import com.beank.app.utils.notificationBuilder
+import com.beank.domain.model.GeofenceEvent
 import com.beank.domain.model.Record
 import com.beank.domain.repository.LogRepository
 import com.beank.domain.usecase.GeoUsecases
@@ -55,7 +56,7 @@ class RecordWorker @AssistedInject constructor(
     private suspend fun onGeofenceWork(geofenceId : String, geoState : Int, dateTime: LocalDateTime){
         val geofenceData = geoUsecases.getChooseGeofence(geofenceId)
         geofenceData?.let {geo ->
-            if (geo.geoEvent == geoState) {
+            if (geoState == getGeoState(geo.geoEvent)) {
                 if (geo.startTime.isAfter(dateTime.toLocalTime()) && geo.endTime.isBefore(dateTime.toLocalTime()) || !geo.timeOption) {//시간안에 동작
                     onRecordReduce()//현재 까지 진행중이던 기록 저장
                     onRecordInsert(geo.tag,dateTime)//새 기록 추가
@@ -63,6 +64,12 @@ class RecordWorker @AssistedInject constructor(
                 }
             }
         }
+    }
+
+    private fun getGeoState(geoEvent : Int) : Int = when{
+        (geoEvent == GeofenceEvent.EnterRequest) -> Geofence.GEOFENCE_TRANSITION_DWELL
+        (geoEvent == GeofenceEvent.ExitRequest) -> Geofence.GEOFENCE_TRANSITION_EXIT
+        else -> 0
     }
 
     private suspend fun onActivityWork(state : Int, dateTime: LocalDateTime){

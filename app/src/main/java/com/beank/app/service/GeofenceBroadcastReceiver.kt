@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.util.Log
+import androidx.work.BackoffPolicy
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.workDataOf
@@ -16,6 +17,7 @@ import com.google.android.gms.location.GeofenceStatusCodes
 import com.google.android.gms.location.GeofencingEvent
 import dagger.hilt.android.AndroidEntryPoint
 import java.time.LocalDateTime
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -24,12 +26,14 @@ class GeofenceBroadcastReceiver : BroadcastReceiver(){
 
     override fun onReceive(context : Context?, intented : Intent?) {
         intented?.let { intent ->
+            Log.d("trigger",intent.toString())
             if (intent.action == "android.intent.action.BOOT_COMPLETED" || intent.action == "android.intent.action.LOCKED_BOOT_COMPLETED"){
                 //지오펜스 재등록 기능 추가
                 val geoWorkRequest = OneTimeWorkRequestBuilder<RecordWorker>()
                     .setInputData(workDataOf(
                         "reboot" to true
                     ))
+                    .setBackoffCriteria(BackoffPolicy.LINEAR,30000, TimeUnit.MILLISECONDS)
                     .build()
                 workManager.enqueue(geoWorkRequest)
             }else{
@@ -50,8 +54,10 @@ class GeofenceBroadcastReceiver : BroadcastReceiver(){
                                 "geofenceId" to triggeringGeofences.last().requestId,
                                 "geoState" to geofenceTransition,
                                 "dateTime" to LocalDateTime.now().toLong()))
+                            .setBackoffCriteria(BackoffPolicy.LINEAR,30000,TimeUnit.MILLISECONDS)
                             .build()
                         workManager.enqueue(geoWorkRequest)
+                        Log.e(TAG, "success geowork")
 
                     }else {
                         //error
@@ -60,21 +66,23 @@ class GeofenceBroadcastReceiver : BroadcastReceiver(){
                 }else{
                     if (activityEvent){
                         val result = ActivityTransitionResult.extractResult(intent)!!
-                        val event = result.transitionEvents.last()
-                        if (event.activityType == DetectedActivity.WALKING || event.activityType == DetectedActivity.IN_VEHICLE ||
-                            event.activityType == DetectedActivity.ON_BICYCLE || event.activityType == DetectedActivity.RUNNING){
+                        val event = result.transitionEvents.first()
+                        if (event.activityType == DetectedActivity.ON_FOOT || event.activityType == DetectedActivity.IN_VEHICLE ||
+                            event.activityType == DetectedActivity.ON_BICYCLE){
                             if (event.transitionType == ActivityTransition.ACTIVITY_TRANSITION_ENTER){
                                 val activityWorkRequest = OneTimeWorkRequestBuilder<RecordWorker>()
                                     .setInputData(workDataOf(
                                         "activity" to event.transitionType,
                                         "dateTime" to LocalDateTime.now().toLong()))
+                                    .setBackoffCriteria(BackoffPolicy.LINEAR,30000,TimeUnit.MILLISECONDS)
                                     .build()
                                 workManager.enqueue(activityWorkRequest)
                             }else if (event.transitionType == ActivityTransition.ACTIVITY_TRANSITION_EXIT){
                                 val activityWorkRequest = OneTimeWorkRequestBuilder<RecordWorker>()
                                     .setInputData(workDataOf(
-                                        "activity" to "Exit",
+                                        "activity" to 0,
                                         "dateTime" to LocalDateTime.now().toLong()))
+                                    .setBackoffCriteria(BackoffPolicy.LINEAR,30000,TimeUnit.MILLISECONDS)
                                     .build()
                                 workManager.enqueue(activityWorkRequest)
                             }
