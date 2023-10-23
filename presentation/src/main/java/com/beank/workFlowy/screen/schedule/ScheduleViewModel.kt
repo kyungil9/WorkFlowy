@@ -2,6 +2,7 @@ package com.beank.workFlowy.screen.schedule
 
 import android.content.res.TypedArray
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
@@ -18,12 +19,16 @@ import com.beank.workFlowy.utils.fromScheduleJson
 import com.beank.workFlowy.utils.imageToInt
 import com.beank.workFlowy.utils.intToImage
 import com.beank.workFlowy.utils.toLocalDate
+import com.beank.workFlowy.utils.toLocalDateTime
+import com.beank.workFlowy.utils.toLong
+import com.beank.workFlowy.utils.toTimeMillis
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
+import java.util.Calendar
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -142,7 +147,8 @@ class ScheduleViewModel @Inject constructor(
             //알람 등록 추가
             //알람 하루전에 해당되는 경우 알람매니저 바로 추가
             if (uiState.alarmToggle){
-                if (LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(0,0)).isBefore(alarmTime) && LocalDateTime.now().isAfter(alarmTime)){
+                if (LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(0,0)).isAfter(alarmTime) && LocalDateTime.now().isBefore(alarmTime)){
+                    Log.d("message","succeses")
                     onNowMessageBuild(alarmTime)
                 }
             }
@@ -155,7 +161,7 @@ class ScheduleViewModel @Inject constructor(
                 "mode" to MessageMode.NOW,
                 "title" to uiState.title,
                 "body" to uiState.comment,
-                "time" to alarmTime,
+                "time" to alarmTime.toTimeMillis(),
                 "id" to uiState.originalSchedule.alarmCode
             ))
             .setBackoffCriteria(BackoffPolicy.LINEAR,30000, TimeUnit.MILLISECONDS)
@@ -164,7 +170,8 @@ class ScheduleViewModel @Inject constructor(
     }
 
     private fun onCheckTime() : Boolean {
-        return (LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(0,0)).isBefore(uiState.originalSchedule.alarmTime))&& (LocalDateTime.now().isAfter(uiState.originalSchedule.alarmTime))
+        val alarmTime = uiState.originalSchedule.alarmTime
+        return (LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(0,0)).isAfter(alarmTime))&& (LocalDateTime.now().isBefore(alarmTime))
     }
 
     fun onScheduleUpdate(){

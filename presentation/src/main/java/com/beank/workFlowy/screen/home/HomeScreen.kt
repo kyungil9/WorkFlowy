@@ -125,7 +125,9 @@ fun HomeScreen(
                 onDeleteSchedule = remember {{
                     weekViewModel.onScheduleDelete()
                     weekViewModel.onScheduleStateChange(false)}},
-                onUpdateSchedule = remember {{ openEditSchedule(NavigationItem.SCHEDULE.route,uiState.selectSchedule) }},
+                onUpdateSchedule = remember {{
+                    openEditSchedule(NavigationItem.SCHEDULE.route,uiState.selectSchedule)
+                    weekViewModel.onScheduleStateChange(false)}},
                 onAdditionalSchedule = remember {{ openSchedule(NavigationItem.SCHEDULE.route,selectDay) }}
             )
         }}

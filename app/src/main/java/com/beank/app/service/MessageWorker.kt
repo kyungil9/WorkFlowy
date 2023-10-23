@@ -19,6 +19,7 @@ import com.beank.domain.repository.LogRepository
 import com.beank.domain.usecase.AlarmUsecases
 import com.beank.workFlowy.utils.MessageMode
 import com.beank.workFlowy.utils.toLong
+import com.beank.workFlowy.utils.toTimeMillis
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -51,11 +52,13 @@ class MessageWorker @AssistedInject constructor(
         val dateTime = LocalDateTime.now()
         val alarmList = alarmUsecases.getAlarmSchedule(dateTime.toLocalDate())
         for (schedule in alarmList){//오늘 알람 등록
+            Log.d("localMessage","workManager list updast")
+            Log.d("localMessage","${schedule}")
             if (value){
-                if (schedule.alarmTime.isAfter(dateTime))
-                    onAlarmInsert(schedule.title,schedule.comment,schedule.alarmTime.toLong(),schedule.alarmCode)
+                if (schedule.alarmTime.isBefore(dateTime))
+                    onAlarmInsert(schedule.title,schedule.comment,schedule.alarmTime.toTimeMillis(),schedule.alarmCode)
             }else{
-                onAlarmInsert(schedule.title,schedule.comment,schedule.alarmTime.toLong(),schedule.alarmCode)
+                onAlarmInsert(schedule.title,schedule.comment,schedule.alarmTime.toTimeMillis(),schedule.alarmCode)
             }
         }
     }
@@ -64,7 +67,7 @@ class MessageWorker @AssistedInject constructor(
         val dateTime = LocalDateTime.now()
         val alarmList = alarmUsecases.getAlarmSchedule(dateTime.toLocalDate())
         for (schedule in alarmList){//오늘 알람 등록
-            if (dateTime.isAfter(schedule.alarmTime))
+            if (dateTime.isBefore(schedule.alarmTime))
                 onAlarmDelete(schedule.alarmCode)
         }
     }
@@ -83,6 +86,7 @@ class MessageWorker @AssistedInject constructor(
                     time,//시간대 설정
                     pendingIntent
                 )
+                Log.d("localMessage","workManager local success")
             }
         }else{
             alarmManager.setAndAllowWhileIdle(
@@ -98,7 +102,7 @@ class MessageWorker @AssistedInject constructor(
             intent.putExtra("repeast",true)
             PendingIntent.getBroadcast(applicationContext,0,intent,PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
         }
-        val time = LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(0,0)).toLong()
+        val time = LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(0,0)).toTimeMillis()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S){
             if (alarmManager.canScheduleExactAlarms()) {
                 alarmManager.setExactAndAllowWhileIdle(
@@ -163,6 +167,7 @@ class MessageWorker @AssistedInject constructor(
                     }
                     MessageMode.LOCAL -> {//스캐줄 알람 처리
                         if (onScheduleAlarmCheck()) {
+                            Log.d("localMessage","workManager success")
                             onNotifySend(title, body)
                         }
                     }
@@ -175,6 +180,7 @@ class MessageWorker @AssistedInject constructor(
                     MessageMode.NOW -> {//오늘 등록한 알람 추가
                         if (onScheduleAlarmCheck()){
                             onAlarmInsert(title,body, time, id)
+                            Log.d("localMessage","workManager insert success")
                         }
                     }
                     MessageMode.CANCLE -> {

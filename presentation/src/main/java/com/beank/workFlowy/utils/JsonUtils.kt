@@ -13,6 +13,7 @@ import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
+import java.util.Calendar
 
 @RequiresApi(Build.VERSION_CODES.O)
 fun Schedule.toScheduleJson() : String?{
@@ -146,5 +147,13 @@ fun LocalDate.toEndTimeLong() = LocalDateTime.of(this, LocalTime.of(23,59)).toLo
 fun LocalDateTime.toLong() = this.atZone(ZoneOffset.UTC)?.toInstant()?.toEpochMilli()!!
 
 @RequiresApi(Build.VERSION_CODES.O)
+fun LocalDateTime.toTimeMillis() : Long{
+    val calendar = Calendar.getInstance()
+    calendar.set(this.year,this.monthValue-1,this.dayOfMonth,this.hour,this.minute)
+    return calendar.timeInMillis
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
 fun Long.toLocalDateTime() = LocalDateTime.ofInstant(Instant.ofEpochMilli(this), ZoneOffset.UTC)
+
 

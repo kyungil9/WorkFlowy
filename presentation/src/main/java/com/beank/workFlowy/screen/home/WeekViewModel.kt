@@ -3,6 +3,10 @@ package com.beank.workFlowy.screen.home
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.viewModelScope
+import androidx.work.BackoffPolicy
+import androidx.work.OneTimeWorkRequest
+import androidx.work.WorkManager
+import androidx.work.workDataOf
 import com.beank.domain.model.Record
 import com.beank.domain.model.Schedule
 import com.beank.domain.model.Tag
@@ -14,6 +18,7 @@ import com.beank.domain.repository.LogRepository
 import com.beank.domain.usecase.WeekUsecases
 import com.beank.workFlowy.component.snackbar.SnackbarManager
 import com.beank.workFlowy.screen.WorkFlowyViewModel
+import com.beank.workFlowy.utils.MessageMode
 import com.beank.workFlowy.utils.toFormatString
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineStart
@@ -34,6 +39,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.temporal.ChronoUnit
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import com.beank.presentation.R.string as AppText
 
@@ -41,6 +47,8 @@ import com.beank.presentation.R.string as AppText
 @HiltViewModel
 class WeekViewModel @Inject constructor(
     private val weekUsecases: WeekUsecases,
+    private val workManager: WorkManager,
+    private val messageRequest : OneTimeWorkRequest.Builder,
     logRepository: LogRepository
 ) : WorkFlowyViewModel(logRepository) {
 
@@ -129,6 +137,16 @@ class WeekViewModel @Inject constructor(
     fun onScheduleDelete(){
         launchCatching {
             weekUsecases.deleteSchedule(scheduleInfo)
+            val messageWorkRequest = messageRequest //등록된 알람 취소
+                .setInputData(
+                    workDataOf(
+                    "mode" to MessageMode.CANCLE,
+                    "id" to scheduleInfo.alarmCode
+                )
+                )
+                .setBackoffCriteria(BackoffPolicy.LINEAR,30000, TimeUnit.MILLISECONDS)
+                .build()
+            workManager.enqueue(messageWorkRequest)
         }
     }
 
