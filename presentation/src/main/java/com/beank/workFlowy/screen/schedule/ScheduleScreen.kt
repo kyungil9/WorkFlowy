@@ -71,6 +71,7 @@ import com.beank.workFlowy.component.ToggleCard
 import com.beank.workFlowy.component.VerticalSpacer
 import com.beank.workFlowy.component.WeekLayout
 import com.beank.workFlowy.component.snackbar.SnackbarManager
+import com.beank.workFlowy.screen.RequestNotificationPermissionDialog
 import com.beank.workFlowy.ui.theme.gray
 import com.beank.workFlowy.ui.theme.white
 import com.beank.workFlowy.utils.toFormatShortString
@@ -89,7 +90,6 @@ fun ScheduleScreen(
     snackbarHostState: SnackbarHostState,
     onBackHome : () -> Unit
 ) {
-    val alarmList = listOf("5분전","30분전","1시간전","3시간전","6시간전","12시간전","하루전")
     val resources = LocalContext.current.resources
     val uiState = scheduleViewModel.uiState
     val configuration = LocalConfiguration.current
@@ -198,7 +198,7 @@ fun ScheduleScreen(
 
                 AnimatedVisibility(visible = uiState.alarmToggle) {
                     LazyRow(modifier = Modifier.fillMaxWidth()){
-                        items(alarmList,key = {alarm -> alarm}){item ->
+                        items(scheduleViewModel.alarmList,key = {alarm -> alarm}){item ->
                             FilterChip(
                                 modifier = Modifier.padding(horizontal = 5.dp),
                                 selected = (item == uiState.alarmState),
@@ -326,7 +326,9 @@ fun ScheduleScreen(
                                 imageVector = if (imageToggle) Icons.Outlined.KeyboardArrowUp else Icons.Outlined.KeyboardArrowDown,
                                 contentDescription = "아이콘 선택",
                                 tint = MaterialTheme.colorScheme.onSecondaryContainer,
-                                modifier = Modifier.size(35.dp).padding(end = 12.dp)
+                                modifier = Modifier
+                                    .size(35.dp)
+                                    .padding(end = 12.dp)
                             )
                         }
                         if(imageToggle) {
@@ -343,7 +345,7 @@ fun ScheduleScreen(
                                         modifier = Modifier
                                             .height(40.dp)
                                             .clickable(onClick = remember {
-                                                {scheduleViewModel.onImageChange(image)}
+                                                { scheduleViewModel.onImageChange(image) }
                                             })
                                     )
                                 }

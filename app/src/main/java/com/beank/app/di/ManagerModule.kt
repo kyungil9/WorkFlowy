@@ -4,8 +4,11 @@ import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import androidx.work.OneTimeWorkRequest
+import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import com.beank.app.service.GeofenceBroadcastReceiver
+import com.beank.app.service.MessageWorker
 import com.beank.data.di.ActivityPendingIntent
 import com.beank.data.di.GeoPendingIntent
 import com.google.android.gms.location.ActivityRecognition
@@ -33,6 +36,12 @@ object ManagerModule{
     @Provides
     fun proviedsAlarmManager(@ApplicationContext context: Context) : AlarmManager {
         return context.getSystemService(AlarmManager::class.java)
+    }
+
+    @Singleton
+    @Provides
+    fun providesMessageRequest() : OneTimeWorkRequest.Builder {
+        return OneTimeWorkRequestBuilder<MessageWorker>()
     }
 
     @Singleton

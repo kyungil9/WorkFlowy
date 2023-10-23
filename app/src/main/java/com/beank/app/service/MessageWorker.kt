@@ -8,6 +8,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.hilt.work.HiltWorker
@@ -16,18 +17,19 @@ import androidx.work.WorkerParameters
 import com.beank.app.utils.notificationBuilder
 import com.beank.domain.repository.LogRepository
 import com.beank.domain.usecase.AlarmUsecases
+import com.beank.workFlowy.utils.MessageMode
 import com.beank.workFlowy.utils.toLong
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import java.time.LocalDateTime
 import kotlin.random.Random
 
 @HiltWorker
+@RequiresApi(Build.VERSION_CODES.O)
 class MessageWorker @AssistedInject constructor(
     @Assisted applicationContext: Context,
     @Assisted workerParams: WorkerParameters,
@@ -49,12 +51,22 @@ class MessageWorker @AssistedInject constructor(
         for (schedule in alarmList){//오늘 알람 등록
             if (value){
                 if (schedule.alarmTime.isAfter(dateTime))
-                    onAlarmInsert(schedule.title,schedule.comment,schedule.alarmTime.toLong(),schedule.id.hashCode())
+                    onAlarmInsert(schedule.title,schedule.comment,schedule.alarmTime.toLong(),schedule.alarmCode)
             }else{
-                onAlarmInsert(schedule.title,schedule.comment,schedule.alarmTime.toLong(),schedule.id.hashCode())
+                onAlarmInsert(schedule.title,schedule.comment,schedule.alarmTime.toLong(),schedule.alarmCode)
             }
         }
     }
+
+    private suspend fun onAlarmListDelect(){
+        val dateTime = LocalDateTime.now()
+        val alarmList = alarmUsecases.getAlarmSchedule(dateTime.toLocalDate())
+        for (schedule in alarmList){//오늘 알람 등록
+            if (dateTime.isAfter(schedule.alarmTime))
+                onAlarmDelete(schedule.alarmCode)
+        }
+    }
+
 
     private suspend fun onAlarmInsert(title: String, body: String, time : Long, id: Int){
         val pendingIntent = Intent(applicationContext,ScheduleAlarmReceiver::class.java).let { intent ->
@@ -87,11 +99,11 @@ class MessageWorker @AssistedInject constructor(
     }
 
     private suspend fun onNoticeAlarmCheck() :Boolean {
-        return alarmUsecases.getNoticeAlarm().first()
+        return alarmUsecases.getNoticeAlarm()
     }
 
     private suspend fun onScheduleAlarmCheck() : Boolean {
-        return alarmUsecases.getScheduleAlarm().first()
+        return alarmUsecases.getScheduleAlarm()
     }
 
     private fun onNotifySend(title : String, body : String){
@@ -103,50 +115,53 @@ class MessageWorker @AssistedInject constructor(
 
     override suspend fun doWork(): Result = coroutineScope {
         try {
-            val remote = inputData.getBoolean("remote",false)
-            val local = inputData.getBoolean("local",false)
-            val reboot = inputData.getBoolean("reboot", false)
-            val now = inputData.getBoolean("now",false)
-            val cancle = inputData.getBoolean("cancle",false)
-            val cancleAll = inputData.getBoolean("cancleAll",false)
+            val mode = inputData.getInt("mode",-1)
             val title = inputData.getString("title") ?: ""
             val body = inputData.getString("body") ?: ""
             val time = inputData.getLong("time",0)
             val id = inputData.getInt("id",0)
             withContext(ioDispatchers){
-                when {
-                    remote -> {
+                when(mode) {
+                    MessageMode.REMOTE-> {
+                        Log.d("remoteMessage","workManager success")
                         if (onNoticeAlarmCheck()){//공지 알림 처리
+                            onNotifySend(title, body)
+                            Log.d("remoteMessage","workManager notify")
+                        }
+                    }
+                    MessageMode.LOCAL -> {//스캐줄 알람 처리
+                        if (onScheduleAlarmCheck()) {
                             onNotifySend(title, body)
                         }
                     }
-                    local -> {//스캐줄 알람 처리
-
-                        onNotifySend(title, body)
-                    }
-                    reboot -> {
+                    MessageMode.REBOOT -> {
                         //오늘 알람 재등록
                         if (onScheduleAlarmCheck()){
                             onTodayAlarmListUpdate(true)
                         }
                     }
-                    now -> {//오늘 등록한 알람 추가
+                    MessageMode.NOW -> {//오늘 등록한 알람 추가
                         if (onScheduleAlarmCheck()){
                             onAlarmInsert(title,body, time, id)
                         }
                     }
-                    cancle -> {
+                    MessageMode.CANCLE -> {
                         onAlarmDelete(id)
                     }
-                    cancleAll -> {
-                        //전체 알림 취소 추가
+                    MessageMode.CANCLEALL -> {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE){
+                            alarmManager.cancelAll()
+                        }else{
+                            onAlarmListDelect()
+                        }
                     }
-                    else -> {
+                    MessageMode.TODAY -> {
                         //schedule알람 설정 -> workmanager 12 00분마다 실행
                         if (onScheduleAlarmCheck()){
                             onTodayAlarmListUpdate(false)
                         }
                     }
+                    else -> {}
                 }
             }
             Result.success()

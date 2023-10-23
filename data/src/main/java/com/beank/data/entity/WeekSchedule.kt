@@ -1,6 +1,7 @@
 package com.beank.data.entity
 
 import com.google.firebase.firestore.DocumentId
+import kotlin.random.Random
 
 
 data class WeekSchedule(
@@ -15,5 +16,6 @@ data class WeekSchedule(
     var check : Boolean = false,
     var alarm : Boolean = false,
     var alarmTime : Long = 0,
-    var alarmState : String = "5분전"
+    var alarmState : String = "5분전",
+    var alarmCode : Int = Random.nextInt()
 )

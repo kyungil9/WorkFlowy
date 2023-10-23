@@ -27,7 +27,8 @@ fun WeekSchedule.toScheduleModel() = Schedule(
     check = check,
     alarm = alarm,
     alarmTime = alarmTime.toLocalDateTime(),
-    alarmState = alarmState
+    alarmState = alarmState,
+    alarmCode = alarmCode
 )
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -82,7 +83,8 @@ fun Schedule.toWeekSchedule() = WeekSchedule(
     check = check,
     alarm = alarm,
     alarmTime = alarmTime.toLong(),
-    alarmState = alarmState
+    alarmState = alarmState,
+    alarmCode = alarmCode
 )
 
 @RequiresApi(Build.VERSION_CODES.O)

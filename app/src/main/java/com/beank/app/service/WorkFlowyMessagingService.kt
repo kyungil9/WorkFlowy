@@ -1,13 +1,12 @@
 package com.beank.app.service
 
-import android.content.Intent
 import android.util.Log
 import androidx.work.BackoffPolicy
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.workDataOf
-import com.beank.domain.usecase.message.InsertToken
 import com.beank.domain.usecase.message.NewToken
+import com.beank.workFlowy.utils.MessageMode
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
@@ -28,7 +27,7 @@ class WorkFlowyMessagingService : FirebaseMessagingService() {
             val messageWorkRequest = OneTimeWorkRequestBuilder<MessageWorker>()
                 .setInputData(
                     workDataOf(
-                    "remote" to true,
+                    "mode" to MessageMode.REMOTE,
                     "title" to message.title,
                     "body" to message.body)
                 )

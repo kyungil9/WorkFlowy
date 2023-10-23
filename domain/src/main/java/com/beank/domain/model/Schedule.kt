@@ -5,6 +5,7 @@ import androidx.annotation.RequiresApi
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
+import kotlin.random.Random
 
 @RequiresApi(Build.VERSION_CODES.O)
 data class Schedule(
@@ -19,5 +20,6 @@ data class Schedule(
     var check : Boolean = false,
     var alarm : Boolean = false,
     var alarmTime : LocalDateTime = LocalDateTime.now(),
-    var alarmState : String = "5분전"
+    var alarmState : String = "5분전",
+    var alarmCode : Int = Random.nextInt()
 )

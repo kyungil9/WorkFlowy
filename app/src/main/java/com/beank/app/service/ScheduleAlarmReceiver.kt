@@ -7,6 +7,7 @@ import androidx.work.BackoffPolicy
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.workDataOf
+import com.beank.workFlowy.utils.MessageMode
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -19,7 +20,7 @@ class ScheduleAlarmReceiver : BroadcastReceiver() {
             if (it.action == "android.intent.action.BOOT_COMPLETED" || it.action == "android.intent.action.LOCKED_BOOT_COMPLETED"){
                 val messageWorkRequest = OneTimeWorkRequestBuilder<MessageWorker>()
                     .setInputData(workDataOf(
-                        "reboot" to true
+                        "mode" to MessageMode.REBOOT
                     ))
                     .setBackoffCriteria(BackoffPolicy.LINEAR,30000,TimeUnit.MILLISECONDS)
                     .build()
@@ -29,7 +30,7 @@ class ScheduleAlarmReceiver : BroadcastReceiver() {
                 val message = it.getStringExtra("body").toString()
                 val messageWorkRequest = OneTimeWorkRequestBuilder<MessageWorker>()
                     .setInputData(workDataOf(
-                        "local" to true,
+                        "mode" to MessageMode.LOCAL,
                         "title" to title,
                         "body" to message
                     ))

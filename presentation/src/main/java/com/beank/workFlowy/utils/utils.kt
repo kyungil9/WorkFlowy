@@ -41,3 +41,14 @@ fun Int.exchangeEvent() : String{
         else -> "Enter"
     }
 }
+
+object MessageMode {
+    const val REMOTE = 1
+    const val LOCAL = 2
+    const val REBOOT = 3
+    const val NOW = 4
+    const val CANCLE = 5
+    const val CANCLEALL = 6
+    const val TODAY = 7
+}
+

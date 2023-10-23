@@ -6,6 +6,7 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import com.beank.domain.model.Schedule
 import com.beank.presentation.R
 import java.time.LocalDate
 import java.time.LocalTime
@@ -36,5 +37,5 @@ class ScheduleUiState(
     var timeToggle by mutableStateOf(timeToggle)
     var alarmToggle by mutableStateOf(alarmToggle)
     var alarmState by mutableStateOf(alarmState)
-
+    var originalSchedule = Schedule()
 }
