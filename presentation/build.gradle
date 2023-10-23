@@ -84,4 +84,7 @@ dependencies {
     implementation(libs.compose.map)
     implementation(libs.gms.play.services.maps)
     implementation(libs.gms.play.services.location)
+
+    //workManager
+    implementation(libs.work)
 }
