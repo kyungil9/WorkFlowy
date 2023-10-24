@@ -2,12 +2,13 @@ package com.beank.data.entity
 
 import com.beank.domain.model.GeofenceEvent
 import com.google.firebase.firestore.DocumentId
-import java.time.LocalTime
 
 data class WeekGeoTrigger(
     @DocumentId val id : String? = null,
-    val tag : String = "",
-    val tagImage : Int = 0,
+    var enterTag : String = "",
+    var enterTagImage : Int = 0,
+    var exitTag : String = "",
+    var exitTagImage : Int = 0,
     val latitude : Double = 0.0,
     val lonitude : Double = 0.0,
     val radius : Float = 100f,

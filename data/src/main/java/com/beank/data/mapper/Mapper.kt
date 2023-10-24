@@ -58,8 +58,10 @@ fun WeekUserInfo.toUserInfo() = UserInfo(
 @RequiresApi(Build.VERSION_CODES.O)
 fun WeekGeoTrigger.toGeofenceData() = GeofenceData(
     id = id,
-    tag = tag,
-    tagImage = tagImage,
+    enterTag = enterTag,
+    enterTagImage = enterTagImage,
+    exitTag = exitTag,
+    exitTagImage = exitTagImage,
     latitude = latitude,
     lonitude = lonitude,
     radius = radius,
@@ -114,8 +116,10 @@ fun UserInfo.toWeekUserInfo() = WeekUserInfo(
 @RequiresApi(Build.VERSION_CODES.O)
 fun GeofenceData.toWeekGeoTrigger() = WeekGeoTrigger(
     id = id,
-    tag = tag,
-    tagImage = tagImage,
+    enterTag = enterTag,
+    enterTagImage = enterTagImage,
+    exitTag = exitTag,
+    exitTagImage = exitTagImage,
     latitude = latitude,
     lonitude = lonitude,
     radius = radius,

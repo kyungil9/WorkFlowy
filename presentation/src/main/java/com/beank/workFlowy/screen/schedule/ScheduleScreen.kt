@@ -259,7 +259,7 @@ fun ScheduleScreen(
                                             .clickable { showTimeState = true }
                                     ){
                                         Icon(
-                                            imageVector = ImageVector.vectorResource(id = com.google.android.material.R.drawable.ic_clock_black_24dp),
+                                            imageVector = ImageVector.vectorResource(id = R.drawable.baseline_access_time_24),
                                             contentDescription = "시간 선택 아이콘",
                                             tint = MaterialTheme.colorScheme.onSecondaryContainer,
                                             modifier = Modifier.size(40.dp)

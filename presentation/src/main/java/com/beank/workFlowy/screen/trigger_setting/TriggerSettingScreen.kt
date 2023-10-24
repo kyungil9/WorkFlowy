@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -29,7 +30,6 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.DateRange
 import androidx.compose.material.icons.outlined.KeyboardArrowDown
 import androidx.compose.material.icons.outlined.KeyboardArrowUp
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -41,8 +41,6 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldColors
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TimeInput
 import androidx.compose.material3.TimePicker
 import androidx.compose.material3.rememberTimePickerState
@@ -76,7 +74,6 @@ import com.beank.workFlowy.component.ToggleCard
 import com.beank.workFlowy.component.VerticalSpacer
 import com.beank.workFlowy.component.WeekLayout
 import com.beank.workFlowy.component.snackbar.SnackbarManager
-import com.beank.workFlowy.screen.RequestLocationPermissionDialog
 import com.beank.workFlowy.utils.exchangeEvent
 import com.beank.workFlowy.utils.exchangeTime
 import com.beank.workFlowy.utils.getAddress
@@ -91,9 +88,7 @@ import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.rememberCameraPositionState
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.util.Locale
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -110,9 +105,9 @@ fun TriggerSettingScreen(
     val uiState = triggerSettingViewModel.uiState
     val configuration = LocalConfiguration.current
     val scrollState = rememberScrollState()
-    val tagScrollState = rememberLazyListState()
     var showTimeState by rememberSaveable { mutableStateOf(false) }
-    var tagToggle by remember { mutableStateOf(false)}
+    var startTagToggle by remember { mutableStateOf(false)}
+    var endTagToggle by remember { mutableStateOf(false)}
     var showPicker by remember { mutableStateOf(false) }
     var mapToggle by remember { mutableStateOf(false)}
     val startTimePickerState = rememberTimePickerState(
@@ -180,65 +175,37 @@ fun TriggerSettingScreen(
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.Start
         ) {
-            //태그 선택 화면
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(if (tagToggle) 250.dp else 85.dp)
-                    .padding(10.dp),
-                colors = CardDefaults.cardColors(MaterialTheme.colorScheme.secondaryContainer),
-                shape = MaterialTheme.shapes.medium,
-                elevation = CardDefaults.cardElevation(defaultElevation = 5.dp)
-            ) {
-                Column(
-                    verticalArrangement = Arrangement.Center,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(vertical = 5.dp, horizontal = 15.dp)
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable(onClick = remember {
-                                { tagToggle = tagToggle.not() }
-                            })
-                    ) {
-                        Row {
-                            Icon(
-                                imageVector = ImageVector.vectorResource(intToImage(uiState.tagImage, LocalContext.current.resources.obtainTypedArray(R.array.tagList))),
-                                contentDescription = "태그 사진",
-                                modifier = Modifier
-                                    .size(50.dp),
-                                tint = MaterialTheme.colorScheme.onSecondaryContainer
-                            )
-                            Text(text = uiState.tag, style = MaterialTheme.typography.headlineSmall, color = MaterialTheme.colorScheme.onSecondaryContainer, modifier = Modifier.offset(x = 20.dp, y = 10.dp))
-                        }
-                        Icon(
-                            imageVector = if (tagToggle) Icons.Outlined.KeyboardArrowUp else Icons.Outlined.KeyboardArrowDown,
-                            contentDescription = "아이콘 선택",
-                            tint = MaterialTheme.colorScheme.onSecondaryContainer,
-                            modifier = Modifier
-                                .size(35.dp)
-                                .padding(end = 12.dp)
-                        )
-                    }
-                    if (tagToggle){
-                        LazyColumn(
-                            state = tagScrollState,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 10.dp, horizontal = 5.dp)
-                                .height(150.dp)
-                        ){
-                            items(uiState.tagList, key = {item -> item.id!!}){tag ->
-                                TagItem(tag = tag, onClick = triggerSettingViewModel::onTagSelect)
-                            }
-                        }
-
-                    }
+            TextCard(title = "트리거 조건 설정")
+            LazyRow(modifier = Modifier.fillMaxWidth()){
+                items(triggerList, key = {item -> item}){trigger ->
+                    FilterChip(
+                        modifier = Modifier.padding(horizontal = 5.dp),
+                        selected = (trigger == uiState.geoEvent.exchangeEvent()),
+                        onClick = { triggerSettingViewModel.onGeoEventUpdate(trigger) },
+                        label = { Text(text = trigger)})
                 }
+            }
+            //디자인 개선????????
+            if (uiState.geoEvent != GeofenceEvent.ExitRequest){
+                //태그 선택 화면
+                TextCard(title = "ENTER 트리거 태그 설정")
+                TagSelectItem(
+                    tagToggle = startTagToggle,
+                    tagImage = uiState.enterTagImage,
+                    tag = uiState.enterTag,
+                    tagList = uiState.tagList,
+                    onTagSelect = triggerSettingViewModel::onEnterTagSelect,
+                    onTagStateChange = { startTagToggle = startTagToggle.not()})
+            }
+            if (uiState.geoEvent != GeofenceEvent.EnterRequest){
+                TextCard(title = "EXIT 트리거 태그 설정")
+                TagSelectItem(
+                    tagToggle = endTagToggle,
+                    tagImage = uiState.exitTagImage,
+                    tag = uiState.exitTag,
+                    tagList = uiState.tagList,
+                    onTagSelect = triggerSettingViewModel::onExitTagSelect,
+                    onTagStateChange = { endTagToggle = endTagToggle.not()})
             }
 
             //지도 위치 선택
@@ -281,17 +248,6 @@ fun TriggerSettingScreen(
                 }
             }
 
-            TextCard(title = "트리거 조건 설정")
-            LazyRow(modifier = Modifier.fillMaxWidth()){
-                items(triggerList, key = {item -> item}){trigger ->
-                    FilterChip(
-                        modifier = Modifier.padding(horizontal = 5.dp),
-                        selected = (trigger == uiState.geoEvent.exchangeEvent()),
-                        onClick = { triggerSettingViewModel.onGeoEventUpdate(trigger) },
-                        label = { Text(text = trigger)})
-                }
-            }
-
             TextCard(title = "시간 딜레이 설정")
             LazyRow(modifier = Modifier.fillMaxWidth()){
                 items(timeList, key = {item -> item}){time ->
@@ -314,7 +270,7 @@ fun TriggerSettingScreen(
                         .clickable { showTimeState = true }
                 ){
                     Icon(
-                        imageVector = ImageVector.vectorResource(id = com.google.android.material.R.drawable.ic_clock_black_24dp),
+                        imageVector = ImageVector.vectorResource(id = R.drawable.baseline_access_time_24),
                         contentDescription = "시간 선택 아이콘",
                         tint = MaterialTheme.colorScheme.onSecondaryContainer,
                         modifier = Modifier.size(40.dp)
@@ -394,6 +350,76 @@ fun TriggerSettingScreen(
 }
 
 @Composable
+fun TagSelectItem(
+    tagToggle : Boolean,
+    tagImage : Int,
+    tag : String,
+    tagList : List<Tag>,
+    onTagSelect : (Tag) -> Unit,
+    onTagStateChange : () -> Unit,
+    tagScrollState : LazyListState = rememberLazyListState()
+){
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(if (tagToggle) 250.dp else 85.dp)
+            .padding(10.dp),
+        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.secondaryContainer),
+        shape = MaterialTheme.shapes.medium,
+        elevation = CardDefaults.cardElevation(defaultElevation = 5.dp)
+    ) {
+        Column(
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(vertical = 5.dp, horizontal = 15.dp)
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable(onClick = onTagStateChange)
+            ) {
+                Row {
+                    Icon(
+                        imageVector = ImageVector.vectorResource(intToImage(tagImage, LocalContext.current.resources.obtainTypedArray(R.array.tagList))),
+                        contentDescription = "태그 사진",
+                        modifier = Modifier
+                            .size(50.dp),
+                        tint = MaterialTheme.colorScheme.onSecondaryContainer
+                    )
+                    Text(text = tag, style = MaterialTheme.typography.headlineSmall, color = MaterialTheme.colorScheme.onSecondaryContainer, modifier = Modifier.offset(x = 20.dp, y = 10.dp))
+                }
+                Icon(
+                    imageVector = if (tagToggle) Icons.Outlined.KeyboardArrowUp else Icons.Outlined.KeyboardArrowDown,
+                    contentDescription = "아이콘 선택",
+                    tint = MaterialTheme.colorScheme.onSecondaryContainer,
+                    modifier = Modifier
+                        .size(35.dp)
+                        .padding(end = 12.dp)
+                )
+            }
+            if (tagToggle){
+                LazyColumn(
+                    state = tagScrollState,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 10.dp, horizontal = 5.dp)
+                        .height(150.dp)
+                ){
+                    items(tagList, key = {item -> item.id!!}){tag ->
+                        TagItem(tag = tag, onClick = onTagSelect)
+                    }
+                }
+
+            }
+        }
+    }
+
+}
+
+@Composable
 fun TagItem(
     tag: Tag,
     onClick : (Tag) -> Unit
@@ -419,8 +445,6 @@ fun TagItem(
         )
     }
 }
-
-
 
 @Composable
 fun GoogleMapDialog(

@@ -1,6 +1,5 @@
 package com.beank.workFlowy.component
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,18 +19,18 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DissmissBackground(
-    dismissState: () -> DismissState
+    dismissState: () -> DismissState,
+    height : Dp
 ){
     val color by remember{
         derivedStateOf { when(dismissState().dismissDirection){
@@ -46,7 +45,7 @@ fun DissmissBackground(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(60.dp)
+            .height(height)
             .padding(horizontal = 10.dp, vertical = 5.dp),
         colors = CardDefaults.cardColors(color),
         shape = MaterialTheme.shapes.small,

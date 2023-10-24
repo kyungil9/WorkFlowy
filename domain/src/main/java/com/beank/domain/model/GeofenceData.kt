@@ -1,15 +1,16 @@
 package com.beank.domain.model
 
 import android.os.Build
-import android.window.SplashScreen.OnExitAnimationListener
 import androidx.annotation.RequiresApi
 import java.time.LocalTime
 
 @RequiresApi(Build.VERSION_CODES.O)
 data class GeofenceData(
     var id : String? = null,
-    var tag : String = "",
-    var tagImage : Int = 0,
+    var enterTag : String = "",
+    var enterTagImage : Int = 0,
+    var exitTag : String = "",
+    var exitTagImage : Int = 0,
     var latitude : Double = 0.0,
     var lonitude : Double = 0.0,
     var radius : Float = 100f,

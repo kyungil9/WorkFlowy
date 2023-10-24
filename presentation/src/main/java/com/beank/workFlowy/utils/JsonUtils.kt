@@ -37,8 +37,10 @@ fun Schedule.toScheduleJson() : String?{
 fun GeofenceData.toGeofenceJson() : String? {
     val temp = JsonGeofenceData(
         id,
-        tag,
-        tagImage,
+        enterTag,
+        enterTagImage,
+        exitTag,
+        exitTagImage,
         latitude,
         lonitude,
         radius,
@@ -74,8 +76,10 @@ fun String.fromGeofenceJson() : GeofenceData{
     val json = Gson().fromJson(this,JsonGeofenceData::class.java)
     return GeofenceData(
         json.id,
-        json.tag,
-        json.tagImage,
+        json.enterTag,
+        json.enterTagImage,
+        json.exitTag,
+        json.exitTagImage,
         json.latitude,
         json.lonitude,
         json.radius,
@@ -105,8 +109,10 @@ data class JsonSchedule(
 
 data class JsonGeofenceData(
     var id : String? = null,
-    var tag : String = "",
-    var tagImage : Int = 0,
+    var enterTag : String = "",
+    var enterTagImage : Int = 0,
+    var exitTag : String = "",
+    var exitTagImage : Int = 0,
     var latitude : Double = 0.0,
     var lonitude : Double = 0.0,
     var radius : Float = 100f,

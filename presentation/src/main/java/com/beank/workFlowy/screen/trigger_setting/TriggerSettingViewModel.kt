@@ -14,7 +14,6 @@ import com.beank.domain.repository.LogRepository
 import com.beank.domain.usecase.TriggerSettingUsecases
 import com.beank.presentation.R
 import com.beank.workFlowy.component.snackbar.SnackbarManager
-import com.beank.workFlowy.component.snackbar.SnackbarMessage
 import com.beank.workFlowy.screen.WorkFlowyViewModel
 import com.beank.workFlowy.utils.fromGeofenceJson
 import com.google.android.gms.maps.model.LatLng
@@ -43,8 +42,10 @@ class TriggerSettingViewModel @Inject constructor(
             val geofence = geofenceData.fromGeofenceJson()
             geofence.let { geo ->
                 uiState.id = geo.id ?: ""
-                uiState.tag = geo.tag
-                uiState.tagImage = geo.tagImage
+                uiState.enterTag = geo.enterTag
+                uiState.enterTagImage = geo.enterTagImage
+                uiState.exitTag = geo.exitTag
+                uiState.exitTagImage = geo.exitTagImage
                 uiState.latitude = geo.latitude
                 uiState.lonitude = geo.lonitude
                 uiState.radius = geo.radius.toDouble()
@@ -57,9 +58,14 @@ class TriggerSettingViewModel @Inject constructor(
         }
     }
 
-    fun onTagSelect(tag: Tag){
-        uiState.tag = tag.title
-        uiState.tagImage = tag.icon
+    fun onEnterTagSelect(tag: Tag){
+        uiState.enterTag = tag.title
+        uiState.enterTagImage = tag.icon
+    }
+
+    fun onExitTagSelect(tag: Tag){
+        uiState.exitTag = tag.title
+        uiState.exitTagImage = tag.icon
     }
 
     fun onLatLngUpdate(latLng: LatLng, radius : Double = 30.0){
@@ -105,8 +111,10 @@ class TriggerSettingViewModel @Inject constructor(
         launchCatching {
             triggerSettingUsecases.addGeofence(GeofenceData(
                 id = null,
-                tag  = uiState.tag,
-                tagImage  = uiState.tagImage,
+                enterTag = uiState.enterTag,
+                enterTagImage = uiState.enterTagImage,
+                exitTag = uiState.exitTag,
+                exitTagImage = uiState.exitTagImage,
                 latitude  = uiState.latitude,
                 lonitude  = uiState.lonitude,
                 radius = uiState.radius.toFloat(),
@@ -115,7 +123,7 @@ class TriggerSettingViewModel @Inject constructor(
                 startTime  = uiState.startTime,
                 endTime = uiState.endTime,
                 geoEvent = uiState.geoEvent
-            ), onSuccess = {SnackbarManager.showMessage(SnackbarMessage.StringSnackbar("정상 등록"))})
+            ))
         }
     }
 
@@ -124,8 +132,10 @@ class TriggerSettingViewModel @Inject constructor(
             triggerSettingUsecases.updateGeofence(
                 GeofenceData(
                     id = uiState.id,
-                    tag  = uiState.tag,
-                    tagImage  = uiState.tagImage,
+                    enterTag = uiState.enterTag,
+                    enterTagImage = uiState.enterTagImage,
+                    exitTag = uiState.exitTag,
+                    exitTagImage = uiState.exitTagImage,
                     latitude  = uiState.latitude,
                     lonitude  = uiState.lonitude,
                     radius = uiState.radius.toFloat(),
@@ -134,8 +144,7 @@ class TriggerSettingViewModel @Inject constructor(
                     startTime  = uiState.startTime,
                     endTime = uiState.endTime,
                     geoEvent = uiState.geoEvent
-                ),
-                onSuccess = {SnackbarManager.showMessage(SnackbarMessage.StringSnackbar("정상 업뎃등록"))}
+                )
             )
         }
     }

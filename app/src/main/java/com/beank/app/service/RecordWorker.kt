@@ -6,23 +6,18 @@ import android.content.pm.PackageManager
 import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationManagerCompat
-import androidx.core.content.contentValuesOf
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
-import androidx.work.ForegroundInfo
 import androidx.work.WorkerParameters
 import com.beank.app.utils.notificationBuilder
+import com.beank.domain.model.GeofenceData
 import com.beank.domain.model.GeofenceEvent
 import com.beank.domain.model.Record
 import com.beank.domain.repository.LogRepository
 import com.beank.domain.usecase.GeoUsecases
-import com.beank.domain.usecase.record.InsertRecord
-import com.beank.domain.usecase.setting.GetGeoState
 import com.beank.workFlowy.utils.toLocalDateTime
 import com.google.android.gms.location.ActivityTransition
-import com.google.android.gms.location.DetectedActivity
 import com.google.android.gms.location.Geofence
-import com.google.firebase.crashlytics.FirebaseCrashlytics
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -56,20 +51,24 @@ class RecordWorker @AssistedInject constructor(
     private suspend fun onGeofenceWork(geofenceId : String, geoState : Int, dateTime: LocalDateTime){
         val geofenceData = geoUsecases.getChooseGeofence(geofenceId)
         geofenceData?.let {geo ->
-            if (geoState == getGeoState(geo.geoEvent)) {
-                if (geo.startTime.isAfter(dateTime.toLocalTime()) && geo.endTime.isBefore(dateTime.toLocalTime()) || !geo.timeOption) {//시간안에 동작
-                    onRecordReduce()//현재 까지 진행중이던 기록 저장
-                    onRecordInsert(geo.tag,dateTime)//새 기록 추가
-                    onNotifySend(geo.tag)//알림 보내기
+            if (geoState == Geofence.GEOFENCE_TRANSITION_DWELL) {//들어올때 기록저장
+                if (geo.geoEvent != GeofenceEvent.ExitRequest){
+                    onStartRecord(geo,dateTime,true)
+                }
+            }else{//나갈때 기록 저장
+                if (geo.geoEvent != GeofenceEvent.EnterRequest){
+                    onStartRecord(geo,dateTime,false)
                 }
             }
         }
     }
 
-    private fun getGeoState(geoEvent : Int) : Int = when{
-        (geoEvent == GeofenceEvent.EnterRequest) -> Geofence.GEOFENCE_TRANSITION_DWELL
-        (geoEvent == GeofenceEvent.ExitRequest) -> Geofence.GEOFENCE_TRANSITION_EXIT
-        else -> 0
+    private suspend fun onStartRecord(geo : GeofenceData, dateTime: LocalDateTime, startState : Boolean){
+        if (geo.startTime.isBefore(dateTime.toLocalTime()) && geo.endTime.isAfter(dateTime.toLocalTime()) || !geo.timeOption) {//시간안에 동작
+            onRecordReduce()//현재 까지 진행중이던 기록 저장
+            onRecordInsert(if (startState) geo.enterTag else geo.exitTag,dateTime)//새 기록 추가
+            onNotifySend(if (startState) geo.enterTag else geo.exitTag)//알림 보내기
+        }
     }
 
     private suspend fun onActivityWork(state : Int, dateTime: LocalDateTime){

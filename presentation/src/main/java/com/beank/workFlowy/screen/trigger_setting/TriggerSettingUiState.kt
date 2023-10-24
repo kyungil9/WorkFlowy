@@ -4,9 +4,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableDoubleStateOf
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.beank.domain.model.GeofenceEvent
@@ -16,8 +14,10 @@ import java.time.LocalTime
 class TriggerSettingUiState(
     tagList : List<Tag> = emptyList(),
     id : String = "",
-    tag : String = "휴식중",
-    tagImage : Int = 2,
+    enterTag : String = "휴식중",
+    exitTag : String = "휴식중",
+    enterTagImage : Int = 2,
+    exitTagImage : Int = 2,
     latitude : Double = 37.5642135,
     lonitude : Double = 127.0016985,
     radius : Double = 30.0,
@@ -29,8 +29,10 @@ class TriggerSettingUiState(
 ) {
     var tagList by mutableStateOf(tagList)
     var id by mutableStateOf(id)
-    var tag by mutableStateOf(tag)
-    var tagImage by mutableIntStateOf(tagImage)
+    var enterTag by mutableStateOf(enterTag)
+    var exitTag by mutableStateOf(exitTag)
+    var enterTagImage by mutableIntStateOf(enterTagImage)
+    var exitTagImage by mutableIntStateOf(exitTagImage)
     var latitude by mutableDoubleStateOf(latitude)
     var lonitude by mutableDoubleStateOf(lonitude)
     var radius by mutableDoubleStateOf(radius)
