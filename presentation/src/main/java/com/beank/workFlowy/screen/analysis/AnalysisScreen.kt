@@ -188,7 +188,7 @@ fun RecordCard(
                         .width(
                             when (toggle) {
                                 0 -> 150.dp
-                                1 -> 180.dp
+                                1 -> 190.dp
                                 2, 3 -> 110.dp
                                 else -> 150.dp
                             }

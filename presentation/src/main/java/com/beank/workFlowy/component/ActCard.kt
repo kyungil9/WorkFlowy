@@ -20,6 +20,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -36,6 +37,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.beank.domain.model.Tag
 import com.beank.presentation.R
@@ -51,7 +53,6 @@ fun ActCard(
     progress : () -> Boolean,
     onClickAct : () -> Unit
 ){
-    Log.d("recomposition","actcard")
     Button(
         onClick = onClickAct,
         modifier = Modifier
@@ -68,7 +69,7 @@ fun ActCard(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
             ) {
-                //CircularProgressIndicator()
+                CircularProgressIndicator()
             }
         }
         AnimatedVisibility(visible = !progress()) {
@@ -77,32 +78,37 @@ fun ActCard(
                     .fillMaxWidth()
                     .fillMaxHeight()
                     .padding(horizontal = 10.dp, vertical = 5.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
                     imageVector = ImageVector.vectorResource(id = intToImage(selectedTag().icon, LocalContext.current.resources.obtainTypedArray(R.array.tagList))),
                     contentDescription = null,
                     modifier = Modifier
-                        .size(70.dp)
-                        .padding(start = 5.dp),
+                        .size(70.dp),
                     tint = MaterialTheme.colorScheme.onPrimaryContainer
                 )
                 Row {
                     Column(
                         modifier = Modifier
                             .fillMaxHeight()
-                            .width(120.dp)
-                            .padding(top = 5.dp, end = 25.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
+                            .padding(end = 25.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
                     ) {
-                        Text(text = selectedTag().title, style = MaterialTheme.typography.headlineMedium, color = MaterialTheme.colorScheme.onPrimaryContainer)
+                        Text(text = selectedTag().title,
+                            style = MaterialTheme.typography.headlineMedium,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis)
                         Text(
                             text = "${zeroFormat.format(progressTime().toHours())}:${zeroFormat.format(progressTime().toMinutes()%60)}:${zeroFormat.format(progressTime().seconds%60)}",
                             style = MaterialTheme.typography.headlineSmall,
                             color = MaterialTheme.colorScheme.onPrimaryContainer,
                             modifier = Modifier
-                                .size(80.dp, 30.dp)
+                                .height(30.dp)
                                 .padding(start = 5.dp))
+
                     }
                 }
 

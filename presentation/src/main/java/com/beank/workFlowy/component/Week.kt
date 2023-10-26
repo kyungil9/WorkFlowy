@@ -55,7 +55,7 @@ fun WeekLazyList(
 fun dayItem(day : () ->Date, onItemClick : (LocalDate) -> Unit){
     Log.d("recomposition","weekitem")
     Card(
-        onClick = remember{{ onItemClick(day().date) }},
+        onClick = { onItemClick(day().date) },
         shape = MaterialTheme.shapes.small,
         colors = CardDefaults.cardColors(MaterialTheme.colorScheme.background),
         modifier = Modifier

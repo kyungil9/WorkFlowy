@@ -3,6 +3,7 @@ package com.beank.app.service
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.os.SystemClock
 import android.util.Log
 import androidx.work.BackoffPolicy
 import androidx.work.OneTimeWorkRequestBuilder
@@ -57,7 +58,6 @@ class GeofenceBroadcastReceiver : BroadcastReceiver(){
                             .setBackoffCriteria(BackoffPolicy.LINEAR,30000,TimeUnit.MILLISECONDS)
                             .build()
                         workManager.enqueue(geoWorkRequest)
-                        Log.e(TAG, "success geowork")
 
                     }else {
                         //error
@@ -66,25 +66,30 @@ class GeofenceBroadcastReceiver : BroadcastReceiver(){
                 }else{
                     if (activityEvent){
                         val result = ActivityTransitionResult.extractResult(intent)!!
-                        val event = result.transitionEvents.first()
-                        if (event.activityType == DetectedActivity.ON_FOOT || event.activityType == DetectedActivity.IN_VEHICLE ||
-                            event.activityType == DetectedActivity.ON_BICYCLE){
-                            if (event.transitionType == ActivityTransition.ACTIVITY_TRANSITION_ENTER){
-                                val activityWorkRequest = OneTimeWorkRequestBuilder<RecordWorker>()
-                                    .setInputData(workDataOf(
-                                        "activity" to event.transitionType,
-                                        "dateTime" to LocalDateTime.now().toLong()))
-                                    .setBackoffCriteria(BackoffPolicy.LINEAR,30000,TimeUnit.MILLISECONDS)
-                                    .build()
-                                workManager.enqueue(activityWorkRequest)
-                            }else if (event.transitionType == ActivityTransition.ACTIVITY_TRANSITION_EXIT){
-                                val activityWorkRequest = OneTimeWorkRequestBuilder<RecordWorker>()
-                                    .setInputData(workDataOf(
-                                        "activity" to 0,
-                                        "dateTime" to LocalDateTime.now().toLong()))
-                                    .setBackoffCriteria(BackoffPolicy.LINEAR,30000,TimeUnit.MILLISECONDS)
-                                    .build()
-                                workManager.enqueue(activityWorkRequest)
+                        Log.e(TAG, "activity on")
+                        for (event in result.transitionEvents){
+                            Log.e(TAG, "${event.activityType}")
+                            if(((SystemClock.elapsedRealtime()-(event.elapsedRealTimeNanos/1000000))/1000) <= 30) {
+                                if (event.activityType == DetectedActivity.WALKING || event.activityType == DetectedActivity.IN_VEHICLE ||
+                                    event.activityType == DetectedActivity.ON_BICYCLE || event.activityType == DetectedActivity.RUNNING){
+                                    if (event.transitionType == ActivityTransition.ACTIVITY_TRANSITION_ENTER){
+                                        val activityWorkRequest = OneTimeWorkRequestBuilder<RecordWorker>()
+                                            .setInputData(workDataOf(
+                                                "activity" to event.transitionType,
+                                                "dateTime" to LocalDateTime.now().toLong()))
+                                            .setBackoffCriteria(BackoffPolicy.LINEAR,30000,TimeUnit.MILLISECONDS)
+                                            .build()
+                                        workManager.enqueue(activityWorkRequest)
+                                    }else if (event.transitionType == ActivityTransition.ACTIVITY_TRANSITION_EXIT){
+                                        val activityWorkRequest = OneTimeWorkRequestBuilder<RecordWorker>()
+                                            .setInputData(workDataOf(
+                                                "activity" to -1,
+                                                "dateTime" to LocalDateTime.now().toLong()))
+                                            .setBackoffCriteria(BackoffPolicy.LINEAR,30000,TimeUnit.MILLISECONDS)
+                                            .build()
+                                        workManager.enqueue(activityWorkRequest)
+                                    }
+                                }
                             }
                         }
                     }

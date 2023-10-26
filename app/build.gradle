@@ -73,6 +73,8 @@ dependencies {
 
     //compose
     implementation(libs.activity.compose)
+    androidTestImplementation(libs.compose.bom)
+    debugImplementation(libs.compose.ui.tooling)
 
     //workManager
     implementation(libs.work)

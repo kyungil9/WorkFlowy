@@ -78,6 +78,8 @@ class GeofenceRepositoryImpl @Inject constructor(
         val task = activityRecognitionClient.requestActivityTransitionUpdates(ActivityTransitionRequest(initTransitions()),activityPendingIntent)
         task.addOnSuccessListener {
             Log.d("walk","ok")
+        }.addOnFailureListener {
+            Log.e("walk",it.message.toString())
         }
         val geofenceDataList = storage.store.document(storage.getUid()!!).collection(GEOTRIGGER).get().await().toObjects(WeekGeoTrigger::class.java).map { it.toGeofenceData() }
         val geofenceList = ArrayList<Geofence>()
@@ -126,11 +128,19 @@ class GeofenceRepositoryImpl @Inject constructor(
     private fun initTransitions() : List<ActivityTransition>{
         val transitions = mutableListOf<ActivityTransition>()
         transitions += ActivityTransition.Builder()
-            .setActivityType(DetectedActivity.ON_FOOT)
+            .setActivityType(DetectedActivity.WALKING)
             .setActivityTransition(ActivityTransition.ACTIVITY_TRANSITION_ENTER)
             .build()
         transitions += ActivityTransition.Builder()
-            .setActivityType(DetectedActivity.ON_FOOT)
+            .setActivityType(DetectedActivity.WALKING)
+            .setActivityTransition(ActivityTransition.ACTIVITY_TRANSITION_EXIT)
+            .build()
+        transitions += ActivityTransition.Builder()
+            .setActivityType(DetectedActivity.RUNNING)
+            .setActivityTransition(ActivityTransition.ACTIVITY_TRANSITION_ENTER)
+            .build()
+        transitions += ActivityTransition.Builder()
+            .setActivityType(DetectedActivity.RUNNING)
             .setActivityTransition(ActivityTransition.ACTIVITY_TRANSITION_EXIT)
             .build()
         transitions += ActivityTransition.Builder()

@@ -24,6 +24,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
@@ -63,11 +64,11 @@ class WeekViewModel @Inject constructor(
     private val scheduleInfo get() = uiState.selectSchedule
     private var todayJob : Job? = null
 
-    val timerJob = viewModelScope.launch(Dispatchers.Default, start = CoroutineStart.LAZY) {
+    val timerJob = viewModelScope.launch(Dispatchers.IO, start = CoroutineStart.LAZY) {
         oldTimeMills = System.currentTimeMillis()
         while (true) {
             val delayMills = System.currentTimeMillis() - oldTimeMills
-            if (delayMills >= 1000L) {
+            if (delayMills >= 1000L) {//1초당
                 val record = uiState.recordList
                 if (record.isNotEmpty()) {
                     uiState.progressTime = Duration.between(record[0].startTime, LocalDateTime.now())
@@ -81,7 +82,6 @@ class WeekViewModel @Inject constructor(
         getAllTagInfo()
         getTodaySchedule()
         getSelectedRecordInfo()
-
     }
     fun setSelectScheduleInfo(schedule: Schedule){
         uiState.selectSchedule = schedule
@@ -259,6 +259,7 @@ class WeekViewModel @Inject constructor(
                 uiState.recordList = listOf(nowRecord.record)
                 uiState.selectTag = nowRecord.tag
                 uiState.actProgress = false
+                //uiState.progressTime = Duration.between(nowRecord.record.startTime, LocalDateTime.now())
             }
             state.onException { message, e ->
                 uiState.actProgress = false

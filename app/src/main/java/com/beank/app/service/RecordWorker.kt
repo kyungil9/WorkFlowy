@@ -65,17 +65,23 @@ class RecordWorker @AssistedInject constructor(
 
     private suspend fun onStartRecord(geo : GeofenceData, dateTime: LocalDateTime, startState : Boolean){
         if (geo.startTime.isBefore(dateTime.toLocalTime()) && geo.endTime.isAfter(dateTime.toLocalTime()) || !geo.timeOption) {//시간안에 동작
-            onRecordReduce()//현재 까지 진행중이던 기록 저장
-            onRecordInsert(if (startState) geo.enterTag else geo.exitTag,dateTime)//새 기록 추가
-            onNotifySend(if (startState) geo.enterTag else geo.exitTag)//알림 보내기
+            val record = geoUsecases.getCurrentRecord()
+            if(record.tag != if (startState) geo.enterTag else geo.exitTag){
+                onRecordReduce()//현재 까지 진행중이던 기록 저장
+                onRecordInsert(if (startState) geo.enterTag else geo.exitTag,dateTime)//새 기록 추가
+                onNotifySend(if (startState) geo.enterTag else geo.exitTag)//알림 보내기
+            }
         }
     }
 
     private suspend fun onActivityWork(state : Int, dateTime: LocalDateTime){
-        onRecordReduce()
+        val record = geoUsecases.getCurrentRecord()
         val tag = if (state == ActivityTransition.ACTIVITY_TRANSITION_ENTER) "이동중" else "개인시간"
-        onRecordInsert(tag,dateTime)//새 기록 추가
-        onNotifySend(tag)//알림 보내기
+        if (record.tag != tag){//태그가 다를경우만 새로 등록
+            onRecordReduce()
+            onRecordInsert(tag,dateTime)//새 기록 추가
+            onNotifySend(tag)//알림 보내기
+        }
     }
 
     private fun onRecordInsert(tag: String, dateTime: LocalDateTime){
@@ -155,7 +161,7 @@ class RecordWorker @AssistedInject constructor(
         try {
             val geofenceId = inputData.getString("geofenceId")
             val geoState = inputData.getInt("geoState",0)
-            val activityState = inputData.getInt("activity",0)
+            val activityState = inputData.getInt("activity",-1)
             val dateTime = inputData.getLong("dateTime",0).toLocalDateTime()
             val reboot = inputData.getBoolean("reboot", false)
 

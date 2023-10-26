@@ -50,31 +50,26 @@ fun WeekAppBar(
             onClick = onHeaderIconClick
         ) {
             Icon(
-                modifier = Modifier
-                    .clickable(
-                        onClick = onHeaderIconClick,
-                        interactionSource = remember { MutableInteractionSource()},
-                        indication = rememberRipple(bounded = false, radius = 18.dp)),
                 imageVector = ImageVector.vectorResource(id = headerIcon),
-                contentDescription = "menu"
+                contentDescription = "menu",
+                tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                modifier = Modifier.size(30.dp)
             )
         }
         TextButton(onClick = onContentClick) {
             Text(
                 text = selectDay(),
-                style = MaterialTheme.typography.headlineSmall
+                style = MaterialTheme.typography.headlineSmall,
+                color = MaterialTheme.colorScheme.onPrimaryContainer
             )
         }
         tailIcon?.let{
             IconButton(onClick = onTailIconClick) {
                 Icon(
-                    modifier = Modifier
-                        .clickable(
-                            onClick = onTailIconClick,
-                            interactionSource = remember { MutableInteractionSource()},
-                            indication = rememberRipple(bounded = false, radius = 18.dp)),
                     imageVector = ImageVector.vectorResource(id = tailIcon),
-                    contentDescription = "menu2"
+                    contentDescription = "menu2",
+                    tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                    modifier = Modifier.size(30.dp)
                 )
             }
         }

@@ -51,6 +51,7 @@ import com.beank.workFlowy.utils.toStartTimeLong
 import com.beank.workFlowy.utils.transDayToKorean
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 
@@ -89,7 +90,9 @@ fun HomeScreen(
 
 
     LaunchedEffect(key1 = Unit){
-        weekViewModel.timerJob.start()
+        withContext(Dispatchers.IO){
+            weekViewModel.timerJob.start()
+        }
     }
 
     WeekLayout(
@@ -97,38 +100,38 @@ fun HomeScreen(
         topBar = remember{{
             WeekAppBar(
                 headerIcon = R.drawable.baseline_settings_24,
-                onHeaderIconClick = remember {{openScreen(NavigationItem.SETTING.route) }},
+                onHeaderIconClick = {openScreen(NavigationItem.SETTING.route) },
                 selectDay = {selectDayString},
-                onContentClick = remember{{
+                onContentClick ={
                     dateDialogState = true
-                }},
+                },
                 tailIcon = NavigationItem.ANALYSIS.icon,
-                onTailIconClick = remember {{
+                onTailIconClick = {
                     weekViewModel.onRecordReduce()
                     openScreen(NavigationItem.ANALYSIS.route)
-                }}
+                }
             )
         }},
         bottomBar = remember{{
             WeekBottomBar(
                 checked = {uiState.scheduleState},
-                onMoveMisson = remember {{ openScreen(NavigationItem.MISSON.route)}},
-                onMoveToday = remember {{
+                onMoveMisson = { openScreen(NavigationItem.MISSON.route) },
+                onMoveToday = {
                     scope.launch(Dispatchers.Default) {
                         if (!selectDay.isEqual(LocalDate.now())){
                             weekViewModel.onSelectDayChange(LocalDate.now())
                             weekListState.animateScrollToItem(uiState.listCenter)
                         }
                     }
-                }},
+                },
                 onCheckSchedule = weekViewModel::onCheckScheduleChange,
-                onDeleteSchedule = remember {{
+                onDeleteSchedule = {
                     weekViewModel.onScheduleDelete()
-                    weekViewModel.onScheduleStateChange(false)}},
-                onUpdateSchedule = remember {{
+                    weekViewModel.onScheduleStateChange(false)},
+                onUpdateSchedule = {
                     openEditSchedule(NavigationItem.SCHEDULE.route,uiState.selectSchedule)
-                    weekViewModel.onScheduleStateChange(false)}},
-                onAdditionalSchedule = remember {{ openSchedule(NavigationItem.SCHEDULE.route,selectDay) }}
+                    weekViewModel.onScheduleStateChange(false)},
+                onAdditionalSchedule = { openSchedule(NavigationItem.SCHEDULE.route,selectDay)}
             )
         }}
     ) {
@@ -190,19 +193,19 @@ fun HomeScreen(
             visible = {uiState.weekState},
             tagList = {uiState.tagList},
             onDismissRequest = {weekViewModel.onWeekStateChange(false)},
-            onClickAct = remember{{tag ->
+            onClickAct = {tag ->
                 weekViewModel.onRecordChange(tag)
                 weekViewModel.onWeekStateChange(false)
-            }},
-            onAddActTag = remember{{
+            },
+            onAddActTag = {
                 weekViewModel.onWeekStateChange(false)
-                openScreen(NavigationItem.TAG.route)}},
+                openScreen(NavigationItem.TAG.route)},
             onClickDelect = weekViewModel::onTagDelete
         )
         if (dateDialogState){
             DatePickerDialog(
-                onDismissRequest = remember{{ dateDialogState = false }},
-                confirmButton = remember{{
+                onDismissRequest = { dateDialogState = false },
+                confirmButton = {
                     TextButton(onClick = {
                         val date = datePickerState.selectedDateMillis?.toLocalDateTime()
                         date?.let {
@@ -215,12 +218,12 @@ fun HomeScreen(
                     }) {
                         Text(text = "확인")
                     }
-                }},
-                dismissButton = remember{{
+                },
+                dismissButton = {
                     TextButton(onClick = { dateDialogState = false }) {
                         Text(text = "취소")
                     }
-                }}
+                }
             ) {
                 DatePicker(
                     state = datePickerState,
