@@ -52,6 +52,7 @@ import com.beank.domain.usecase.setting.GetNoticeState
 import com.beank.domain.usecase.setting.GetScheduleAlarm
 import com.beank.domain.usecase.setting.GetScheduleState
 import com.beank.domain.usecase.setting.GetTriggerToggle
+import com.beank.domain.usecase.setting.InitSetting
 import com.beank.domain.usecase.setting.UpdateDarkTheme
 import com.beank.domain.usecase.setting.UpdateDynamicTheme
 import com.beank.domain.usecase.setting.UpdateGeoState
@@ -95,14 +96,16 @@ object UsecaseModule {
 
     @Provides
     @Singleton
-    fun provideLoginUseCases(accountRepository: AccountRepository,tagRepository: TagRepository,recordRepository: RecordRepository,messageRepository: MessageRepository,userRepository: UserRepository) = LoginUsecases(
+    fun provideLoginUseCases(accountRepository: AccountRepository,tagRepository: TagRepository,recordRepository: RecordRepository, messageRepository: MessageRepository,userRepository: UserRepository,settingRepository: SettingRepository) = LoginUsecases(
         loginAccount = LoginAccount(accountRepository),
         initDataSetting = InitDataSetting(
             InsertRecord(recordRepository),
             InsertTag(tagRepository),
             InitUserInfo(userRepository)
         ),
-        insertToken = InsertToken(messageRepository)
+        insertToken = InsertToken(messageRepository),
+        initSetting = InitSetting(settingRepository),
+        subscribeNotice = SubscribeNotice(messageRepository)
     )
 
 

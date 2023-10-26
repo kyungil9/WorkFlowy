@@ -22,7 +22,6 @@ class MessageRepositoryImpl @Inject constructor(
 
     override fun newToken(token: String) {
         storage.replace(TOKEN, TOKEN ,mapOf("token" to token))
-        subscribeNotice()
     }
 
     override fun subscribeNotice() {

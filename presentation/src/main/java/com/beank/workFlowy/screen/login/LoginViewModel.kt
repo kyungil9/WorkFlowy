@@ -2,14 +2,20 @@ package com.beank.workFlowy.screen.login
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.work.BackoffPolicy
+import androidx.work.OneTimeWorkRequest
+import androidx.work.WorkManager
+import androidx.work.workDataOf
 import com.beank.domain.repository.LogRepository
 import com.beank.domain.usecase.LoginUsecases
 import com.beank.workFlowy.component.snackbar.SnackbarManager
 import com.beank.workFlowy.navigation.NavigationItem
 import com.beank.workFlowy.screen.WorkFlowyViewModel
+import com.beank.workFlowy.utils.MessageMode
 import com.beank.workFlowy.utils.isValidEmail
 import com.beank.workFlowy.utils.isValidPassword
 import dagger.hilt.android.lifecycle.HiltViewModel
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import com.beank.presentation.R.string as AppText
 
@@ -18,6 +24,8 @@ import com.beank.presentation.R.string as AppText
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val loginUsecases: LoginUsecases,
+    private val workManager: WorkManager,
+    private val messageRequest : OneTimeWorkRequest.Builder,
     logRepository: LogRepository
 ) : WorkFlowyViewModel(logRepository){
 
@@ -31,10 +39,20 @@ class LoginViewModel @Inject constructor(
         uiState.password = newValue
     }
 
-    fun initSetting(){
+    fun initSetting(state : Boolean){
         launchCatching {
             loginUsecases.initDataSetting()
+            loginUsecases.initSetting(state)
         }
+    }
+
+    fun onNotificationSetting(){
+        loginUsecases.subscribeNotice
+        val messageWorkRequest = messageRequest
+            .setInputData(workDataOf("mode" to MessageMode.REPEAT))
+            .setBackoffCriteria(BackoffPolicy.LINEAR,30000, TimeUnit.MILLISECONDS)
+            .build()
+        workManager.enqueue(messageWorkRequest)
     }
 
     fun initToken() = loginUsecases.insertToken()

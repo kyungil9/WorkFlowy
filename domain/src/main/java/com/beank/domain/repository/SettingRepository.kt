@@ -23,4 +23,6 @@ interface SettingRepository {
     suspend fun updateMoveTriggerToggle(state: Boolean)
     suspend fun updateGeoState(state: Boolean)
 
+    suspend fun initSetting(value : Boolean)
+
 }

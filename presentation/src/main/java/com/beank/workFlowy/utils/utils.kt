@@ -1,7 +1,11 @@
 package com.beank.workFlowy.utils
 
+import android.content.Context
+import android.content.pm.PackageManager
 import android.location.Geocoder
 import android.os.Build
+import androidx.annotation.RequiresApi
+import androidx.core.content.ContextCompat
 import com.beank.domain.model.GeofenceEvent
 import java.io.IOException
 
@@ -41,6 +45,13 @@ fun Int.exchangeEvent() : String{
         else -> "Enter"
     }
 }
+
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
+fun Context.hasNotificationPermissions() = ContextCompat.checkSelfPermission(
+        this,
+        android.Manifest.permission.POST_NOTIFICATIONS
+    ) == PackageManager.PERMISSION_GRANTED
+
 
 object MessageMode {
     const val REMOTE = 1

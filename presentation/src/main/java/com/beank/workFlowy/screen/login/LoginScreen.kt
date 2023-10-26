@@ -34,6 +34,7 @@ import com.beank.workFlowy.component.VerticalSpacer
 import com.beank.workFlowy.component.WeekLayout
 import com.beank.workFlowy.component.basicButton
 import com.beank.workFlowy.navigation.NavigationItem
+import com.beank.workFlowy.utils.hasNotificationPermissions
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
@@ -53,12 +54,22 @@ fun LoginScreen(
     openScreen : (String) -> Unit,
     snackbarHostState: SnackbarHostState
 ){
-
+    val context = LocalContext.current
+    val uiState = loginViewModel.uiState
     var user by rememberSaveable { mutableStateOf(Firebase.auth.currentUser) }
     val launcher = rememberFirebaseAuthLauncher(
         onAuthSuccess = { result ->
-            if(result.additionalUserInfo!!.isNewUser)
-                loginViewModel.initSetting()
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && context.hasNotificationPermissions() || Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+                if(result.additionalUserInfo!!.isNewUser) {
+                    loginViewModel.initSetting(true)
+                }
+                loginViewModel.onNotificationSetting()
+            }else {
+                if(result.additionalUserInfo!!.isNewUser) {
+                    loginViewModel.initSetting(false)
+                }
+                loginViewModel.onNotificationSetting()
+            }
             loginViewModel.initToken()
             user = result.user
         },
@@ -67,8 +78,7 @@ fun LoginScreen(
         }
     )
     val token = stringResource(R.string.default_web_client_id)
-    val context = LocalContext.current
-    val uiState = loginViewModel.uiState
+
 
     WeekLayout(snackbarHostState = snackbarHostState) {
         Column(

@@ -44,4 +44,14 @@ class SettingRepositoryImpl @Inject constructor(
 
     override suspend fun updateGeoState(state: Boolean) : Unit = settingDataSource.updateGeoState(state)
 
+    override suspend fun initSetting(value : Boolean) {
+        settingDataSource.updateDarkTheme(false)
+        settingDataSource.updateDynamicTheme(false)
+        settingDataSource.updateNoticeAlarm(value)
+        settingDataSource.updateScheduleAlarm(value)
+        settingDataSource.updateTrigger(false)
+        settingDataSource.updateMoveTrigger(false)
+        settingDataSource.updateGeoState(false)
+    }
+
 }

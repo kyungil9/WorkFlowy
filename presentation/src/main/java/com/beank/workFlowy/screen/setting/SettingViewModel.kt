@@ -130,7 +130,18 @@ class SettingViewModel @Inject constructor(
     }
 
 
-    fun signOut() = settingUsecases.signOut()
+    fun signOut() {
+        launchCatching {
+            settingUsecases.signOut()
+            settingUsecases.unsubscribeNotice()
+            val messageWorkRequest = messageRequest
+                .setInputData(workDataOf("mode" to MessageMode.CANCLEALL))
+                .setBackoffCriteria(BackoffPolicy.LINEAR,30000, TimeUnit.MILLISECONDS)
+                .build()
+            workManager.enqueue(messageWorkRequest)
+            onTriggerToggleUpdate(false)
+        }
+    }
 
 
     private fun getDarkThemeInfo() = settingUsecases.getDarkTheme()
