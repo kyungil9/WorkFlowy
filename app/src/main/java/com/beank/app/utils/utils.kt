@@ -4,8 +4,10 @@ import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import com.beank.app.WorkFlowyActivity
+import com.beank.app.service.RecordMessageReceiver
 import com.beank.workFlowy.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.GlobalScope
@@ -41,3 +43,4 @@ fun notificationBuilder(context: Context, title : String?, body : String?) : Not
         .setAutoCancel(true)
         .setContentIntent(pendingIntent)
 }
+

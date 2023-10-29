@@ -64,3 +64,8 @@ object MessageMode {
     const val REPEAT = 8
 }
 
+object RecordMode {
+    const val START = 1
+    const val STOP = 2
+    const val REBOOT = 3
+}

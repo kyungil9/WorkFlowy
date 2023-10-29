@@ -11,6 +11,8 @@ interface SettingRepository {
     fun getTriggerToggle() : Flow<Boolean>
     fun getMoveTriggerToggle() : Flow<Boolean>
     fun getGeoState() : Flow<Boolean>
+    fun getMoveState() : Flow<Boolean>
+    fun getRecordAlarm() : Flow<Boolean>
 
     suspend fun getScheduleState() : Boolean
     suspend fun getNoticeState() : Boolean
@@ -22,6 +24,8 @@ interface SettingRepository {
     suspend fun updateTriggerToggle(state: Boolean)
     suspend fun updateMoveTriggerToggle(state: Boolean)
     suspend fun updateGeoState(state: Boolean)
+    suspend fun updateMoveState(state: Boolean)
+    suspend fun updateRecordAlarm(state: Boolean)
 
     suspend fun initSetting(value : Boolean)
 

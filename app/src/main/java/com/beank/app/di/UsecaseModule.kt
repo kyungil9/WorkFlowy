@@ -12,6 +12,7 @@ import com.beank.domain.usecase.AlarmUsecases
 import com.beank.domain.usecase.AnalysisUsecases
 import com.beank.domain.usecase.GeoUsecases
 import com.beank.domain.usecase.LoginUsecases
+import com.beank.domain.usecase.RecordAlarmUsecases
 import com.beank.domain.usecase.ScheduleUsecases
 import com.beank.domain.usecase.SettingUsecases
 import com.beank.domain.usecase.SignUpUsecases
@@ -49,6 +50,7 @@ import com.beank.domain.usecase.setting.GetDynamicTheme
 import com.beank.domain.usecase.setting.GetGeoState
 import com.beank.domain.usecase.setting.GetNoticeAlarm
 import com.beank.domain.usecase.setting.GetNoticeState
+import com.beank.domain.usecase.setting.GetRecordAlarm
 import com.beank.domain.usecase.setting.GetScheduleAlarm
 import com.beank.domain.usecase.setting.GetScheduleState
 import com.beank.domain.usecase.setting.GetTriggerToggle
@@ -57,6 +59,7 @@ import com.beank.domain.usecase.setting.UpdateDarkTheme
 import com.beank.domain.usecase.setting.UpdateDynamicTheme
 import com.beank.domain.usecase.setting.UpdateGeoState
 import com.beank.domain.usecase.setting.UpdateNoticeAlarm
+import com.beank.domain.usecase.setting.UpdateRecordAlarm
 import com.beank.domain.usecase.setting.UpdateScheduleAlarm
 import com.beank.domain.usecase.setting.UpdateTriggerToggle
 import com.beank.domain.usecase.tag.CheckTagTitle
@@ -208,7 +211,15 @@ object UsecaseModule {
         getAlarmSchedule = GetAlarmSchedule(scheduleRepository)
     )
 
-
+    @Provides
+    @Singleton
+    fun providesRecordAlarmUseCases(recordRepository: RecordRepository,settingRepository: SettingRepository) = RecordAlarmUsecases(
+        getNowRecord = GetNowRecord(recordRepository),
+        getCurrentRecord = GetCurrentRecord(recordRepository),
+        insertRecord = InsertRecord(recordRepository),
+        updateRecord = UpdateRecord(recordRepository),
+        getRecordAlarm = GetRecordAlarm(settingRepository)
+    )
 
 
 }

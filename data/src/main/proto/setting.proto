@@ -11,4 +11,6 @@ message Setting {
   bool trigger = 5;
   bool moveTrigger = 6;
   bool geo = 7;
+  bool move = 8;
+  bool recordAlarm = 9;
 }

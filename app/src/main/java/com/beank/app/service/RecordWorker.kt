@@ -9,6 +9,7 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import com.beank.app.di.NormalNotification
 import com.beank.app.utils.notificationBuilder
 import com.beank.domain.model.GeofenceData
 import com.beank.domain.model.GeofenceEvent
@@ -37,7 +38,7 @@ class RecordWorker @AssistedInject constructor(
     @Assisted applicationContext: Context,
     @Assisted workerParams: WorkerParameters,
     private val geoUsecases: GeoUsecases,
-    private val notification : NotificationManagerCompat,
+    @NormalNotification private val notification : NotificationManagerCompat,
     private val crashlytics : LogRepository
 ): CoroutineWorker(applicationContext,workerParams){
     private val random = Random

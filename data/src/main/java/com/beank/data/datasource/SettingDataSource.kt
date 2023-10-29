@@ -21,4 +21,8 @@ interface SettingDataSource {
 
     suspend fun updateGeoState(state: Boolean)
 
+    suspend fun updateMoveState(state: Boolean)
+
+    suspend fun updateRecordAlarm(state: Boolean)
+
 }

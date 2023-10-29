@@ -25,6 +25,10 @@ class SettingRepositoryImpl @Inject constructor(
 
     override fun getGeoState(): Flow<Boolean> = settingDataSource.getSettingState().map { it.geo }
 
+    override fun getMoveState(): Flow<Boolean> = settingDataSource.getSettingState().map { it.move }
+
+    override fun getRecordAlarm(): Flow<Boolean> = settingDataSource.getSettingState().map { it.recordAlarm }
+
     override suspend fun getNoticeState(): Boolean = settingDataSource.getSettingState().first().noticeAlarm
 
     override suspend fun getScheduleState(): Boolean = settingDataSource.getSettingState().first().scheduleAlarm
@@ -44,6 +48,10 @@ class SettingRepositoryImpl @Inject constructor(
 
     override suspend fun updateGeoState(state: Boolean) : Unit = settingDataSource.updateGeoState(state)
 
+    override suspend fun updateMoveState(state: Boolean) : Unit = settingDataSource.updateMoveState(state)
+
+    override suspend fun updateRecordAlarm(state: Boolean) : Unit = settingDataSource.updateRecordAlarm(state)
+
     override suspend fun initSetting(value : Boolean) {
         settingDataSource.updateDarkTheme(false)
         settingDataSource.updateDynamicTheme(false)
@@ -52,6 +60,8 @@ class SettingRepositoryImpl @Inject constructor(
         settingDataSource.updateTrigger(false)
         settingDataSource.updateMoveTrigger(false)
         settingDataSource.updateGeoState(false)
+        settingDataSource.updateMoveState(false)
+        settingDataSource.updateRecordAlarm(false)
     }
 
 }

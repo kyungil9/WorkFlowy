@@ -68,5 +68,21 @@ class SettingDataSourceImpl @Inject constructor(
         }
     }
 
+    override suspend fun updateMoveState(state: Boolean) {
+        settingDataStore.updateData { setting ->
+            setting.toBuilder()
+                .setMove(state)
+                .build()
+        }
+    }
+
+    override suspend fun updateRecordAlarm(state: Boolean) {
+        settingDataStore.updateData { setting ->
+            setting.toBuilder()
+                .setRecordAlarm(state)
+                .build()
+        }
+    }
+
 
 }
