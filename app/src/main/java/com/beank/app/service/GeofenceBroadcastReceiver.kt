@@ -66,7 +66,6 @@ class GeofenceBroadcastReceiver : BroadcastReceiver(){
                 }else{
                     if (activityEvent){
                         val result = ActivityTransitionResult.extractResult(intent)!!
-                        Log.e(TAG, "activity on")
                         for (event in result.transitionEvents){
                             Log.e(TAG, "${event.activityType}")
                             if(((SystemClock.elapsedRealtime()-(event.elapsedRealTimeNanos/1000000))/1000) <= 30) {

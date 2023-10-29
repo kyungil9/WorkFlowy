@@ -48,6 +48,7 @@ import com.beank.domain.usecase.schedule.UpdateSchedule
 import com.beank.domain.usecase.setting.GetDarkTheme
 import com.beank.domain.usecase.setting.GetDynamicTheme
 import com.beank.domain.usecase.setting.GetGeoState
+import com.beank.domain.usecase.setting.GetMoveState
 import com.beank.domain.usecase.setting.GetNoticeAlarm
 import com.beank.domain.usecase.setting.GetNoticeState
 import com.beank.domain.usecase.setting.GetRecordAlarm
@@ -58,6 +59,7 @@ import com.beank.domain.usecase.setting.InitSetting
 import com.beank.domain.usecase.setting.UpdateDarkTheme
 import com.beank.domain.usecase.setting.UpdateDynamicTheme
 import com.beank.domain.usecase.setting.UpdateGeoState
+import com.beank.domain.usecase.setting.UpdateMoveState
 import com.beank.domain.usecase.setting.UpdateNoticeAlarm
 import com.beank.domain.usecase.setting.UpdateRecordAlarm
 import com.beank.domain.usecase.setting.UpdateScheduleAlarm
@@ -184,7 +186,9 @@ object UsecaseModule {
             getGeoState = GetGeoState(settingRepository),
             updateGeoState = UpdateGeoState(settingRepository),
             getTriggerToggle = GetTriggerToggle(settingRepository),
-            startGeofenceToClient = StartGeofenceToClient(geofenceRepository)
+            startGeofenceToClient = StartGeofenceToClient(geofenceRepository),
+            getMoveState = GetMoveState(settingRepository),
+            updateMoveState = UpdateMoveState(settingRepository)
         )
     }
 

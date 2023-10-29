@@ -154,6 +154,10 @@ class RecordWorker @AssistedInject constructor(
         return geoUsecases.getGeoState().first()
     }
 
+    private suspend fun onMoveStateCheck() : Boolean {
+        return geoUsecases.getMoveState().first()
+    }
+
     private suspend fun onTriggerToggleState() : Boolean {
         return geoUsecases.getTriggerToggle().first()
     }
@@ -170,18 +174,29 @@ class RecordWorker @AssistedInject constructor(
                 if (geofenceId != null){//지오펜서 트리거 처리
                     if (geoState == Geofence.GEOFENCE_TRANSITION_EXIT){
                         geoUsecases.updateGeoState(false)
-                    }else{
+                        if (onMoveStateCheck()){
+                            onActivityWork(
+                                state = ActivityTransition.ACTIVITY_TRANSITION_ENTER,
+                                dateTime = LocalDateTime.now()
+                            )
+                        }
+                    }else{//exit기능을 빼야하나??
                         geoUsecases.updateGeoState(true)
+                        onGeofenceWork(
+                            geofenceId = geofenceId,
+                            geoState = geoState,
+                            dateTime = dateTime
+                        )
                     }
-                    onGeofenceWork(
-                        geofenceId = geofenceId,
-                        geoState = geoState,
-                        dateTime = dateTime
-                    )
                 }else if (reboot){//재부팅시 트리거 재등록 처리
                     if (onTriggerToggleState())
                         geoUsecases.startGeofenceToClient()
                 }else{//이동중 트리거 처리
+                    if (activityState == ActivityTransition.ACTIVITY_TRANSITION_ENTER){
+                        geoUsecases.updateMoveState(true)
+                    }else{
+                        geoUsecases.updateMoveState(false)
+                    }
                     if (!onGeoStateCheck()){
                         onActivityWork(
                             state = activityState,
