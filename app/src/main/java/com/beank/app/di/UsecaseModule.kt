@@ -25,8 +25,10 @@ import com.beank.domain.usecase.account.CreateAccount
 import com.beank.domain.usecase.account.LoginAccount
 import com.beank.domain.usecase.account.SignOut
 import com.beank.domain.usecase.geo.AddGeofence
+import com.beank.domain.usecase.geo.AddTempGeofence
 import com.beank.domain.usecase.geo.GetChooseGeofence
 import com.beank.domain.usecase.geo.GetGeoTriggerList
+import com.beank.domain.usecase.geo.GetTempGeoTrigger
 import com.beank.domain.usecase.geo.RemoveGeofence
 import com.beank.domain.usecase.geo.StartGeofenceToClient
 import com.beank.domain.usecase.geo.UpdateGeofence
@@ -67,6 +69,7 @@ import com.beank.domain.usecase.setting.UpdateTriggerToggle
 import com.beank.domain.usecase.tag.CheckTagTitle
 import com.beank.domain.usecase.tag.DeleteTag
 import com.beank.domain.usecase.tag.GetAllTag
+import com.beank.domain.usecase.tag.GetNextTag
 import com.beank.domain.usecase.tag.InitDataSetting
 import com.beank.domain.usecase.tag.InsertTag
 import com.beank.domain.usecase.user.GetUserInfo
@@ -188,7 +191,8 @@ object UsecaseModule {
             getTriggerToggle = GetTriggerToggle(settingRepository),
             startGeofenceToClient = StartGeofenceToClient(geofenceRepository),
             getMoveState = GetMoveState(settingRepository),
-            updateMoveState = UpdateMoveState(settingRepository)
+            updateMoveState = UpdateMoveState(settingRepository),
+            removeGeofence = RemoveGeofence(geofenceRepository)
         )
     }
 
@@ -217,12 +221,16 @@ object UsecaseModule {
 
     @Provides
     @Singleton
-    fun providesRecordAlarmUseCases(recordRepository: RecordRepository,settingRepository: SettingRepository) = RecordAlarmUsecases(
+    fun providesRecordAlarmUseCases(recordRepository: RecordRepository,settingRepository: SettingRepository,geofenceRepository: GeofenceRepository,tagRepository: TagRepository) = RecordAlarmUsecases(
         getNowRecord = GetNowRecord(recordRepository),
         getCurrentRecord = GetCurrentRecord(recordRepository),
         insertRecord = InsertRecord(recordRepository),
         updateRecord = UpdateRecord(recordRepository),
-        getRecordAlarm = GetRecordAlarm(settingRepository)
+        getRecordAlarm = GetRecordAlarm(settingRepository),
+        addTempGeofence = AddTempGeofence(geofenceRepository),
+        getNextTag = GetNextTag(tagRepository),
+        removeGeofence = RemoveGeofence(geofenceRepository),
+        getTempGeoTrigger = GetTempGeoTrigger(geofenceRepository)
     )
 
 

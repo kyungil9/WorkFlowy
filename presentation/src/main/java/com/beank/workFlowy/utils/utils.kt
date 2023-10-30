@@ -68,4 +68,5 @@ object RecordMode {
     const val START = 1
     const val STOP = 2
     const val REBOOT = 3
+    const val NEXT_RECORD = 4
 }

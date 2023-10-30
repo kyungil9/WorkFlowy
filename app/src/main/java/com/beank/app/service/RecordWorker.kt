@@ -56,9 +56,14 @@ class RecordWorker @AssistedInject constructor(
                 if (geo.geoEvent != GeofenceEvent.ExitRequest){
                     onStartRecord(geo,dateTime,true)
                 }
+            }else if(geoState == Geofence.GEOFENCE_TRANSITION_ENTER){//temp사용시 기록
+                onStartRecord(geo,dateTime,true)
             }else{//나갈때 기록 저장
-                if (geo.geoEvent != GeofenceEvent.EnterRequest){
-                    onStartRecord(geo,dateTime,false)
+                if (geo.geoEvent == GeofenceEvent.TempRequest){
+                    //temp나갈때 삭제 처리
+                    geoUsecases.removeGeofence(geofenceId)
+                }else if (geo.geoEvent != GeofenceEvent.EnterRequest){
+                    //onStartRecord(geo,dateTime,false)
                 }
             }
         }

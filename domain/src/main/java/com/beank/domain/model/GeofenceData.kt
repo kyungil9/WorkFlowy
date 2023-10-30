@@ -25,4 +25,5 @@ object GeofenceEvent{
     const val EnterRequest = 0
     const val ExitRequest = 1
     const val EnterOrExitRequest = 2
+    const val TempRequest = 3
 }

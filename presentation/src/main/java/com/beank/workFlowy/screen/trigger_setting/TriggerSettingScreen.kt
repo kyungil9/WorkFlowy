@@ -175,16 +175,16 @@ fun TriggerSettingScreen(
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.Start
         ) {
-            TextCard(title = "트리거 조건 설정")
-            LazyRow(modifier = Modifier.fillMaxWidth()){
-                items(triggerList, key = {item -> item}){trigger ->
-                    FilterChip(
-                        modifier = Modifier.padding(horizontal = 5.dp),
-                        selected = (trigger == uiState.geoEvent.exchangeEvent()),
-                        onClick = { triggerSettingViewModel.onGeoEventUpdate(trigger) },
-                        label = { Text(text = trigger)})
-                }
-            }
+//            TextCard(title = "트리거 조건 설정")
+//            LazyRow(modifier = Modifier.fillMaxWidth()){
+//                items(triggerList, key = {item -> item}){trigger ->
+//                    FilterChip(
+//                        modifier = Modifier.padding(horizontal = 5.dp),
+//                        selected = (trigger == uiState.geoEvent.exchangeEvent()),
+//                        onClick = { triggerSettingViewModel.onGeoEventUpdate(trigger) },
+//                        label = { Text(text = trigger)})
+//                }
+//            }
             //디자인 개선????????
             if (uiState.geoEvent != GeofenceEvent.ExitRequest){
                 //태그 선택 화면
@@ -197,16 +197,16 @@ fun TriggerSettingScreen(
                     onTagSelect = triggerSettingViewModel::onEnterTagSelect,
                     onTagStateChange = { startTagToggle = startTagToggle.not()})
             }
-            if (uiState.geoEvent != GeofenceEvent.EnterRequest){
-                TextCard(title = "EXIT 트리거 태그 설정")
-                TagSelectItem(
-                    tagToggle = endTagToggle,
-                    tagImage = uiState.exitTagImage,
-                    tag = uiState.exitTag,
-                    tagList = uiState.tagList,
-                    onTagSelect = triggerSettingViewModel::onExitTagSelect,
-                    onTagStateChange = { endTagToggle = endTagToggle.not()})
-            }
+//            if (uiState.geoEvent != GeofenceEvent.EnterRequest){
+//                TextCard(title = "EXIT 트리거 태그 설정")
+//                TagSelectItem(
+//                    tagToggle = endTagToggle,
+//                    tagImage = uiState.exitTagImage,
+//                    tag = uiState.exitTag,
+//                    tagList = uiState.tagList,
+//                    onTagSelect = triggerSettingViewModel::onExitTagSelect,
+//                    onTagStateChange = { endTagToggle = endTagToggle.not()})
+//            }
 
             //지도 위치 선택
             Card(

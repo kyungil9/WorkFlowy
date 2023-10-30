@@ -8,6 +8,8 @@ interface TagRepository {
 
     fun getTagInfo() : Flow<FireStoreState<List<Tag>>>
 
+    suspend fun getNextTag(tag : String) : Tag
+
     suspend fun checkTagTitle(title : String) : Boolean
 
     fun insertTag(tag: Tag)

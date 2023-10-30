@@ -1,6 +1,7 @@
 package com.beank.domain.usecase
 
 import com.beank.domain.usecase.geo.GetChooseGeofence
+import com.beank.domain.usecase.geo.RemoveGeofence
 import com.beank.domain.usecase.geo.StartGeofenceToClient
 import com.beank.domain.usecase.record.GetCurrentRecord
 import com.beank.domain.usecase.record.InsertRecord
@@ -21,5 +22,6 @@ data class GeoUsecases(
     val getTriggerToggle: GetTriggerToggle,
     val startGeofenceToClient: StartGeofenceToClient,
     val getMoveState: GetMoveState,
-    val updateMoveState: UpdateMoveState
+    val updateMoveState: UpdateMoveState,
+    val removeGeofence: RemoveGeofence
 )

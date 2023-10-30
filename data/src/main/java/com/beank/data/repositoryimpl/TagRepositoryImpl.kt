@@ -1,10 +1,13 @@
 package com.beank.data.repositoryimpl
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import com.beank.data.datasource.StorageDataSource
 import com.beank.data.entity.WeekTag
 import com.beank.data.mapper.toTagModel
 import com.beank.data.mapper.toWeekTag
 import com.beank.data.utils.dataStateObjects
+import com.beank.data.utils.toObjects
 import com.beank.domain.model.FireStoreState
 import com.beank.domain.model.Tag
 import com.beank.domain.repository.TagRepository
@@ -22,6 +25,18 @@ class TagRepositoryImpl @Inject constructor(
 ): TagRepository {
     override fun getTagInfo(): Flow<FireStoreState<List<Tag>>> =
         storage.store.document(storage.getUid()!!).collection(TAG).dataStateObjects<WeekTag,Tag>()
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    override suspend fun getNextTag(title : String): Tag {
+        val tags = storage.store.document(storage.getUid()!!).collection(TAG).get().await().toObjects(WeekTag::class.java,Tag::class.java)
+        var nextIndex = 0
+        tags.forEachIndexed{index, tag ->
+            if (tag.title == title){
+                nextIndex = (index+1) % tags.size
+            }
+        }
+        return tags[nextIndex]
+    }
 
     override suspend fun checkTagTitle(title: String): Boolean =
         storage.store.document(storage.getUid()!!).collection(TAG).whereEqualTo("title",title).get().await().documents.isEmpty()

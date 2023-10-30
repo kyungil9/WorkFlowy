@@ -12,7 +12,11 @@ interface GeofenceRepository {
 
     fun getGeoTriggerList(): Flow<FireStoreState<List<GeofenceData>>>
 
+    suspend fun getTempGeoTrigger() : GeofenceData?
+
     suspend fun addGeofenceToClient(geofenceData: GeofenceData, onSuccess: () -> Unit, onFail: () -> Unit)
+
+    suspend fun addTempGeofenceToClient(geofenceData: GeofenceData, onSuccess: () -> Unit, onFail: () -> Unit)
 
     suspend fun startGeofenceToClient(onSuccess : () -> Unit, onFail : () -> Unit)
 

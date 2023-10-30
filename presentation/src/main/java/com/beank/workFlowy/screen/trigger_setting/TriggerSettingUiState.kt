@@ -20,7 +20,7 @@ class TriggerSettingUiState(
     exitTagImage : Int = 2,
     latitude : Double = 37.5642135,
     lonitude : Double = 127.0016985,
-    radius : Double = 30.0,
+    radius : Double = 100.0,
     delayTime : Int = 300000,
     timeOption : Boolean = false,
     startTime : LocalTime = LocalTime.now(),

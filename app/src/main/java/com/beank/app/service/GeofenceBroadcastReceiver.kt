@@ -48,7 +48,7 @@ class GeofenceBroadcastReceiver : BroadcastReceiver(){
                         return
                     }
                     val geofenceTransition = geofencingEvent?.geofenceTransition!!
-                    if ((geofenceTransition == Geofence.GEOFENCE_TRANSITION_DWELL)or(geofenceTransition == Geofence.GEOFENCE_TRANSITION_EXIT)) {
+                    if ((geofenceTransition == Geofence.GEOFENCE_TRANSITION_DWELL)or(geofenceTransition == Geofence.GEOFENCE_TRANSITION_EXIT)or(geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER)) {
                         val triggeringGeofences = geofencingEvent.triggeringGeofences!!
                         val geoWorkRequest = OneTimeWorkRequestBuilder<RecordWorker>()
                             .setInputData(workDataOf(
@@ -58,7 +58,6 @@ class GeofenceBroadcastReceiver : BroadcastReceiver(){
                             .setBackoffCriteria(BackoffPolicy.LINEAR,30000,TimeUnit.MILLISECONDS)
                             .build()
                         workManager.enqueue(geoWorkRequest)
-
                     }else {
                         //error
                         Log.e(TAG, "error code 1")
