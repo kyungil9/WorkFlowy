@@ -53,11 +53,9 @@ class RecordWorker @AssistedInject constructor(
         val geofenceData = geoUsecases.getChooseGeofence(geofenceId)
         geofenceData?.let {geo ->
             if (geoState == Geofence.GEOFENCE_TRANSITION_DWELL) {//들어올때 기록저장
-                if (geo.geoEvent != GeofenceEvent.ExitRequest){
+                if (geo.geoEvent != GeofenceEvent.ExitRequest){//temp같이 기록
                     onStartRecord(geo,dateTime,true)
                 }
-            }else if(geoState == Geofence.GEOFENCE_TRANSITION_ENTER){//temp사용시 기록
-                onStartRecord(geo,dateTime,true)
             }else{//나갈때 기록 저장
                 if (geo.geoEvent == GeofenceEvent.TempRequest){
                     //temp나갈때 삭제 처리

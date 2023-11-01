@@ -194,16 +194,14 @@ class RecordMessageWorker @AssistedInject constructor(
         recordAlarmUsecases.getTempGeoTrigger()?.let {
             recordAlarmUsecases.removeGeofence(it.id!!)
         }
-        onRecordReduce()
-        onRecordInsert(nextTag.title, LocalDateTime.now())
-        recordAlarmUsecases.addTempGeofence(
+        //onRecordReduce()
+        //onRecordInsert(nextTag.title, LocalDateTime.now()) 5분뒤에 반영??
+        recordAlarmUsecases.addGeofence(
             GeofenceData(
                 enterTag = nextTag.title,
                 enterTagImage = nextTag.icon,
                 latitude = lat,
                 lonitude = lon,
-                radius = 100.0f,
-                delayTime = 0,
                 geoEvent = GeofenceEvent.TempRequest
             )
         )
@@ -221,6 +219,7 @@ class RecordMessageWorker @AssistedInject constructor(
                         //계속해서 어떻게 보여줄지 고민??
                     }
                     RecordMode.STOP -> {
+
                         onStopRecordNotification()
                     }
                     RecordMode.REBOOT -> {

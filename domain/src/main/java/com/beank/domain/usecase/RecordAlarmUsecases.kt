@@ -1,6 +1,6 @@
 package com.beank.domain.usecase
 
-import com.beank.domain.usecase.geo.AddTempGeofence
+import com.beank.domain.usecase.geo.AddGeofence
 import com.beank.domain.usecase.geo.GetTempGeoTrigger
 import com.beank.domain.usecase.geo.RemoveGeofence
 import com.beank.domain.usecase.record.GetCurrentRecord
@@ -16,7 +16,7 @@ data class RecordAlarmUsecases (
     val updateRecord: UpdateRecord,
     val insertRecord: InsertRecord,
     val getRecordAlarm: GetRecordAlarm,
-    val addTempGeofence: AddTempGeofence,
+    val addGeofence: AddGeofence,
     val getNextTag: GetNextTag,
     val removeGeofence: RemoveGeofence,
     val getTempGeoTrigger: GetTempGeoTrigger

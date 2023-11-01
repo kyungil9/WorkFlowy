@@ -16,8 +16,6 @@ interface GeofenceRepository {
 
     suspend fun addGeofenceToClient(geofenceData: GeofenceData, onSuccess: () -> Unit, onFail: () -> Unit)
 
-    suspend fun addTempGeofenceToClient(geofenceData: GeofenceData, onSuccess: () -> Unit, onFail: () -> Unit)
-
     suspend fun startGeofenceToClient(onSuccess : () -> Unit, onFail : () -> Unit)
 
     fun updateGeofenceToClient(geofenceData: GeofenceData,onSuccess: () -> Unit, onFail: () -> Unit)

@@ -35,6 +35,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -64,16 +65,18 @@ class WeekViewModel @Inject constructor(
     private val scheduleInfo get() = uiState.selectSchedule
     private var todayJob : Job? = null
 
-    val timerJob = viewModelScope.launch(Dispatchers.IO, start = CoroutineStart.LAZY) {
-        oldTimeMills = System.currentTimeMillis()
-        while (true) {
-            val delayMills = System.currentTimeMillis() - oldTimeMills
-            if (delayMills >= 1000L) {//1초당
-                val record = uiState.recordList
-                if (record.isNotEmpty()) {
-                    uiState.progressTime = Duration.between(record[0].startTime, LocalDateTime.now())
+    val timerJob = viewModelScope.launch(start = CoroutineStart.LAZY) {
+        withContext(Dispatchers.IO){
+            oldTimeMills = System.currentTimeMillis()
+            while (true) {
+                val delayMills = System.currentTimeMillis() - oldTimeMills
+                if (delayMills >= 1000L) {//1초당
+                    val record = uiState.recordList
+                    if (record.isNotEmpty()) {
+                        uiState.progressTime = Duration.between(record[0].startTime, LocalDateTime.now())
+                    }
+                    oldTimeMills = System.currentTimeMillis()
                 }
-                oldTimeMills = System.currentTimeMillis()
             }
         }
     }
