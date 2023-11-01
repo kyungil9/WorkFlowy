@@ -7,7 +7,6 @@ import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -44,7 +43,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.input.ImeAction
@@ -62,6 +60,7 @@ import com.beank.workFlowy.navigation.NavigationItem
 import com.beank.workFlowy.screen.RequestBackgroundPermissionDialog
 import com.beank.workFlowy.screen.RequestLocationPermissionDialog
 import com.beank.workFlowy.screen.RequestNotificationPermissionDialog
+import com.beank.workFlowy.screen.RequestTransitionPermissionDialog
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.integration.compose.placeholder
@@ -211,6 +210,11 @@ fun SettingScreen(
                 ToggleCard(title = stringResource(id = AppText.scheduleAlarm), checked = {uiState.scheduleToggle}, onClick = settingViewModel::onScheduleAlarmUpdate)
 
                 VerticalSpacer(height = 10.dp)
+                TextCard(title = stringResource(id = AppText.record_widget))
+                ToggleCard(title = stringResource(id = AppText.record_widget_setting), checked = {uiState.recordAlarmToggle}, onClick = settingViewModel::onRecordAlarmUpdate)
+
+
+                VerticalSpacer(height = 10.dp)
                 TextCard(title = stringResource(id = AppText.themeSetting))
                 ToggleCard(title = stringResource(id = AppText.darkTheme), checked = {uiState.darkThemeToggle}, onClick = settingViewModel::onDarkThemeUpdate)
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -220,6 +224,7 @@ fun SettingScreen(
 
                 SettingCard(title = stringResource(id = AppText.triggerTitle))
                 ToggleCard(title = stringResource(id = AppText.triggerToggle), checked = {uiState.triggerToggle}, onClick = settingViewModel::onTriggerToggleUpdate)
+                ToggleCard(title = stringResource(id = AppText.triggerMove), checked = {uiState.triggerMoveToggle}, onClick = settingViewModel::onTriggerMoveUpdate)
                 SettingCard(title = stringResource(id = AppText.triggerSetting), padding = 25.dp, onClick = {onMove(NavigationItem.TRIGGER.route)})
                 VerticalSpacer(height = 5.dp)
 
@@ -228,7 +233,7 @@ fun SettingScreen(
 
                 SettingCard(title = stringResource(id = AppText.notice))
                 SettingCard(title = stringResource(id = AppText.customCenter))
-                SettingCard(title = stringResource(id = AppText.useOfTerm))
+                //SettingCard(title = stringResource(id = AppText.useOfTerm))
                 TextCard(title = stringResource(id = AppText.version), comment = LocalContext.current.packageManager.getPackageInfo(
                     LocalContext.current.packageName,0).versionName)
 
@@ -247,6 +252,7 @@ fun SettingScreen(
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
             RequestBackgroundPermissionDialog()
         RequestLocationPermissionDialog()
+        RequestTransitionPermissionDialog()
     }
 }
 

@@ -6,13 +6,14 @@ import android.content.Context
 import android.content.Intent
 import androidx.work.OneTimeWorkRequest
 import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.PeriodicWorkRequest
-import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import com.beank.app.service.GeofenceBroadcastReceiver
 import com.beank.app.service.MessageWorker
+import com.beank.app.service.RecordMessageWorker
 import com.beank.data.di.ActivityPendingIntent
 import com.beank.data.di.GeoPendingIntent
+import com.beank.workFlowy.utils.MessageWorkRequest
+import com.beank.workFlowy.utils.RecordWorkRequest
 import com.google.android.gms.location.ActivityRecognition
 import com.google.android.gms.location.ActivityRecognitionClient
 import com.google.android.gms.location.GeofencingClient
@@ -22,10 +23,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import java.time.Duration
-import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
-import kotlin.random.Random
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -44,8 +42,16 @@ object ManagerModule{
 
     @Singleton
     @Provides
+    @MessageWorkRequest
     fun providesMessageRequest() : OneTimeWorkRequest.Builder {
         return OneTimeWorkRequestBuilder<MessageWorker>()
+    }
+
+    @Singleton
+    @Provides
+    @RecordWorkRequest
+    fun providesRecordRequest() : OneTimeWorkRequest.Builder {
+        return OneTimeWorkRequestBuilder<RecordMessageWorker>()
     }
 
     @Singleton

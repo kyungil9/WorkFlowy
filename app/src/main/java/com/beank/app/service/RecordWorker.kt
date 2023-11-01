@@ -165,6 +165,10 @@ class RecordWorker @AssistedInject constructor(
         return geoUsecases.getTriggerToggle().first()
     }
 
+    private suspend fun onTriggerMoveState() : Boolean {
+        return geoUsecases.getMoveTriggerToggle().first()
+    }
+
     override suspend fun doWork(): Result = coroutineScope {
         try {
             val geofenceId = inputData.getString("geofenceId")
@@ -183,7 +187,7 @@ class RecordWorker @AssistedInject constructor(
                                 dateTime = LocalDateTime.now()
                             )
                         }
-                    }else{//exit기능을 빼야하나??
+                    }else{
                         geoUsecases.updateGeoState(true)
                         onGeofenceWork(
                             geofenceId = geofenceId,
@@ -194,6 +198,8 @@ class RecordWorker @AssistedInject constructor(
                 }else if (reboot){//재부팅시 트리거 재등록 처리
                     if (onTriggerToggleState())
                         geoUsecases.startGeofenceToClient()
+                    if (onTriggerMoveState())
+                        geoUsecases.startMoveToClient()
                 }else{//이동중 트리거 처리
                     if (activityState == ActivityTransition.ACTIVITY_TRANSITION_ENTER){
                         geoUsecases.updateMoveState(true)

@@ -1,6 +1,5 @@
 package com.beank.data.repositoryimpl
 
-import android.annotation.SuppressLint
 import android.app.PendingIntent
 import android.os.Build
 import android.util.Log
@@ -18,7 +17,6 @@ import com.beank.domain.model.GeofenceData
 import com.beank.domain.model.GeofenceEvent
 import com.beank.domain.repository.GeofenceRepository
 import com.google.android.gms.location.ActivityRecognitionClient
-import com.google.android.gms.location.ActivityRecognitionResult
 import com.google.android.gms.location.ActivityTransition
 import com.google.android.gms.location.ActivityTransitionRequest
 import com.google.android.gms.location.DetectedActivity
@@ -79,12 +77,6 @@ class GeofenceRepositoryImpl @Inject constructor(
     }
 
     override suspend fun startGeofenceToClient(onSuccess : () -> Unit, onFail : () -> Unit) {
-        val task = activityRecognitionClient.requestActivityTransitionUpdates(ActivityTransitionRequest(initTransitions()),activityPendingIntent)
-        task.addOnSuccessListener {
-            Log.d("walk","ok")
-        }.addOnFailureListener {
-            Log.e("walk",it.message.toString())
-        }
         val geofenceDataList = storage.store.document(storage.getUid()!!).collection(GEOTRIGGER).get().await().toObjects(WeekGeoTrigger::class.java).map { it.toGeofenceData() }
         val geofenceList = ArrayList<Geofence>()
         geofenceDataList.forEach { geofenceData ->
@@ -95,6 +87,15 @@ class GeofenceRepositoryImpl @Inject constructor(
                 addOnSuccessListener { onSuccess() }
                 addOnFailureListener { onFail() }
             }
+        }
+    }
+
+    override suspend fun startMoveToClient(onSuccess: () -> Unit, onFail: () -> Unit) {
+        val task = activityRecognitionClient.requestActivityTransitionUpdates(ActivityTransitionRequest(initTransitions()),activityPendingIntent)
+        task.addOnSuccessListener {
+            Log.d("walk","ok")
+        }.addOnFailureListener {
+            Log.e("walk",it.message.toString())
         }
     }
 
@@ -126,6 +127,9 @@ class GeofenceRepositoryImpl @Inject constructor(
             addOnSuccessListener { onSuccess() }
             addOnFailureListener { onFail() }
         }
+    }
+
+    override fun removeMoveToClient(onSuccess: () -> Unit, onFail: () -> Unit) {
         activityRecognitionClient.removeActivityTransitionUpdates(activityPendingIntent)
     }
 

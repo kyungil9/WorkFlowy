@@ -29,7 +29,9 @@ import com.beank.domain.usecase.geo.GetChooseGeofence
 import com.beank.domain.usecase.geo.GetGeoTriggerList
 import com.beank.domain.usecase.geo.GetTempGeoTrigger
 import com.beank.domain.usecase.geo.RemoveGeofence
+import com.beank.domain.usecase.geo.RemoveMoveToClient
 import com.beank.domain.usecase.geo.StartGeofenceToClient
+import com.beank.domain.usecase.geo.StartMoveToClient
 import com.beank.domain.usecase.geo.UpdateGeofence
 import com.beank.domain.usecase.message.InsertToken
 import com.beank.domain.usecase.message.SubscribeNotice
@@ -50,6 +52,7 @@ import com.beank.domain.usecase.setting.GetDarkTheme
 import com.beank.domain.usecase.setting.GetDynamicTheme
 import com.beank.domain.usecase.setting.GetGeoState
 import com.beank.domain.usecase.setting.GetMoveState
+import com.beank.domain.usecase.setting.GetMoveTriggerToggle
 import com.beank.domain.usecase.setting.GetNoticeAlarm
 import com.beank.domain.usecase.setting.GetNoticeState
 import com.beank.domain.usecase.setting.GetRecordAlarm
@@ -61,7 +64,9 @@ import com.beank.domain.usecase.setting.UpdateDarkTheme
 import com.beank.domain.usecase.setting.UpdateDynamicTheme
 import com.beank.domain.usecase.setting.UpdateGeoState
 import com.beank.domain.usecase.setting.UpdateMoveState
+import com.beank.domain.usecase.setting.UpdateMoveTriggerToggle
 import com.beank.domain.usecase.setting.UpdateNoticeAlarm
+import com.beank.domain.usecase.setting.UpdateRecordAlarm
 import com.beank.domain.usecase.setting.UpdateScheduleAlarm
 import com.beank.domain.usecase.setting.UpdateTriggerToggle
 import com.beank.domain.usecase.tag.CheckTagTitle
@@ -155,12 +160,18 @@ object UsecaseModule {
         getNoticeAlarm = GetNoticeAlarm(settingRepository),
         getScheduleAlarm = GetScheduleAlarm(settingRepository),
         getTriggerToggle = GetTriggerToggle(settingRepository),
+        getMoveTriggerToggle = GetMoveTriggerToggle(settingRepository),
+        getRecordAlarm = GetRecordAlarm(settingRepository),
         updateDarkTheme = UpdateDarkTheme(settingRepository),
         updateDynamicTheme = UpdateDynamicTheme(settingRepository),
         updateNoticeAlarm = UpdateNoticeAlarm(settingRepository),
         updateScheduleAlarm = UpdateScheduleAlarm(settingRepository),
         updateTriggerToggle = UpdateTriggerToggle(settingRepository),
+        updateMoveTriggerToggle = UpdateMoveTriggerToggle(settingRepository),
+        updateRecordAlarm = UpdateRecordAlarm(settingRepository),
         startGeofenceToClient = StartGeofenceToClient(geofenceRepository),
+        startMoveToClient = StartMoveToClient(geofenceRepository),
+        removeMoveToClient = RemoveMoveToClient(geofenceRepository),
         removeGeofence = RemoveGeofence(geofenceRepository),
         subscribeNotice = SubscribeNotice(messageRepository),
         unsubscribeNotice = UnsubscribeNotice(messageRepository),
@@ -187,7 +198,9 @@ object UsecaseModule {
             getGeoState = GetGeoState(settingRepository),
             updateGeoState = UpdateGeoState(settingRepository),
             getTriggerToggle = GetTriggerToggle(settingRepository),
+            getMoveTriggerToggle = GetMoveTriggerToggle(settingRepository),
             startGeofenceToClient = StartGeofenceToClient(geofenceRepository),
+            startMoveToClient = StartMoveToClient(geofenceRepository),
             getMoveState = GetMoveState(settingRepository),
             updateMoveState = UpdateMoveState(settingRepository),
             removeGeofence = RemoveGeofence(geofenceRepository)

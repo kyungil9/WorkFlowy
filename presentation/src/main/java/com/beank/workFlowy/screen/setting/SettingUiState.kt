@@ -18,6 +18,8 @@ class SettingUiState(
     noticeToggle : Boolean = true,
     scheduleToggle : Boolean = true,
     triggerToggle : Boolean = false,
+    triggerMoveToggle : Boolean = false,
+    recordAlarmToggle : Boolean = false,
     tempNickname : String = ""
 ){
     var nickname by mutableStateOf(nickname)
@@ -30,4 +32,6 @@ class SettingUiState(
     var scheduleToggle by mutableStateOf(scheduleToggle)
     var triggerToggle by mutableStateOf(triggerToggle)
     var tempNickname by mutableStateOf(tempNickname)
+    var triggerMoveToggle by mutableStateOf(triggerMoveToggle)
+    var recordAlarmToggle by mutableStateOf(recordAlarmToggle)
 }

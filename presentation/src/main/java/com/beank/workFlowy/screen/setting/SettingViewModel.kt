@@ -13,10 +13,12 @@ import com.beank.domain.model.onSuccess
 import com.beank.domain.repository.LogRepository
 import com.beank.domain.usecase.SettingUsecases
 import com.beank.domain.usecase.UserUsecases
-import com.beank.domain.usecase.account.SignOut
 import com.beank.workFlowy.component.snackbar.SnackbarManager
 import com.beank.workFlowy.screen.WorkFlowyViewModel
 import com.beank.workFlowy.utils.MessageMode
+import com.beank.workFlowy.utils.MessageWorkRequest
+import com.beank.workFlowy.utils.RecordMode
+import com.beank.workFlowy.utils.RecordWorkRequest
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flowOn
@@ -32,7 +34,8 @@ class SettingViewModel @Inject constructor(
     private val settingUsecases: SettingUsecases,
     private val userUsecases: UserUsecases,
     private val workManager: WorkManager,
-    private val messageRequest : OneTimeWorkRequest.Builder,
+    @MessageWorkRequest private val messageRequest : OneTimeWorkRequest.Builder,
+    @RecordWorkRequest private val recordRequest : OneTimeWorkRequest.Builder,
     logRepository: LogRepository
 ) : WorkFlowyViewModel(logRepository) {
 
@@ -45,6 +48,8 @@ class SettingViewModel @Inject constructor(
         getNoticeAlarmInfo()
         getScheduleAlarmInfo()
         getTriggerInfo()
+        getTriggerMoveInfo()
+        getRecordAlarmInfo()
     }
 
     fun onImageUpload(uri: Uri, onFail : () -> Unit){
@@ -61,7 +66,6 @@ class SettingViewModel @Inject constructor(
             }else{
                 settingUsecases.unsubscribeNotice()
             }
-            uiState.noticeToggle = toggle
             settingUsecases.updateNoticeAlarm(toggle)
         }
     }
@@ -81,21 +85,18 @@ class SettingViewModel @Inject constructor(
                     .build()
                 workManager.enqueue(messageWorkRequest)
             }
-            uiState.scheduleToggle = toggle
             settingUsecases.updateScheduleAlarm(toggle)
         }
     }
 
     fun onDarkThemeUpdate(toggle : Boolean){
         launchCatching {
-            uiState.darkThemeToggle = toggle
             settingUsecases.updateDarkTheme(toggle)
         }
     }
 
     fun onDynamicThemeUpdate(toggle : Boolean){
         launchCatching {
-            uiState.dynamicThemeToggle = toggle
             settingUsecases.updateDynamicTheme(toggle)
         }
     }
@@ -108,12 +109,39 @@ class SettingViewModel @Inject constructor(
             }else{
                 settingUsecases.removeGeofence()//트리거 해제
             }
-            uiState.triggerToggle = toggle
             settingUsecases.updateTriggerToggle(toggle)
         }
     }
 
+    fun onTriggerMoveUpdate(toggle: Boolean){
+        launchCatching {
+            if (toggle){
+                settingUsecases.startMoveToClient()
+            }else{
+                settingUsecases.removeMoveToClient()
+            }
+            settingUsecases.updateMoveTriggerToggle(toggle)
+        }
+    }
 
+    fun onRecordAlarmUpdate(toggle: Boolean){
+        launchCatching {
+            if (toggle){
+                val recordMessageWorkRequest = recordRequest
+                    .setInputData(workDataOf("mode" to RecordMode.START))
+                    .setBackoffCriteria(BackoffPolicy.LINEAR,30000, TimeUnit.MILLISECONDS)
+                    .build()
+                workManager.enqueue(recordMessageWorkRequest)
+            }else{
+                val recordMessageWorkRequest = recordRequest
+                    .setInputData(workDataOf("mode" to RecordMode.STOP))
+                    .setBackoffCriteria(BackoffPolicy.LINEAR,30000, TimeUnit.MILLISECONDS)
+                    .build()
+                workManager.enqueue(recordMessageWorkRequest)
+            }
+            settingUsecases.updateRecordAlarm(toggle)
+        }
+    }
 
     fun onNicknameUpdate() {
         launchCatching {
@@ -134,12 +162,22 @@ class SettingViewModel @Inject constructor(
         launchCatching {
             settingUsecases.signOut()
             settingUsecases.unsubscribeNotice()
-            val messageWorkRequest = messageRequest
-                .setInputData(workDataOf("mode" to MessageMode.CANCLEALL))
-                .setBackoffCriteria(BackoffPolicy.LINEAR,30000, TimeUnit.MILLISECONDS)
-                .build()
-            workManager.enqueue(messageWorkRequest)
+            if (uiState.scheduleToggle){
+                val messageWorkRequest = messageRequest
+                    .setInputData(workDataOf("mode" to MessageMode.CANCLEALL))
+                    .setBackoffCriteria(BackoffPolicy.LINEAR,30000, TimeUnit.MILLISECONDS)
+                    .build()
+                workManager.enqueue(messageWorkRequest)
+            }
+            if (uiState.recordAlarmToggle){
+                val recordMessageWorkRequest = recordRequest
+                    .setInputData(workDataOf("mode" to RecordMode.STOP))
+                    .setBackoffCriteria(BackoffPolicy.LINEAR,30000, TimeUnit.MILLISECONDS)
+                    .build()
+                workManager.enqueue(recordMessageWorkRequest)
+            }
             onTriggerToggleUpdate(false)
+            onTriggerMoveUpdate(false)
         }
     }
 
@@ -167,6 +205,16 @@ class SettingViewModel @Inject constructor(
     private fun getTriggerInfo() = settingUsecases.getTriggerToggle()
         .flowOn(Dispatchers.IO).onEach { toggle ->
             uiState.triggerToggle = toggle
+        }.launchIn(viewModelScope)
+
+    private fun getTriggerMoveInfo() = settingUsecases.getMoveTriggerToggle()
+        .flowOn(Dispatchers.IO).onEach { toggle ->
+            uiState.triggerMoveToggle = toggle
+        }.launchIn(viewModelScope)
+
+    private fun getRecordAlarmInfo() = settingUsecases.getRecordAlarm()
+        .flowOn(Dispatchers.IO).onEach { toggle ->
+            uiState.recordAlarmToggle = toggle
         }.launchIn(viewModelScope)
 
     private fun getUserInfo() = userUsecases.getUserInfo()

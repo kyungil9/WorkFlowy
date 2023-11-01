@@ -22,11 +22,9 @@ import com.beank.domain.model.onSuccess
 import com.beank.domain.repository.LogRepository
 import com.beank.domain.usecase.RecordAlarmUsecases
 import com.beank.workFlowy.R
-import com.beank.workFlowy.ui.theme.md_theme_light_surfaceVariant
 import com.beank.workFlowy.utils.RecordMode
 import com.beank.workFlowy.utils.zeroFormat
 import com.google.android.gms.location.LocationServices
-import com.google.type.LatLng
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -159,12 +157,16 @@ class RecordMessageWorker @AssistedInject constructor(
     private suspend fun onStartRecordNotification(){
         val record = recordAlarmUsecases.getNowRecord(true).first()
         record.onSuccess { nowRecord ->
-            val timeDuration = Duration.between(nowRecord.record.startTime, LocalDateTime.now())
-            val notify = createRecordNotification(nowRecord.record.tag,
-                "${zeroFormat.format(timeDuration.toHours())}:${zeroFormat.format(timeDuration.toMinutes()%60)}" ,nowRecord.tag.icon)
-            if (ActivityCompat.checkSelfPermission(applicationContext, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED)
-                notification.notify(-1,notify.build())
+            onRecordNotify(nowRecord.record.startTime,nowRecord.record.tag,nowRecord.tag.icon)
         }
+    }
+
+    private fun onRecordNotify(startTime : LocalDateTime, tag : String, icon : Int){
+        val timeDuration = Duration.between(startTime, LocalDateTime.now())
+        val notify = createRecordNotification(tag,
+            "${zeroFormat.format(timeDuration.toHours())}:${zeroFormat.format(timeDuration.toMinutes()%60)}", icon)
+        if (ActivityCompat.checkSelfPermission(applicationContext, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED)
+            notification.notify(-1,notify.build())
     }
 
     private suspend fun onStopRecordNotification(){
@@ -205,6 +207,7 @@ class RecordMessageWorker @AssistedInject constructor(
                 geoEvent = GeofenceEvent.TempRequest
             )
         )
+        //alarmManager로 1분뒤에 시간 계산되도록 보내는건??
 
     }
 
@@ -219,7 +222,6 @@ class RecordMessageWorker @AssistedInject constructor(
                         //계속해서 어떻게 보여줄지 고민??
                     }
                     RecordMode.STOP -> {
-
                         onStopRecordNotification()
                     }
                     RecordMode.REBOOT -> {
