@@ -18,11 +18,11 @@ import com.beank.app.di.RecordNotification
 import com.beank.domain.model.GeofenceData
 import com.beank.domain.model.GeofenceEvent
 import com.beank.domain.model.Record
-import com.beank.domain.model.onSuccess
 import com.beank.domain.repository.LogRepository
 import com.beank.domain.usecase.RecordAlarmUsecases
 import com.beank.workFlowy.R
 import com.beank.workFlowy.utils.RecordMode
+import com.beank.workFlowy.utils.intToImage
 import com.beank.workFlowy.utils.zeroFormat
 import com.google.android.gms.location.LocationServices
 import dagger.assisted.Assisted
@@ -146,7 +146,11 @@ class RecordMessageWorker @AssistedInject constructor(
         tagId: Int,
     ): NotificationCompat.Builder {
         val remoteViews = RemoteViews(applicationContext.packageName, com.beank.presentation.R.layout.custom_notification)
-        remoteViews.setImageViewResource(com.beank.presentation.R.id.image,tagId)
+        remoteViews.setImageViewResource(com.beank.presentation.R.id.image,
+            intToImage(tagId, applicationContext.resources.obtainTypedArray(com.beank.presentation.R.array.tagList))
+        )
+        remoteViews.setImageViewResource(com.beank.presentation.R.id.nextRecord,
+            com.beank.presentation.R.drawable.baseline_navigate_next_24)
         remoteViews.setTextViewText(com.beank.presentation.R.id.title,title)
         remoteViews.setTextViewText(com.beank.presentation.R.id.time,time)
         remoteViews.setOnClickPendingIntent(com.beank.presentation.R.id.nextRecord, getRecordPendingIntent())
@@ -155,10 +159,9 @@ class RecordMessageWorker @AssistedInject constructor(
     }
 
     private suspend fun onStartRecordNotification(){
-        val record = recordAlarmUsecases.getNowRecord(true).first()
-        record.onSuccess { nowRecord ->
-            onRecordNotify(nowRecord.record.startTime,nowRecord.record.tag,nowRecord.tag.icon)
-        }
+        val nowRecord = recordAlarmUsecases.getNowRecord()
+        onRecordNotify(nowRecord.record.startTime,nowRecord.record.tag,nowRecord.tag.icon)
+
     }
 
     private fun onRecordNotify(startTime : LocalDateTime, tag : String, icon : Int){
@@ -216,6 +219,7 @@ class RecordMessageWorker @AssistedInject constructor(
         try {
             val mode = inputData.getInt("mode",0)
             withContext(ioDispatchers){
+                Log.d("RECORD_ALARM","$mode")
                 when(mode){
                     RecordMode.START -> {
                         onStartRecordNotification()

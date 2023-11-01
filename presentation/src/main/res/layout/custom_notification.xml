@@ -1,59 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="120dp"
-    android:minHeight="120dp"
-    android:weightSum="100"
-    android:orientation="horizontal">
-
+    android:layout_height="60dp"
+    android:gravity="center_vertical"
+    android:minHeight="80dp"
+    android:orientation="horizontal"
+    android:weightSum="100">
 
 
     <ImageView
         android:id="@+id/image"
-        android:scaleType="centerCrop"
-        android:layout_weight="30"
-        android:layout_width="0dp"
-        android:layout_height="120dp"
-        />
-    <LinearLayout
-        android:layout_weight="55"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:orientation="vertical"
+        android:layout_weight="30"
+        android:scaleType="fitCenter" />
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="20"
+        android:ellipsize="end"
         android:gravity="center"
-        >
+        android:maxLines="1"
+        android:padding="5dp"
+        android:textColor="#000000"
+        android:textSize="34sp"
+        android:textStyle="bold"
+        tools:text="운동중" />
 
-        <TextView
-            android:id="@+id/title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:padding="5dp"
-            android:textColor="#000000"
-            android:textSize="34sp"
-            android:textStyle="bold"
-            tools:text="운동중" />
+    <TextView
+        android:id="@+id/time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="20"
+        android:ellipsize="end"
+        android:gravity="center"
+        android:maxLines="1"
+        android:padding="5dp"
+        android:textColor="#757474"
+        android:textSize="24sp"
+        tools:text="00:00" />
 
-        <TextView
-            android:id="@+id/time"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:padding="5dp"
-            android:textColor="#757474"
-            android:textSize="24sp"
-            tools:text="00:00" />
-    </LinearLayout>
     <ImageView
         android:id="@+id/nextRecord"
-        android:layout_weight="15"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="match_parent"
-        app:srcCompat="@drawable/baseline_navigate_next_24" />
+        android:layout_weight="30"
+        android:scaleType="fitCenter" />
 
 </LinearLayout>

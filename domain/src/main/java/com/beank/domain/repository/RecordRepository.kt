@@ -15,6 +15,8 @@ interface RecordRepository {
 
     fun getPauseRecord(pause: Boolean) : Flow<FireStoreState<NowRecord>> //??수정?
 
+    suspend fun getNowRecord() : NowRecord
+
     suspend fun getCurrentRecord() : Record
 
     fun insertRecord(record: Record)

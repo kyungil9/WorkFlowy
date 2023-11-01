@@ -15,12 +15,11 @@ import com.beank.domain.repository.LogRepository
 import com.beank.domain.usecase.ScheduleUsecases
 import com.beank.workFlowy.screen.WorkFlowyViewModel
 import com.beank.workFlowy.utils.MessageMode
+import com.beank.workFlowy.utils.MessageWorkRequest
 import com.beank.workFlowy.utils.fromScheduleJson
 import com.beank.workFlowy.utils.imageToInt
 import com.beank.workFlowy.utils.intToImage
 import com.beank.workFlowy.utils.toLocalDate
-import com.beank.workFlowy.utils.toLocalDateTime
-import com.beank.workFlowy.utils.toLong
 import com.beank.workFlowy.utils.toTimeMillis
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -28,7 +27,6 @@ import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
-import java.util.Calendar
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -38,7 +36,7 @@ class ScheduleViewModel @Inject constructor(
     private val savedStateHandle : SavedStateHandle,
     private val scheduleUsecases: ScheduleUsecases,
     private val workManager: WorkManager,
-    private val messageRequest : OneTimeWorkRequest.Builder,
+    @MessageWorkRequest private val messageRequest : OneTimeWorkRequest.Builder,
     logRepository: LogRepository
 ) : WorkFlowyViewModel(logRepository){
 

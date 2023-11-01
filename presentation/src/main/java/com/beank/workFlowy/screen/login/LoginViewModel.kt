@@ -12,6 +12,7 @@ import com.beank.workFlowy.component.snackbar.SnackbarManager
 import com.beank.workFlowy.navigation.NavigationItem
 import com.beank.workFlowy.screen.WorkFlowyViewModel
 import com.beank.workFlowy.utils.MessageMode
+import com.beank.workFlowy.utils.MessageWorkRequest
 import com.beank.workFlowy.utils.isValidEmail
 import com.beank.workFlowy.utils.isValidPassword
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -25,7 +26,7 @@ import com.beank.presentation.R.string as AppText
 class LoginViewModel @Inject constructor(
     private val loginUsecases: LoginUsecases,
     private val workManager: WorkManager,
-    private val messageRequest : OneTimeWorkRequest.Builder,
+    @MessageWorkRequest private val messageRequest : OneTimeWorkRequest.Builder,
     logRepository: LogRepository
 ) : WorkFlowyViewModel(logRepository){
 

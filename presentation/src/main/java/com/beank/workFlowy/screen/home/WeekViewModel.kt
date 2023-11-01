@@ -19,12 +19,12 @@ import com.beank.domain.usecase.WeekUsecases
 import com.beank.workFlowy.component.snackbar.SnackbarManager
 import com.beank.workFlowy.screen.WorkFlowyViewModel
 import com.beank.workFlowy.utils.MessageMode
+import com.beank.workFlowy.utils.MessageWorkRequest
 import com.beank.workFlowy.utils.toFormatString
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
@@ -50,7 +50,7 @@ import com.beank.presentation.R.string as AppText
 class WeekViewModel @Inject constructor(
     private val weekUsecases: WeekUsecases,
     private val workManager: WorkManager,
-    private val messageRequest : OneTimeWorkRequest.Builder,
+    @MessageWorkRequest private val messageRequest : OneTimeWorkRequest.Builder,
     logRepository: LogRepository
 ) : WorkFlowyViewModel(logRepository) {
 

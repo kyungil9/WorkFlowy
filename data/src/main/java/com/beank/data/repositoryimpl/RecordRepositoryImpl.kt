@@ -18,14 +18,10 @@ import com.beank.domain.model.onException
 import com.beank.domain.model.onLoading
 import com.beank.domain.model.onSuccess
 import com.beank.domain.repository.RecordRepository
-import com.google.firebase.firestore.Filter
-import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.toObject
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.tasks.await
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -63,8 +59,18 @@ class RecordRepositoryImpl @Inject constructor(
             }
     }
 
+    override suspend fun getNowRecord(): NowRecord {
+        val record = storage.store.document(storage.getUid()!!).collection(RECORD)
+            .whereEqualTo("pause",true).get().await().documents.first().toObject<WeekRecord>()!!.toRecordModel()
+        val tag =  storage.store.document(storage.getUid()!!).collection(TagRepositoryImpl.TAG)
+            .whereEqualTo("title", record.tag).get()
+            .await().documents[0].toObject<WeekTag>()!!.toTagModel()
+        return NowRecord(record,tag)
+
+    }
+
     override suspend fun getCurrentRecord(): Record = storage.store.document(storage.getUid()!!).collection(RECORD)
-        .whereEqualTo("pause",true).get().await().documents[0].toObject<WeekRecord>()!!.toRecordModel()
+        .whereEqualTo("pause",true).get().await().documents.first().toObject<WeekRecord>()!!.toRecordModel()
 
 
     override fun insertRecord(record: Record) : Unit =
