@@ -19,7 +19,7 @@ class ScheduleAlarmReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
         intent?.let {
             Log.d("localMessage","receive intent")
-            if (it.action == "android.intent.action.BOOT_COMPLETED" || it.action == "android.intent.action.LOCKED_BOOT_COMPLETED"){
+            if (it.action == "android.intent.action.LOCKED_BOOT_COMPLETED"){
                 val messageWorkRequest = OneTimeWorkRequestBuilder<MessageWorker>()
                     .setInputData(workDataOf(
                         "mode" to MessageMode.REBOOT

@@ -13,6 +13,7 @@ interface SettingRepository {
     fun getGeoState() : Flow<Boolean>
     fun getMoveState() : Flow<Boolean>
     fun getRecordAlarm() : Flow<Boolean>
+    fun getTimePause() : Flow<Boolean>
 
     suspend fun getScheduleState() : Boolean
     suspend fun getNoticeState() : Boolean
@@ -26,6 +27,7 @@ interface SettingRepository {
     suspend fun updateGeoState(state: Boolean)
     suspend fun updateMoveState(state: Boolean)
     suspend fun updateRecordAlarm(state: Boolean)
+    suspend fun updateTimePause(state: Boolean)
 
     suspend fun initSetting(value : Boolean)
 

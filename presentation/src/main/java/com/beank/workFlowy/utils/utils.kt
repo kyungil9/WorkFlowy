@@ -69,4 +69,7 @@ object RecordMode {
     const val STOP = 2
     const val REBOOT = 3
     const val NEXT_RECORD = 4
+    const val PAUSE = 5
+    const val PLAY = 6
+    const val TICK = 7
 }

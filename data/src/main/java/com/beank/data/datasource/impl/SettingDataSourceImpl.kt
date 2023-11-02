@@ -84,5 +84,13 @@ class SettingDataSourceImpl @Inject constructor(
         }
     }
 
+    override suspend fun updateTimePause(state: Boolean) {
+        settingDataStore.updateData { setting ->
+            setting.toBuilder()
+                .setTimePause(state)
+                .build()
+        }
+    }
+
 
 }

@@ -13,4 +13,5 @@ message Setting {
   bool geo = 7;
   bool move = 8;
   bool recordAlarm = 9;
+  bool timePause = 10;
 }

@@ -4,6 +4,7 @@ import android.Manifest
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.util.Log
 import android.widget.RemoteViews
@@ -45,7 +46,8 @@ class RecordMessageWorker @AssistedInject constructor(
     @Assisted workerParams: WorkerParameters,
     @RecordNotification private val notification: NotificationManagerCompat,
     private val recordAlarmUsecases: RecordAlarmUsecases,
-    private val crashlytics : LogRepository
+    private val crashlytics : LogRepository,
+    private val recordMessageReceiver: RecordMessageReceiver
 ) : CoroutineWorker(applicationContext,workerParams) {
     private val coroutineExceptionHandler = CoroutineExceptionHandler { _,throwable ->
         crashlytics.logNonFatalCrash(throwable)
@@ -173,6 +175,7 @@ class RecordMessageWorker @AssistedInject constructor(
     }
 
     private suspend fun onStopRecordNotification(){
+        recordAlarmUsecases.updateTimePause(false)
         notification.cancel(-1)
     }
 
@@ -191,7 +194,7 @@ class RecordMessageWorker @AssistedInject constructor(
         {
             val locationResult = fusedLocationProviderClient.lastLocation
             locationResult.addOnSuccessListener {
-                lat = it.longitude
+                lat = it.latitude
                 lon = it.longitude
             }.await()
         }
@@ -199,9 +202,9 @@ class RecordMessageWorker @AssistedInject constructor(
         recordAlarmUsecases.getTempGeoTrigger()?.let {
             recordAlarmUsecases.removeGeofence(it.id!!)
         }
-        //onRecordReduce()
-        //onRecordInsert(nextTag.title, LocalDateTime.now()) 5분뒤에 반영??
-        recordAlarmUsecases.addGeofence(
+//        onRecordReduce()
+//        onRecordInsert(nextTag.title, LocalDateTime.now()) //5분뒤에 반영??
+        recordAlarmUsecases.addTempGeofence(
             GeofenceData(
                 enterTag = nextTag.title,
                 enterTagImage = nextTag.icon,
@@ -210,8 +213,19 @@ class RecordMessageWorker @AssistedInject constructor(
                 geoEvent = GeofenceEvent.TempRequest
             )
         )
-        //alarmManager로 1분뒤에 시간 계산되도록 보내는건??
+    }
 
+    private suspend fun onStartReceiver(){
+        val intentFilter = IntentFilter()
+        intentFilter.addAction("android.intent.action.SCREEN_ON")
+        intentFilter.addAction("android.intent.action.SCREEN_OFF")
+        intentFilter.addAction("android.intent.action.TIME_TICK")
+        recordAlarmUsecases.updateTimePause(true)
+        applicationContext.registerReceiver(recordMessageReceiver,intentFilter)
+    }
+
+    private suspend fun onStopReceiver(){
+        applicationContext.unregisterReceiver(recordMessageReceiver)
     }
 
 
@@ -223,25 +237,31 @@ class RecordMessageWorker @AssistedInject constructor(
                 when(mode){
                     RecordMode.START -> {
                         onStartRecordNotification()
+                        onStartReceiver()
                         //계속해서 어떻게 보여줄지 고민??
+
                     }
                     RecordMode.STOP -> {
                         onStopRecordNotification()
+                        onStopReceiver()
                     }
                     RecordMode.REBOOT -> {
                         if (onRecordAlarmCheck()){
                             onStartRecordNotification()
+                            onStartReceiver()
                         }
                     }
                     RecordMode.NEXT_RECORD -> {
                         //next tag를 찾아서 현재위치에 대한 geofencedata작성후
                         //addtempgeofence로 추가
                         onNextRecordNotification()
+                        onStartRecordNotification()
+                    }
+                    RecordMode.TICK -> {
+                        onStartRecordNotification()
                     }
                 }
             }
-
-
             Result.success()
         }catch (e : Exception){
             if (runAttemptCount > 3) {

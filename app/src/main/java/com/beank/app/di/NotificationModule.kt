@@ -43,6 +43,10 @@ object NotificationModule {
         return manager
     }
 
+    @Singleton
+    @Provides
+    fun providesRecordMessageReceiver() : RecordMessageReceiver = RecordMessageReceiver()
+
 }
 
 @Qualifier

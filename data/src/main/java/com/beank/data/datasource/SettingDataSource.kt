@@ -25,4 +25,6 @@ interface SettingDataSource {
 
     suspend fun updateRecordAlarm(state: Boolean)
 
+    suspend fun updateTimePause(state: Boolean)
+
 }

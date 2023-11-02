@@ -28,7 +28,7 @@ class GeofenceBroadcastReceiver : BroadcastReceiver(){
     override fun onReceive(context : Context?, intented : Intent?) {
         intented?.let { intent ->
             Log.d("trigger",intent.toString())
-            if (intent.action == "android.intent.action.BOOT_COMPLETED" || intent.action == "android.intent.action.LOCKED_BOOT_COMPLETED"){
+            if (intent.action == "android.intent.action.LOCKED_BOOT_COMPLETED"){
                 //지오펜스 재등록 기능 추가
                 val geoWorkRequest = OneTimeWorkRequestBuilder<RecordWorker>()
                     .setInputData(workDataOf(

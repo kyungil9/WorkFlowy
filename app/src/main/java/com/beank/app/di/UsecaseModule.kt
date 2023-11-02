@@ -25,6 +25,7 @@ import com.beank.domain.usecase.account.CreateAccount
 import com.beank.domain.usecase.account.LoginAccount
 import com.beank.domain.usecase.account.SignOut
 import com.beank.domain.usecase.geo.AddGeofence
+import com.beank.domain.usecase.geo.AddTempGeofence
 import com.beank.domain.usecase.geo.GetChooseGeofence
 import com.beank.domain.usecase.geo.GetGeoTriggerList
 import com.beank.domain.usecase.geo.GetTempGeoTrigger
@@ -68,6 +69,7 @@ import com.beank.domain.usecase.setting.UpdateMoveTriggerToggle
 import com.beank.domain.usecase.setting.UpdateNoticeAlarm
 import com.beank.domain.usecase.setting.UpdateRecordAlarm
 import com.beank.domain.usecase.setting.UpdateScheduleAlarm
+import com.beank.domain.usecase.setting.UpdateTimePause
 import com.beank.domain.usecase.setting.UpdateTriggerToggle
 import com.beank.domain.usecase.tag.CheckTagTitle
 import com.beank.domain.usecase.tag.DeleteTag
@@ -238,10 +240,11 @@ object UsecaseModule {
         insertRecord = InsertRecord(recordRepository),
         updateRecord = UpdateRecord(recordRepository),
         getRecordAlarm = GetRecordAlarm(settingRepository),
-        addGeofence = AddGeofence(geofenceRepository),
+        addTempGeofence = AddTempGeofence(geofenceRepository),
         getNextTag = GetNextTag(tagRepository),
         removeGeofence = RemoveGeofence(geofenceRepository),
-        getTempGeoTrigger = GetTempGeoTrigger(geofenceRepository)
+        getTempGeoTrigger = GetTempGeoTrigger(geofenceRepository),
+        updateTimePause = UpdateTimePause(settingRepository)
     )
 
 
