@@ -3,15 +3,16 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="60dp"
+    android:layout_height="54dp"
     android:gravity="center_vertical"
-    android:minHeight="80dp"
+    android:minHeight="54dp"
     android:orientation="horizontal"
     android:weightSum="100">
 
 
     <ImageView
         android:id="@+id/image"
+        style="@style/TextAppearance.Compat.Notification"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="30"
@@ -19,13 +20,16 @@
 
     <TextView
         android:id="@+id/title"
+        style="@style/TextAppearance.Compat.Notification.Title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="20"
         android:ellipsize="end"
-        android:gravity="center"
+        android:gravity="right"
         android:maxLines="1"
-        android:padding="5dp"
+        android:paddingTop="5dp"
+        android:paddingRight="5dp"
+        android:paddingBottom="5dp"
         android:textColor="#000000"
         android:textSize="34sp"
         android:textStyle="bold"
@@ -37,15 +41,18 @@
         android:layout_height="wrap_content"
         android:layout_weight="20"
         android:ellipsize="end"
-        android:gravity="center"
+        android:gravity="start"
         android:maxLines="1"
-        android:padding="5dp"
+        android:paddingLeft="10dp"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"
         android:textColor="#757474"
         android:textSize="24sp"
         tools:text="00:00" />
 
     <ImageView
         android:id="@+id/nextRecord"
+        style="@style/TextAppearance.Compat.Notification"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="30"

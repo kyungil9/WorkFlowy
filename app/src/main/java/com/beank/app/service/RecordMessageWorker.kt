@@ -10,9 +10,11 @@ import android.util.Log
 import android.widget.RemoteViews
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationCompat.VISIBILITY_PUBLIC
 import androidx.core.app.NotificationManagerCompat
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
+import androidx.work.ForegroundInfo
 import androidx.work.WorkerParameters
 import com.beank.app.WorkFlowyActivity
 import com.beank.app.di.RecordNotification
@@ -131,14 +133,19 @@ class RecordMessageWorker @AssistedInject constructor(
         val pendingIntent = PendingIntent.getActivity(applicationContext, 1, intent, PendingIntent.FLAG_IMMUTABLE)
         val channelId = applicationContext.getString(R.string.record_channel_id)
         val notificationBuilder = NotificationCompat.Builder(applicationContext, channelId)
+            .setSmallIcon(R.mipmap.workflowy)
             .setContentTitle(title)
             .setContentText(time)
-            .setSmallIcon(R.mipmap.workflowy)
+            .setShowWhen(false)
             .setAutoCancel(false)
             .setOngoing(true)
             .setContentIntent(pendingIntent)
+            .setVisibility(VISIBILITY_PUBLIC)
+            .setPriority(NotificationCompat.PRIORITY_MIN)
 
-        notificationBuilder.setCustomNotification(title, time, tagId)
+        notificationBuilder
+            .setCustomNotification(title, time, tagId)
+            .setStyle(NotificationCompat.DecoratedCustomViewStyle())
         return notificationBuilder
     }
 
@@ -157,6 +164,7 @@ class RecordMessageWorker @AssistedInject constructor(
         remoteViews.setTextViewText(com.beank.presentation.R.id.time,time)
         remoteViews.setOnClickPendingIntent(com.beank.presentation.R.id.nextRecord, getRecordPendingIntent())
         setCustomContentView(remoteViews)
+        //setCustomBigContentView(remoteViews)
         return this
     }
 
@@ -177,6 +185,7 @@ class RecordMessageWorker @AssistedInject constructor(
     private suspend fun onStopRecordNotification(){
         recordAlarmUsecases.updateTimePause(false)
         notification.cancel(-1)
+
     }
 
     private suspend fun onRecordAlarmCheck() : Boolean {

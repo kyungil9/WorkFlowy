@@ -45,7 +45,7 @@ class UserRepositoryImpl @Inject constructor(
             imageRef.downloadUrl
         }.addOnCompleteListener { task ->
             if (task.isSuccessful){
-                store.update(USERPROFILE, USER, mapOf("urlImage" to task.result.toString()))//db저장
+                store.update(USERPROFILE, USER, mapOf("urlImage" to "${task.result}_200x200"))//db저장
             }else{
                 onFail()
             }
