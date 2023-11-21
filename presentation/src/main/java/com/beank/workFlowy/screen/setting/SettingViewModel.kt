@@ -1,5 +1,6 @@
 package com.beank.workFlowy.screen.setting
 
+import android.content.Intent
 import android.net.Uri
 import androidx.lifecycle.viewModelScope
 import androidx.work.BackoffPolicy
@@ -36,6 +37,7 @@ class SettingViewModel @Inject constructor(
     private val workManager: WorkManager,
     @MessageWorkRequest private val messageRequest : OneTimeWorkRequest.Builder,
     @RecordWorkRequest private val recordRequest : OneTimeWorkRequest.Builder,
+    val recordIntent : Intent,
     logRepository: LogRepository
 ) : WorkFlowyViewModel(logRepository) {
 
@@ -126,19 +128,6 @@ class SettingViewModel @Inject constructor(
 
     fun onRecordAlarmUpdate(toggle: Boolean){
         launchCatching {
-            if (toggle){
-                val recordMessageWorkRequest = recordRequest
-                    .setInputData(workDataOf("mode" to RecordMode.START))
-                    .setBackoffCriteria(BackoffPolicy.LINEAR,30000, TimeUnit.MILLISECONDS)
-                    .build()
-                workManager.enqueue(recordMessageWorkRequest)
-            }else{
-                val recordMessageWorkRequest = recordRequest
-                    .setInputData(workDataOf("mode" to RecordMode.STOP))
-                    .setBackoffCriteria(BackoffPolicy.LINEAR,30000, TimeUnit.MILLISECONDS)
-                    .build()
-                workManager.enqueue(recordMessageWorkRequest)
-            }
             settingUsecases.updateRecordAlarm(toggle)
         }
     }

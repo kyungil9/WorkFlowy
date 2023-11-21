@@ -1,32 +1,17 @@
 package com.beank.app.service
 
 import android.Manifest
-import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.util.Log
-import android.widget.RemoteViews
-import androidx.core.app.ActivityCompat
-import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationCompat.VISIBILITY_PUBLIC
-import androidx.core.app.NotificationManagerCompat
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
-import androidx.work.ForegroundInfo
 import androidx.work.WorkerParameters
-import com.beank.app.WorkFlowyActivity
-import com.beank.app.di.RecordNotification
-import com.beank.domain.model.GeofenceData
-import com.beank.domain.model.GeofenceEvent
 import com.beank.domain.model.Record
 import com.beank.domain.repository.LogRepository
 import com.beank.domain.usecase.RecordAlarmUsecases
-import com.beank.workFlowy.R
 import com.beank.workFlowy.utils.RecordMode
-import com.beank.workFlowy.utils.intToImage
-import com.beank.workFlowy.utils.zeroFormat
 import com.google.android.gms.location.LocationServices
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
@@ -46,22 +31,14 @@ import java.time.temporal.ChronoUnit
 class RecordMessageWorker @AssistedInject constructor(
     @Assisted applicationContext: Context,
     @Assisted workerParams: WorkerParameters,
-    @RecordNotification private val notification: NotificationManagerCompat,
     private val recordAlarmUsecases: RecordAlarmUsecases,
     private val crashlytics : LogRepository,
-    private val recordMessageReceiver: RecordMessageReceiver
 ) : CoroutineWorker(applicationContext,workerParams) {
     private val coroutineExceptionHandler = CoroutineExceptionHandler { _,throwable ->
         crashlytics.logNonFatalCrash(throwable)
         throwable.printStackTrace()
     }
     private val ioDispatchers = Dispatchers.IO + coroutineExceptionHandler
-
-    private fun getRecordPendingIntent() : PendingIntent{
-        val intent = Intent(applicationContext, RecordMessageReceiver::class.java)
-        intent.action = "NEXT_RECORD"
-        return PendingIntent.getBroadcast(applicationContext, 0,intent, PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
-    }
 
     private fun onRecordInsert(tag: String, dateTime: LocalDateTime){
         recordAlarmUsecases.insertRecord(//새 기록 등록
@@ -122,71 +99,6 @@ class RecordMessageWorker @AssistedInject constructor(
         }
     }
 
-    private fun createRecordNotification(
-        title: String,
-        time: String,
-        tagId : Int
-    ): NotificationCompat.Builder {
-        val intent = Intent(applicationContext, WorkFlowyActivity::class.java).apply {
-            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-        }
-        val pendingIntent = PendingIntent.getActivity(applicationContext, 1, intent, PendingIntent.FLAG_IMMUTABLE)
-        val channelId = applicationContext.getString(R.string.record_channel_id)
-        val notificationBuilder = NotificationCompat.Builder(applicationContext, channelId)
-            .setSmallIcon(R.mipmap.workflowy)
-            .setContentTitle(title)
-            .setContentText(time)
-            .setShowWhen(false)
-            .setAutoCancel(false)
-            .setOngoing(true)
-            .setContentIntent(pendingIntent)
-            .setVisibility(VISIBILITY_PUBLIC)
-            .setPriority(NotificationCompat.PRIORITY_MIN)
-
-        notificationBuilder
-            .setCustomNotification(title, time, tagId)
-            .setStyle(NotificationCompat.DecoratedCustomViewStyle())
-        return notificationBuilder
-    }
-
-    private fun NotificationCompat.Builder.setCustomNotification(
-        title: String,
-        time: String,
-        tagId: Int,
-    ): NotificationCompat.Builder {
-        val remoteViews = RemoteViews(applicationContext.packageName, com.beank.presentation.R.layout.custom_notification)
-        remoteViews.setImageViewResource(com.beank.presentation.R.id.image,
-            intToImage(tagId, applicationContext.resources.obtainTypedArray(com.beank.presentation.R.array.tagList))
-        )
-        remoteViews.setImageViewResource(com.beank.presentation.R.id.nextRecord,
-            com.beank.presentation.R.drawable.baseline_navigate_next_24)
-        remoteViews.setTextViewText(com.beank.presentation.R.id.title,title)
-        remoteViews.setTextViewText(com.beank.presentation.R.id.time,time)
-        remoteViews.setOnClickPendingIntent(com.beank.presentation.R.id.nextRecord, getRecordPendingIntent())
-        setCustomContentView(remoteViews)
-        //setCustomBigContentView(remoteViews)
-        return this
-    }
-
-    private suspend fun onStartRecordNotification(){
-        val nowRecord = recordAlarmUsecases.getNowRecord()
-        onRecordNotify(nowRecord.record.startTime,nowRecord.record.tag,nowRecord.tag.icon)
-
-    }
-
-    private fun onRecordNotify(startTime : LocalDateTime, tag : String, icon : Int){
-        val timeDuration = Duration.between(startTime, LocalDateTime.now())
-        val notify = createRecordNotification(tag,
-            "${zeroFormat.format(timeDuration.toHours())}:${zeroFormat.format(timeDuration.toMinutes()%60)}", icon)
-        if (ActivityCompat.checkSelfPermission(applicationContext, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED)
-            notification.notify(-1,notify.build())
-    }
-
-    private suspend fun onStopRecordNotification(){
-        recordAlarmUsecases.updateTimePause(false)
-        notification.cancel(-1)
-
-    }
 
     private suspend fun onRecordAlarmCheck() : Boolean {
         return recordAlarmUsecases.getRecordAlarm().first()
@@ -211,31 +123,21 @@ class RecordMessageWorker @AssistedInject constructor(
         recordAlarmUsecases.getTempGeoTrigger()?.let {
             recordAlarmUsecases.removeGeofence(it.id!!)
         }
-//        onRecordReduce()
-//        onRecordInsert(nextTag.title, LocalDateTime.now()) //5분뒤에 반영??
-        recordAlarmUsecases.addTempGeofence(
-            GeofenceData(
-                enterTag = nextTag.title,
-                enterTagImage = nextTag.icon,
-                latitude = lat,
-                lonitude = lon,
-                geoEvent = GeofenceEvent.TempRequest
-            )
-        )
+        onRecordReduce()
+        onRecordInsert(nextTag.title, LocalDateTime.now()) //5분뒤에 반영??
+//        recordAlarmUsecases.addTempGeofence(
+//            GeofenceData(
+//                enterTag = nextTag.title,
+//                enterTagImage = nextTag.icon,
+//                latitude = lat,
+//                lonitude = lon,
+//                geoEvent = GeofenceEvent.TempRequest
+//            )
+//        )
     }
 
-    private suspend fun onStartReceiver(){
-        val intentFilter = IntentFilter()
-        intentFilter.addAction("android.intent.action.SCREEN_ON")
-        intentFilter.addAction("android.intent.action.SCREEN_OFF")
-        intentFilter.addAction("android.intent.action.TIME_TICK")
-        recordAlarmUsecases.updateTimePause(true)
-        applicationContext.registerReceiver(recordMessageReceiver,intentFilter)
-    }
 
-    private suspend fun onStopReceiver(){
-        applicationContext.unregisterReceiver(recordMessageReceiver)
-    }
+
 
 
     override suspend fun doWork(): Result = coroutineScope {
@@ -244,30 +146,14 @@ class RecordMessageWorker @AssistedInject constructor(
             withContext(ioDispatchers){
                 Log.d("RECORD_ALARM","$mode")
                 when(mode){
-                    RecordMode.START -> {
-                        onStartRecordNotification()
-                        onStartReceiver()
-                        //계속해서 어떻게 보여줄지 고민??
-
-                    }
-                    RecordMode.STOP -> {
-                        onStopRecordNotification()
-                        onStopReceiver()
-                    }
                     RecordMode.REBOOT -> {
                         if (onRecordAlarmCheck()){
-                            onStartRecordNotification()
-                            onStartReceiver()
+                            val intent = Intent(applicationContext,RecordService::class.java)
+                            applicationContext.startService(intent)
                         }
                     }
                     RecordMode.NEXT_RECORD -> {
-                        //next tag를 찾아서 현재위치에 대한 geofencedata작성후
-                        //addtempgeofence로 추가
                         onNextRecordNotification()
-                        onStartRecordNotification()
-                    }
-                    RecordMode.TICK -> {
-                        onStartRecordNotification()
                     }
                 }
             }

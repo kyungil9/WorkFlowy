@@ -6,6 +6,7 @@ import android.content.Intent
 import android.util.Log
 import androidx.work.BackoffPolicy
 import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.OutOfQuotaPolicy
 import androidx.work.WorkManager
 import androidx.work.workDataOf
 import com.beank.app.utils.goAsync
@@ -35,6 +36,7 @@ class RecordMessageReceiver : BroadcastReceiver(){
                             "mode" to RecordMode.NEXT_RECORD
                         )
                         )
+                        .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
                         .setBackoffCriteria(BackoffPolicy.LINEAR,30000, TimeUnit.MILLISECONDS)
                         .build()
                     workManager.enqueue(recordMessageWorkRequest)
@@ -59,25 +61,18 @@ class RecordMessageReceiver : BroadcastReceiver(){
                 "android.intent.action.SCREEN_OFF" -> {
                     Log.d("RECORD_ALARM","screenoff")
                     withContext(Dispatchers.IO){
-                        updateTimePause(true)
+                        updateTimePause(false)
                     }
                 }
                 "android.intent.action.TIME_TICK" -> {
                     Log.d("RECORD_ALARM","1111111111")
                     withContext(Dispatchers.IO){
                         if (getTimePause().first()){
-                            val recordMessageWorkRequest = OneTimeWorkRequestBuilder<RecordMessageWorker>()
-                                .setInputData(
-                                    workDataOf(
-                                        "mode" to RecordMode.TICK
-                                    )
-                                )
-                                .setBackoffCriteria(BackoffPolicy.LINEAR,30000, TimeUnit.MILLISECONDS)
-                                .build()
-                            workManager.enqueue(recordMessageWorkRequest)
+                            val intent = Intent(context,RecordService::class.java)
+                            intent.putExtra("Tick",true)
+                            context?.startService(intent)
                         }
                     }
-
                 }
                 else -> {
 

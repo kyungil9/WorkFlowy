@@ -2,19 +2,16 @@ package com.beank.app.di
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import androidx.core.app.NotificationManagerCompat
-import com.beank.app.service.GeofenceBroadcastReceiver
 import com.beank.app.service.RecordMessageReceiver
+import com.beank.app.service.RecordService
 import com.beank.app.service.WorkFlowyMessagingService
 import com.beank.workFlowy.R
-import com.google.firebase.messaging.FirebaseMessagingService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.internal.managers.ApplicationComponentManager
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Qualifier
@@ -46,6 +43,10 @@ object NotificationModule {
     @Singleton
     @Provides
     fun providesRecordMessageReceiver() : RecordMessageReceiver = RecordMessageReceiver()
+
+    @Singleton
+    @Provides
+    fun providesRecordIntent(@ApplicationContext context: Context) : Intent = Intent(context,RecordService::class.java)
 
 }
 

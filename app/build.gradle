@@ -76,6 +76,8 @@ dependencies {
     androidTestImplementation(libs.compose.bom)
     debugImplementation(libs.compose.ui.tooling)
 
+    implementation(libs.bundles.lifecycle)
+
     //workManager
     implementation(libs.work)
 }

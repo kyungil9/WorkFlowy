@@ -1,6 +1,7 @@
 package com.beank.workFlowy.screen.setting
 
 
+import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import androidx.activity.compose.ManagedActivityResultLauncher
@@ -89,6 +90,7 @@ fun SettingScreen(
             onBackClear(NavigationItem.LOGIN.route)
         }
     }
+    val context = LocalContext.current
 
     WeekLayout(
         snackbarHostState = snackbarHostState,
@@ -211,7 +213,15 @@ fun SettingScreen(
 
                 VerticalSpacer(height = 10.dp)
                 TextCard(title = stringResource(id = AppText.record_widget))
-                ToggleCard(title = stringResource(id = AppText.record_widget_setting), checked = {uiState.recordAlarmToggle}, onClick = settingViewModel::onRecordAlarmUpdate)
+                ToggleCard(title = stringResource(id = AppText.record_widget_setting), checked = {uiState.recordAlarmToggle}, onClick = {
+                    settingViewModel.onRecordAlarmUpdate(it)
+                    val intent = settingViewModel.recordIntent
+                    if (it){
+                        context.startService(intent)
+                    }else{
+                        context.stopService(intent)
+                    }
+                })
 
 
                 VerticalSpacer(height = 10.dp)
