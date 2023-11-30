@@ -1,8 +1,5 @@
 package com.beank.workFlowy.screen.trigger
 
-import androidx.compose.ui.res.stringResource
-import androidx.lifecycle.viewModelScope
-import com.beank.domain.model.GeofenceData
 import com.beank.domain.model.onEmpty
 import com.beank.domain.model.onException
 import com.beank.domain.model.onLoading
@@ -13,10 +10,10 @@ import com.beank.presentation.R
 import com.beank.workFlowy.component.snackbar.SnackbarManager
 import com.beank.workFlowy.screen.WorkFlowyViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -32,13 +29,13 @@ class TriggerViewModel @Inject constructor(
     }
 
     fun onTriggerRemove(id : String){
-        launchCatching {
+        ioScope.launch {
             triggerUsecases.removeGeofence(id)
         }
     }
 
     private fun getAllTriggerList() = triggerUsecases.getGeoTriggerList()
-        .flowOn(Dispatchers.IO).onEach { state ->
+        .flowOn(ioContext).onEach { state ->
             state.onEmpty {
                 uiState.progressToggle = false
                 uiState.triggerList = emptyList()
@@ -55,7 +52,7 @@ class TriggerViewModel @Inject constructor(
                 SnackbarManager.showMessage(R.string.firebase_server_error)
                 logFirebaseFatalCrash(message, e)
             }
-        }.launchIn(viewModelScope)
+        }.launchIn(mainScope)
 
 
 }

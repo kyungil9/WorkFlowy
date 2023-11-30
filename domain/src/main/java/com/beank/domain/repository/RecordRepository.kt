@@ -13,7 +13,7 @@ interface RecordRepository {
 
     fun getPeriodRecord(startDate: LocalDate,endDate: LocalDate) : Flow<FireStoreState<List<Record>>>
 
-    fun getPauseRecord(pause: Boolean) : Flow<FireStoreState<NowRecord>> //??수정?
+    suspend fun getPauseRecord(pause: Boolean) : Flow<FireStoreState<NowRecord>> //??수정?
 
     suspend fun getNowRecord() : NowRecord
 

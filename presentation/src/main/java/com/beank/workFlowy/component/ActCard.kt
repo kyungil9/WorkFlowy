@@ -1,7 +1,6 @@
 package com.beank.workFlowy.component
 
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
@@ -15,12 +14,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -45,6 +42,7 @@ import com.beank.workFlowy.utils.intToImage
 import com.beank.workFlowy.utils.zeroFormat
 import java.time.Duration
 
+@OptIn(ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ActCard(
@@ -53,15 +51,15 @@ fun ActCard(
     progress : () -> Boolean,
     onClickAct : () -> Unit
 ){
-    Button(
+    Card(
         onClick = onClickAct,
         modifier = Modifier
             .fillMaxWidth()
             .height(130.dp)
             .padding(15.dp),
         shape = MaterialTheme.shapes.medium,
-        colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primary),
-        elevation = ButtonDefaults.elevatedButtonElevation(5.dp),
+        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.primary),
+        elevation = CardDefaults.elevatedCardElevation(5.dp),
     ) {
         if (progress()){
             Row(
@@ -77,7 +75,7 @@ fun ActCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .fillMaxHeight()
-                    .padding(horizontal = 10.dp, vertical = 5.dp),
+                    .padding(horizontal = 50.dp, vertical = 5.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -151,7 +149,11 @@ fun ActTagCard(
                 .fillMaxWidth()
                 .height(100.dp)
                 .drawBehind {
-                    drawRoundRect(color = backgroundColors, size = size, cornerRadius = CornerRadius(8f) )
+                    drawRoundRect(
+                        color = backgroundColors,
+                        size = size,
+                        cornerRadius = CornerRadius(8f)
+                    )
                 },
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally

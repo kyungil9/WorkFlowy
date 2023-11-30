@@ -51,7 +51,6 @@ import com.beank.workFlowy.utils.toStartTimeLong
 import com.beank.workFlowy.utils.transDayToKorean
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 
@@ -90,9 +89,7 @@ fun HomeScreen(
 
 
     LaunchedEffect(key1 = Unit){
-        withContext(Dispatchers.IO){
-            weekViewModel.timerJob.start()
-        }
+        weekViewModel.timerJob.start()
     }
 
     WeekLayout(

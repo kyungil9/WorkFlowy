@@ -2,7 +2,6 @@ package com.beank.workFlowy.screen.analysis
 
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.lifecycle.viewModelScope
 import com.beank.domain.model.Record
 import com.beank.domain.model.onEmpty
 import com.beank.domain.model.onException
@@ -21,7 +20,6 @@ import com.beank.workFlowy.utils.changeDayInfo
 import com.beank.workFlowy.utils.toWeekEnd
 import com.beank.workFlowy.utils.toWeekStart
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -70,7 +68,7 @@ class AnalysisViewModel @Inject constructor(
     }
 
     fun onAnimationEventSend(value: Boolean){
-        viewModelScope.launch {
+        mainScope.launch {
             _animateStackChannel.send(value)
         }
     }
@@ -94,11 +92,11 @@ class AnalysisViewModel @Inject constructor(
     }
 
     private fun getPeriodRecord() {
-        launchCatching {
+       ioScope.launch {
             periodModeFlow.combine(selectDayFlow){ toggle, date -> PeriodDate(date, toggle)}.collectLatest { period ->
                 todayJob?.cancel()
                 todayJob = analysisUsecases.getPeriodRecord(period.startDate(),period.endDate())
-                    .flowOn(Dispatchers.IO).cancellable().onEach { state ->
+                    .flowOn(ioContext).cancellable().onEach { state ->
                         state.onEmpty {
 
                             uiState.recordList = emptyList()
@@ -125,7 +123,7 @@ class AnalysisViewModel @Inject constructor(
                             SnackbarManager.showMessage(R.string.firebase_server_error)
                             logFirebaseFatalCrash(message,e)
                         }
-                    }.launchIn(viewModelScope)
+                    }.launchIn(mainScope)
             }
         }
     }

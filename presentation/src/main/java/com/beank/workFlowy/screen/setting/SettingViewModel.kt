@@ -2,7 +2,6 @@ package com.beank.workFlowy.screen.setting
 
 import android.content.Intent
 import android.net.Uri
-import androidx.lifecycle.viewModelScope
 import androidx.work.BackoffPolicy
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
@@ -21,10 +20,10 @@ import com.beank.workFlowy.utils.MessageWorkRequest
 import com.beank.workFlowy.utils.RecordMode
 import com.beank.workFlowy.utils.RecordWorkRequest
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import com.beank.presentation.R.string as AppText
@@ -55,14 +54,14 @@ class SettingViewModel @Inject constructor(
     }
 
     fun onImageUpload(uri: Uri, onFail : () -> Unit){
-        launchCatching {
+        ioScope.launch {
             uiState.userProgress = true
             userUsecases.uploadImageUrl(uri, onFail)
         }
     }
 
     fun onNoticeAlarmUpdate(toggle : Boolean){
-        launchCatching {
+        ioScope.launch {
             if (toggle){
                 settingUsecases.subscribeNotice()
             }else{
@@ -73,7 +72,7 @@ class SettingViewModel @Inject constructor(
     }
 
     fun onScheduleAlarmUpdate(toggle : Boolean){
-        launchCatching {
+        ioScope.launch {
             if (toggle){
                 val messageWorkRequest = messageRequest
                     .setInputData(workDataOf("mode" to MessageMode.REPEAT))
@@ -92,19 +91,19 @@ class SettingViewModel @Inject constructor(
     }
 
     fun onDarkThemeUpdate(toggle : Boolean){
-        launchCatching {
+        ioScope.launch {
             settingUsecases.updateDarkTheme(toggle)
         }
     }
 
     fun onDynamicThemeUpdate(toggle : Boolean){
-        launchCatching {
+        ioScope.launch {
             settingUsecases.updateDynamicTheme(toggle)
         }
     }
 
     fun onTriggerToggleUpdate(toggle: Boolean){
-        launchCatching {
+        ioScope.launch {
             if (toggle) {
                 settingUsecases.startGeofenceToClient()//등록된 트리거 백그라운드 올리기
 
@@ -116,7 +115,7 @@ class SettingViewModel @Inject constructor(
     }
 
     fun onTriggerMoveUpdate(toggle: Boolean){
-        launchCatching {
+        ioScope.launch {
             if (toggle){
                 settingUsecases.startMoveToClient()
             }else{
@@ -127,13 +126,13 @@ class SettingViewModel @Inject constructor(
     }
 
     fun onRecordAlarmUpdate(toggle: Boolean){
-        launchCatching {
+        ioScope.launch {
             settingUsecases.updateRecordAlarm(toggle)
         }
     }
 
     fun onNicknameUpdate() {
-        launchCatching {
+        ioScope.launch {
             userUsecases.updateUserNickName(uiState.tempNickname)
         }
     }
@@ -148,7 +147,7 @@ class SettingViewModel @Inject constructor(
 
 
     fun signOut() {
-        launchCatching {
+        ioScope.launch {
             settingUsecases.signOut()
             settingUsecases.unsubscribeNotice()
             if (uiState.scheduleToggle){
@@ -172,42 +171,42 @@ class SettingViewModel @Inject constructor(
 
 
     private fun getDarkThemeInfo() = settingUsecases.getDarkTheme()
-        .flowOn(Dispatchers.IO).onEach {toggle ->
+        .flowOn(ioContext).onEach { toggle ->
             uiState.darkThemeToggle = toggle
-        }.launchIn(viewModelScope)
+        }.launchIn(mainScope)
 
     private fun getDynamicThemeInfo() = settingUsecases.getDynamicTheme()
-        .flowOn(Dispatchers.IO).onEach {toggle ->
+        .flowOn(ioContext).onEach { toggle ->
             uiState.dynamicThemeToggle = toggle
-        }.launchIn(viewModelScope)
+        }.launchIn(mainScope)
 
     private fun getNoticeAlarmInfo() = settingUsecases.getNoticeAlarm()
-        .flowOn(Dispatchers.IO).onEach {toggle ->
+        .flowOn(ioContext).onEach { toggle ->
             uiState.noticeToggle = toggle
-        }.launchIn(viewModelScope)
+        }.launchIn(mainScope)
 
     private fun getScheduleAlarmInfo() = settingUsecases.getScheduleAlarm()
-        .flowOn(Dispatchers.IO).onEach {toggle ->
+        .flowOn(ioContext).onEach { toggle ->
             uiState.scheduleToggle = toggle
-        }.launchIn(viewModelScope)
+        }.launchIn(mainScope)
 
     private fun getTriggerInfo() = settingUsecases.getTriggerToggle()
-        .flowOn(Dispatchers.IO).onEach { toggle ->
+        .flowOn(ioContext).onEach { toggle ->
             uiState.triggerToggle = toggle
-        }.launchIn(viewModelScope)
+        }.launchIn(mainScope)
 
     private fun getTriggerMoveInfo() = settingUsecases.getMoveTriggerToggle()
-        .flowOn(Dispatchers.IO).onEach { toggle ->
+        .flowOn(ioContext).onEach { toggle ->
             uiState.triggerMoveToggle = toggle
-        }.launchIn(viewModelScope)
+        }.launchIn(mainScope)
 
     private fun getRecordAlarmInfo() = settingUsecases.getRecordAlarm()
-        .flowOn(Dispatchers.IO).onEach { toggle ->
+        .flowOn(ioContext).onEach { toggle ->
             uiState.recordAlarmToggle = toggle
-        }.launchIn(viewModelScope)
+        }.launchIn(mainScope)
 
     private fun getUserInfo() = userUsecases.getUserInfo()
-        .flowOn(Dispatchers.IO).onEach { state ->
+        .flowOn(ioContext).onEach { state ->
             state.onSuccess {user ->
                 uiState.nickname = user[0].nickname
                 uiState.grade = user[0].grade
@@ -230,5 +229,5 @@ class SettingViewModel @Inject constructor(
                     }
                 }
             }
-        }.launchIn(viewModelScope)
+        }.launchIn(mainScope)
 }

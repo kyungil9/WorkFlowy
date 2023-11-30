@@ -16,6 +16,7 @@ import com.beank.workFlowy.utils.MessageWorkRequest
 import com.beank.workFlowy.utils.isValidEmail
 import com.beank.workFlowy.utils.isValidPassword
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import com.beank.presentation.R.string as AppText
@@ -41,19 +42,21 @@ class LoginViewModel @Inject constructor(
     }
 
     fun initSetting(state : Boolean){
-        launchCatching {
+        ioScope.launch {
             loginUsecases.initDataSetting()
             loginUsecases.initSetting(state)
         }
     }
 
     fun onNotificationSetting(){
-        loginUsecases.subscribeNotice
-        val messageWorkRequest = messageRequest
-            .setInputData(workDataOf("mode" to MessageMode.REPEAT))
-            .setBackoffCriteria(BackoffPolicy.LINEAR,30000, TimeUnit.MILLISECONDS)
-            .build()
-        workManager.enqueue(messageWorkRequest)
+        ioScope.launch {
+            loginUsecases.subscribeNotice()
+            val messageWorkRequest = messageRequest
+                .setInputData(workDataOf("mode" to MessageMode.REPEAT))
+                .setBackoffCriteria(BackoffPolicy.LINEAR, 30000, TimeUnit.MILLISECONDS)
+                .build()
+            workManager.enqueue(messageWorkRequest)
+        }
     }
 
     fun initToken() = loginUsecases.insertToken()
@@ -74,7 +77,7 @@ class LoginViewModel @Inject constructor(
             return
         }
 
-        launchCatching {
+        ioScope.launch {
             loginUsecases.loginAccount(
                 email = uiState.email,
                 password = uiState.password,

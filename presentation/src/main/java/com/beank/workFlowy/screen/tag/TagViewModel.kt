@@ -1,7 +1,6 @@
 package com.beank.workFlowy.screen.tag
 
 import android.content.res.TypedArray
-import androidx.lifecycle.viewModelScope
 import com.beank.domain.model.Tag
 import com.beank.domain.repository.LogRepository
 import com.beank.domain.usecase.TagUsecases
@@ -10,6 +9,7 @@ import com.beank.workFlowy.utils.imageToInt
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -23,12 +23,12 @@ class TagViewModel @Inject constructor(
 
     fun initTagImages(tagList : TypedArray){
         typedTag = tagList
-        launchCatching {
+        ioScope.launch {
             val tagImages = ArrayList<Int>()
             for (i in 0 until tagList.length()-2){
                 tagImages.add(tagList.getResourceId(i,-1))
             }
-            viewModelScope.launch(Dispatchers.Main) {
+            withContext(Dispatchers.Main.immediate) {
                 uiState.tagImageList = tagImages
             }
         }
@@ -43,14 +43,14 @@ class TagViewModel @Inject constructor(
     }
 
     fun insertTagInfo() {
-        launchCatching {
+        ioScope.launch {
             tagUsecases.insertTag(Tag(null, imageToInt(uiState.selectImage,typedTag), uiState.title))
         }
     }
 
     fun checkTagText() : Boolean {
         var result = false
-        launchCatching {
+        ioScope.launch {
             result = tagUsecases.checkTagTitle(uiState.title)
         }
         return result

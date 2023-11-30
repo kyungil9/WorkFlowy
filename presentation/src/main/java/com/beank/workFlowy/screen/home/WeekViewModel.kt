@@ -25,6 +25,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
@@ -54,7 +55,6 @@ class WeekViewModel @Inject constructor(
     logRepository: LogRepository
 ) : WorkFlowyViewModel(logRepository) {
 
-    private var oldTimeMills : Long = 0
     private val _selectDayFlow = MutableStateFlow<LocalDate>(LocalDate.now())
     val selectDayFlow get() = _selectDayFlow.asStateFlow()
     val selectDayStringFlow = selectDayFlow
@@ -65,19 +65,16 @@ class WeekViewModel @Inject constructor(
     private val scheduleInfo get() = uiState.selectSchedule
     private var todayJob : Job? = null
 
-    val timerJob = viewModelScope.launch(start = CoroutineStart.LAZY) {
-        withContext(Dispatchers.IO){
-            oldTimeMills = System.currentTimeMillis()
-            while (true) {
-                val delayMills = System.currentTimeMillis() - oldTimeMills
-                if (delayMills >= 1000L) {//1초당
-                    val record = uiState.recordList
-                    if (record.isNotEmpty()) {
-                        uiState.progressTime = Duration.between(record[0].startTime, LocalDateTime.now())
-                    }
-                    oldTimeMills = System.currentTimeMillis()
+    val timerJob = ioScope.launch(start = CoroutineStart.LAZY) {
+        while(true){
+            val record = uiState.recordList
+            if (record.isNotEmpty()) {
+                withContext(Dispatchers.Main.immediate) {
+                    uiState.progressTime =
+                        Duration.between(record[0].startTime, LocalDateTime.now())
                 }
             }
+            delay(1000)
         }
     }
 
@@ -138,7 +135,7 @@ class WeekViewModel @Inject constructor(
     private fun onDateIndexGet(date: LocalDate) = ChronoUnit.DAYS.between(LocalDate.of(2021, 12, 28), date).toInt()
 
     fun onScheduleDelete(){
-        launchCatching {
+        ioScope.launch {
             weekUsecases.deleteSchedule(scheduleInfo)
             val messageWorkRequest = messageRequest //등록된 알람 취소
                 .setInputData(
@@ -154,13 +151,13 @@ class WeekViewModel @Inject constructor(
     }
 
     fun onTagDelete(tag: Tag){
-        launchCatching {
+        ioScope.launch  {
             weekUsecases.deleteTag(tag)
         }
     }
 
     fun onCheckScheduleChange(){
-        launchCatching {
+        ioScope.launch  {
             scheduleInfo.check = scheduleInfo.check.not()
             weekUsecases.updateCheckSchedule(scheduleInfo.id!!,scheduleInfo.check)
         }
@@ -168,7 +165,7 @@ class WeekViewModel @Inject constructor(
 
     fun onRecordChange(tag: Tag){
         if (uiState.recordList.isNotEmpty()){
-            launchCatching {
+            ioScope.launch  {
                 val record = uiState.recordList[0]
                 val endTime = LocalDateTime.now()
                 val progressTime =
@@ -189,7 +186,7 @@ class WeekViewModel @Inject constructor(
 
     fun onRecordReduce(){
         if (uiState.recordList.isNotEmpty()){
-            launchCatching {
+            ioScope.launch  {
                 val record = uiState.recordList[0]
                 if (uiState.recordList[0].date != LocalDate.now()){//하루가 넘게 기록되고있는경우 쪼개기
                     var startDay = record.date
@@ -236,7 +233,7 @@ class WeekViewModel @Inject constructor(
     }
 
     private fun getAllTagInfo() = weekUsecases.getAllTag()
-        .flowOn(Dispatchers.IO).onEach { state ->
+        .flowOn(ioContext).onEach { state ->
             state.onEmpty {
                 uiState.tagList = emptyList()
             }
@@ -251,36 +248,40 @@ class WeekViewModel @Inject constructor(
                     }
                 }
             }
-        }.launchIn(viewModelScope)
+        }.launchIn(mainScope)
 
-    private fun getSelectedRecordInfo() = weekUsecases.getNowRecord(true)
-        .flowOn(Dispatchers.IO).onEach { state ->
-            state.onLoading { //프로그래스바 실행
-                uiState.actProgress = true
-            }
-            state.onSuccess { nowRecord ->
-                uiState.recordList = listOf(nowRecord.record)
-                uiState.selectTag = nowRecord.tag
-                uiState.actProgress = false
-                //uiState.progressTime = Duration.between(nowRecord.record.startTime, LocalDateTime.now())
-            }
-            state.onException { message, e ->
-                uiState.actProgress = false
-                e.message?.let {
-                    if (!it.contains("PERMISSION_DENIED")){
-                        SnackbarManager.showMessage(AppText.firebase_server_error)
-                        logFirebaseFatalCrash(message, e)
+    private fun getSelectedRecordInfo() {
+        ioScope.launch {
+            weekUsecases.getNowRecord(true)
+                .flowOn(ioContext).onEach { state ->
+                    state.onLoading { //프로그래스바 실행
+                        uiState.actProgress = true
                     }
-                }
-            }
-        }.launchIn(viewModelScope)
+                    state.onSuccess { nowRecord ->
+                        uiState.recordList = listOf(nowRecord.record)
+                        uiState.selectTag = nowRecord.tag
+                        uiState.actProgress = false
+                        //uiState.progressTime = Duration.between(nowRecord.record.startTime, LocalDateTime.now())
+                    }
+                    state.onException { message, e ->
+                        uiState.actProgress = false
+                        e.message?.let {
+                            if (!it.contains("PERMISSION_DENIED")) {
+                                SnackbarManager.showMessage(AppText.firebase_server_error)
+                                logFirebaseFatalCrash(message, e)
+                            }
+                        }
+                    }
+                }.launchIn(mainScope)
+        }
+    }
 
     private fun getTodaySchedule() {
-        launchCatching{
+        ioScope.launch{
             selectDayFlow.collectLatest{date ->
                 todayJob?.cancel()
                 todayJob = weekUsecases.getTodaySchedule(date)
-                    .flowOn(Dispatchers.IO).onEach { state ->
+                    .flowOn(ioContext).flowOn(Dispatchers.IO).onEach { state ->
                         state.onSuccess {scheduleList ->
                             uiState.scheduleList = scheduleList.sortedWith(compareBy({it.check},{ it.time.not() },{it.startTime}))
                         }
@@ -295,7 +296,7 @@ class WeekViewModel @Inject constructor(
                         state.onEmpty {
                             uiState.scheduleList = emptyList()
                         }
-                    }.launchIn(viewModelScope)
+                    }.launchIn(mainScope)
             }
         }
     }

@@ -3,7 +3,6 @@ package com.beank.workFlowy.screen.trigger_setting
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.viewModelScope
 import com.beank.domain.model.GeofenceData
 import com.beank.domain.model.GeofenceEvent
 import com.beank.domain.model.Tag
@@ -18,10 +17,10 @@ import com.beank.workFlowy.screen.WorkFlowyViewModel
 import com.beank.workFlowy.utils.fromGeofenceJson
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import java.time.LocalTime
 import javax.inject.Inject
 
@@ -108,7 +107,7 @@ class TriggerSettingViewModel @Inject constructor(
     }
 
     fun onTriggerAdd(){
-        launchCatching {
+        ioScope.launch {
             triggerSettingUsecases.addGeofence(GeofenceData(
                 id = null,
                 enterTag = uiState.enterTag,
@@ -128,7 +127,7 @@ class TriggerSettingViewModel @Inject constructor(
     }
 
     fun onTriggerUpdate(){
-        launchCatching {
+        ioScope.launch {
             triggerSettingUsecases.updateGeofence(
                 GeofenceData(
                     id = uiState.id,
@@ -150,7 +149,7 @@ class TriggerSettingViewModel @Inject constructor(
     }
 
     private fun getAllTagInfo() = triggerSettingUsecases.getAllTag()
-        .flowOn(Dispatchers.IO).onEach { state ->
+        .flowOn(ioContext).onEach { state ->
             state.onEmpty {
                 uiState.tagList = emptyList()
             }
@@ -165,6 +164,6 @@ class TriggerSettingViewModel @Inject constructor(
                     }
                 }
             }
-        }.launchIn(viewModelScope)
+        }.launchIn(mainScope)
 
 }

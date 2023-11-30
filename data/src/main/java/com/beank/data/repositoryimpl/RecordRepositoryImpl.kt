@@ -40,14 +40,13 @@ class RecordRepositoryImpl @Inject constructor(
         storage.store.document(storage.getUid()!!).collection(RECORD).whereLessThanOrEqualTo("date",endDate.toInt())
             .whereGreaterThanOrEqualTo("date",startDate.toInt()).dataStateObjects<WeekRecord,Record>()
 
-    override fun getPauseRecord(pause: Boolean): Flow<FireStoreState<NowRecord>> = channelFlow {
+    override suspend fun getPauseRecord(pause: Boolean): Flow<FireStoreState<NowRecord>> = channelFlow {
         send(FireStoreState.Loading)
         storage.store.document(storage.getUid()!!).collection(RECORD).whereEqualTo("pause",pause)
             .dataStateObjects<WeekRecord,Record>().collectLatest {state ->
                 state.onSuccess {record ->
                     val tag = storage.store.document(storage.getUid()!!).collection(TagRepositoryImpl.TAG)
-                        .whereEqualTo("title", record[0].tag).get()
-                        .await().documents[0].toObject<WeekTag>()!!.toTagModel()
+                        .whereEqualTo("title", record[0].tag).get().await().documents[0].toObject<WeekTag>()!!.toTagModel()
                     send(FireStoreState.Success(NowRecord(record[0],tag)))
                 }
                 state.onLoading {
@@ -66,7 +65,6 @@ class RecordRepositoryImpl @Inject constructor(
             .whereEqualTo("title", record.tag).get()
             .await().documents[0].toObject<WeekTag>()!!.toTagModel()
         return NowRecord(record,tag)
-
     }
 
     override suspend fun getCurrentRecord(): Record = storage.store.document(storage.getUid()!!).collection(RECORD)

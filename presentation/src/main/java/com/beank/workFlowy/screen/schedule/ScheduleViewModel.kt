@@ -5,7 +5,6 @@ import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.viewModelScope
 import androidx.work.BackoffPolicy
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
@@ -24,6 +23,7 @@ import com.beank.workFlowy.utils.toTimeMillis
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -46,12 +46,12 @@ class ScheduleViewModel @Inject constructor(
 
     fun initScheduleImages(scheduleList : TypedArray){
         typedSchedule = scheduleList
-        launchCatching {
+        ioScope.launch {
             val scheduleImages = ArrayList<Int>()
             for (i in 0 until scheduleList.length()){
                 scheduleImages.add(scheduleList.getResourceId(i,0))
             }
-            viewModelScope.launch(Dispatchers.Main) {
+            withContext(Dispatchers.Main.immediate) {
                 uiState.scheduleImageList = scheduleImages
             }
         }
@@ -127,7 +127,7 @@ class ScheduleViewModel @Inject constructor(
     }
 
     fun onScheduleInsert(){
-        launchCatching {
+        ioScope.launch {
             val alarmTime = onAlarmTimeCalculate()
             scheduleUsecases.insertSchedule(Schedule(
                 id = null,
@@ -154,17 +154,21 @@ class ScheduleViewModel @Inject constructor(
     }
 
     private fun onNowMessageBuild(alarmTime : LocalDateTime){
-        val messageWorkRequest = messageRequest
-            .setInputData(workDataOf(
-                "mode" to MessageMode.NOW,
-                "title" to uiState.title,
-                "body" to uiState.comment,
-                "time" to alarmTime.toTimeMillis(),
-                "id" to uiState.originalSchedule.alarmCode
-            ))
-            .setBackoffCriteria(BackoffPolicy.LINEAR,30000, TimeUnit.MILLISECONDS)
-            .build()
-        workManager.enqueue(messageWorkRequest)
+        ioScope.launch {
+            val messageWorkRequest = messageRequest
+                .setInputData(
+                    workDataOf(
+                        "mode" to MessageMode.NOW,
+                        "title" to uiState.title,
+                        "body" to uiState.comment,
+                        "time" to alarmTime.toTimeMillis(),
+                        "id" to uiState.originalSchedule.alarmCode
+                    )
+                )
+                .setBackoffCriteria(BackoffPolicy.LINEAR, 30000, TimeUnit.MILLISECONDS)
+                .build()
+            workManager.enqueue(messageWorkRequest)
+        }
     }
 
     private fun onCheckTime() : Boolean {
@@ -173,7 +177,7 @@ class ScheduleViewModel @Inject constructor(
     }
 
     fun onScheduleUpdate(){
-        launchCatching {
+        ioScope.launch {
             val alarmTime = onAlarmTimeCalculate()
             //알람 켜지거나 꺼졌을때
             if (uiState.alarmToggle){

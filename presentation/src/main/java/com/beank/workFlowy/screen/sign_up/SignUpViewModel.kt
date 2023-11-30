@@ -11,6 +11,7 @@ import com.beank.workFlowy.utils.isValidEmail
 import com.beank.workFlowy.utils.isValidPassword
 import com.beank.workFlowy.utils.passwordMatches
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -50,7 +51,7 @@ class SignUpViewModel @Inject constructor(
             return
         }
 
-        launchCatching {
+        ioScope.launch {
             signUpUsecases.createAccount(
                 email = uiState.email,
                 password = uiState.password,
